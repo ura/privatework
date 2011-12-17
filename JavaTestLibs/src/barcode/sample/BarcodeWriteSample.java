@@ -1,4 +1,4 @@
-package barcode;
+package barcode.sample;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
