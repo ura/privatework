@@ -3,11 +3,19 @@ package util;
 import java.io.File;
 import java.io.IOException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import util.file.FileMoveUtil;
+import conf.ConfConst;
 
 public class WinRARWrapper {
-
-	private static final String RAR_EXE = "C:\\Program Files\\WinRAR\\WinRAR.exe";
+	private static Logger log = LoggerFactory.getLogger(WinRARWrapper.class);
+	/**
+	 * WINWARにぱすをとおしておｋ
+	 */
+	private static final String RAR_EXE = ConfConst.MAIN_CONF
+			.getVal(ConfConst.WINRAR_PATH);
 
 	public static void decode(String src, String dest) throws IOException,
 			InterruptedException {
@@ -17,7 +25,7 @@ public class WinRARWrapper {
 		String cmd = "\"" + RAR_EXE + "\" X  -o+  -IBCK \"" + src + "\" * \""
 				+ dest + "\"";
 
-		System.out.println(cmd);
+		log.info(cmd);
 		Process exec = Runtime.getRuntime().exec(cmd);
 		exec.waitFor();
 		int exitValue = exec.exitValue();
@@ -40,7 +48,7 @@ public class WinRARWrapper {
 		String cmdZip = "\"" + RAR_EXE + "\" A -R -IBCK -afzip -ep1   \""
 				+ destName + "\" \"" + src + "/*\"";
 
-		System.out.println(cmdZip);
+		log.info(cmdZip);
 
 		Process execZip = Runtime.getRuntime().exec(cmdZip);
 

@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 
 import util.file.FileUtilExt;
 import conf.Config;
+import conf.ListConfig;
 
 /**
  * MAINクラス。分類したり、フォルダを定義したり。
@@ -51,11 +52,11 @@ public class ClassifyAll {
 	}
 
 	private static void classfy(String args[]) {
-		Config config;
+		ListConfig config;
 		if (args.length == 1) {
-			config = Config.loadConfig("/prop.properties");
+			config = Config.loadConfig("/prop.properties", ListConfig.class);
 		} else {
-			config = Config.loadConfig(args[1]);
+			config = Config.loadConfig(args[1], ListConfig.class);
 		}
 
 		Collection<String[]> setting = config.getMoveSetting();

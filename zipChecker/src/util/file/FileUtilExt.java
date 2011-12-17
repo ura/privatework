@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -26,16 +25,20 @@ import util.UserInput;
 import util.WinRARWrapper;
 import zip.State;
 import zip.ZipChecker;
+import conf.ConfConst;
 import dir.Dir;
 import dir.DirCollector;
 
 public class FileUtilExt extends ObjectUtil {
 	static Pattern fileNoPattern = Pattern.compile("(.*)_(\\d*)");
-	static Logger log = LoggerFactory.getLogger(FileUtilExt.class);
+	private static Logger log = LoggerFactory.getLogger(FileUtilExt.class);
+
+	private static final String WORK_DIR = ConfConst.MAIN_CONF
+			.getVal(ConfConst.ARC_WORK_DIR);
 
 	/**
 	 * パスワードつきのファイルを削除します。
-	 * 
+	 *
 	 */
 	public static void movePassZipAll(String src) {
 
@@ -93,19 +96,19 @@ public class FileUtilExt extends ObjectUtil {
 		checker.save();
 	}
 
-	private static final String WORK_DIR = "N:\\tmp";
-
 	/**
 	 * 圧縮ファイルの形式を変えます。 rar→zipに。 さらに、入れ子圧縮の場合、入れ子の展開を行う。
-	 * 
+	 *
 	 */
-	public static void convertArc(String src) {
+	public static void convertArc(String srcArcFile) {
 
-		File srcFile = new File(src);
+		File srcFile = new File(srcArcFile);
 
 		try {
 			String work = FileMoveUtil.createTempDir(WORK_DIR);
-			WinRARWrapper.decode(src, work);
+			WinRARWrapper.decode(srcArcFile, work);
+
+			//TODO フォルダのアップ戦略を検討する
 
 			File dir = new File(work);
 
@@ -116,15 +119,17 @@ public class FileUtilExt extends ObjectUtil {
 
 			for (File zipFile : list) {
 
+				//TODO 巻数の戦略を書き換える
+
 				String childDir = work + "/" + NameUtil.kan(zipFile);
 				File cDir = new File(childDir);
 
 				// 解凍して、フォルダ内のファイルを全部上に上げる。
-				WinRARWrapper.decode(zipFile, cDir);
-				FileMoveUtil.moveParent(cDir, true);
-				zipFile.delete();
+				decodeAll(cDir, srcFile);
 
 			}
+
+			//TODO 失敗した場合に備え、フォルダ名を変えてから圧縮する
 
 			WinRARWrapper.encode(work, WORK_DIR + "/"
 					+ srcFile.getName().replace("rar", "zip"));
@@ -139,10 +144,24 @@ public class FileUtilExt extends ObjectUtil {
 
 	}
 
+	public static void decodeAll(File workDir, File arcFile)
+			throws IOException, InterruptedException {
+
+		WinRARWrapper.decode(arcFile, workDir);
+		FileMoveUtil.moveParent(workDir, true);
+		arcFile.delete();
+		File[] list = FileMoveUtil.listFiles(workDir, ".rar", ".zip");
+
+		for (File file : list) {
+			decodeAll(workDir, file);
+		}
+
+	}
+
 	/**
 	 * 圧縮ファイルの統廃合を行います。 1巻、2巻、3巻と分かれているファイルを結合し、一個のファイルにします。
-	 * 
-	 * 
+	 *
+	 *
 	 */
 	public static void rebuildArc(String base, String name, String... keword) {
 
@@ -213,7 +232,7 @@ public class FileUtilExt extends ObjectUtil {
 
 	/**
 	 * 似たファイルが入っているディレクトリを見つけ、 フォルダを新規に作成、移動を行います。
-	 * 
+	 *
 	 * @param src
 	 */
 	public static void createDir(String src) {
@@ -306,7 +325,7 @@ public class FileUtilExt extends ObjectUtil {
 
 	/**
 	 * ひとつのファイルを残して削除します。
-	 * 
+	 *
 	 * @param list
 	 */
 	private static List<File> deleteFile(List<File> list) {
@@ -325,7 +344,7 @@ public class FileUtilExt extends ObjectUtil {
 
 	/**
 	 * ファイル名のフィルタつき、分類。
-	 * 
+	 *
 	 * @param src
 	 * @param nameFilter
 	 * @param dest
@@ -347,7 +366,7 @@ public class FileUtilExt extends ObjectUtil {
 
 	/**
 	 * ファイルを分類します。複数のファイルを同時に対象にします。
-	 * 
+	 *
 	 * @param dirs
 	 * @param fileNames
 	 */
@@ -365,7 +384,7 @@ public class FileUtilExt extends ObjectUtil {
 
 	/**
 	 * ファイルを分類します。
-	 * 
+	 *
 	 * @param dirs
 	 * @param fileName
 	 * @return
@@ -376,7 +395,7 @@ public class FileUtilExt extends ObjectUtil {
 
 	/**
 	 * ファイルを分類します。
-	 * 
+	 *
 	 * @param dirs
 	 * @param fileName
 	 * @return
