@@ -2,7 +2,11 @@ package barcode.sample;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 
 import javax.imageio.ImageIO;
 
@@ -30,6 +34,11 @@ public class BarcodeReadSample {
 		read("mysample\\0001-04.jpg");
 		read("mysample\\0001-05.jpg");
 
+		read2("mysample\\0001.jpg", 2);
+		read2("mysample\\0001.jpg", 3);
+		read2("mysample\\0001.jpg", 4);
+
+		readDir("mysample\\hyoushi");
 	}
 
 	public static void read(String src) {
@@ -41,6 +50,7 @@ public class BarcodeReadSample {
 		try {
 			// 画像を読み込んでビットマップデータを生成
 			BufferedImage image = ImageIO.read(new File(src));
+
 			LuminanceSource source = new BufferedImageLuminanceSource(image);
 			BinaryBitmap bitmap = new BinaryBitmap(new HybridBinarizer(source));
 
@@ -61,7 +71,7 @@ public class BarcodeReadSample {
 				System.out.println("    Point[" + i + "] = " + points[i]);
 			}
 		} catch (NotFoundException ex) {
-			 ex.printStackTrace(System.out);
+			ex.printStackTrace(System.out);
 		} catch (ChecksumException ex) {
 			ex.printStackTrace(System.out);
 		} catch (FormatException ex) {
@@ -69,6 +79,152 @@ public class BarcodeReadSample {
 		} catch (IOException ex) {
 			ex.printStackTrace(System.out);
 		}
+	}
+
+	public static void readDir(String dir) {
+
+		File f = new File(dir);
+		File[] listFiles = f.listFiles(new FilenameFilter() {
+
+			@Override
+			public boolean accept(File dir, String name) {
+
+				return name.endsWith(".jpeg") || name.endsWith(".jpg");
+			}
+		});
+
+		for (File file : listFiles) {
+
+			read2(file.getAbsolutePath(), 3);
+
+		}
+
+	}
+
+	public static String read2(String src, final int div) {
+		// マルチフォーマット対応の入力ストリームを生成
+
+		System.out.println();
+		System.out.println(src);
+		try {
+			// 画像を読み込んでビットマップデータを生成
+			BufferedImage image = ImageIO.read(new File(src));
+
+			LuminanceSource source = new BufferedImageLuminanceSource(image);
+			BinaryBitmap bitmap = new BinaryBitmap(new HybridBinarizer(source));
+
+			Set<Rect> createRect = createRect(bitmap, div);
+
+			String decode = decode(bitmap, createRect);
+
+			System.out.println(src + "\t" + decode);
+
+			if (decode == null && div < 5) {
+				decode = read2(src, div + 1);
+			}
+
+			return decode;
+
+		} catch (IOException ex) {
+			ex.printStackTrace(System.out);
+		}
+
+		return "";
+	}
+
+	public static BinaryBitmap crop(BinaryBitmap bitmap, Rect rect) {
+
+		return bitmap.crop(rect.left, rect.top, rect.width, rect.height);
+	}
+
+	public static Set<Rect> createRect(BinaryBitmap bitmap, int div) {
+		Set<Rect> set = new HashSet<BarcodeReadSample.Rect>();
+		System.out.println("Base  " + bitmap.getWidth() + ":"
+				+ bitmap.getHeight());
+		for (int i = 0; i < div; i++) {
+			for (int j = 0; j < div; j++) {
+
+				/*
+				 * System.out.println(bitmap.getWidth() * i / div + ":" +
+				 * bitmap.getHeight() * j / div + ":" + bitmap.getWidth() * (i +
+				 * 1) / div + ":" + bitmap.getHeight() * (j + 1) / div);
+				 */
+
+				set.add(new Rect(bitmap.getWidth() * i / div, bitmap
+						.getHeight() * j / div, bitmap.getWidth() / div, bitmap
+						.getHeight() / div));
+			}
+
+		}
+		return set;
+	}
+
+	public static class Rect {
+
+		public Rect(int left, int top, int width, int height) {
+			super();
+			this.top = top;
+			this.left = left;
+			this.width = width;
+			this.height = height;
+		}
+
+		public int top;
+		public int left;
+		public int width;
+		public int height;
+
+		@Override
+		public String toString() {
+			return "Rect [top=" + top + ", left=" + left + ", width=" + width
+					+ ", height=" + height + "]";
+		}
+
+	}
+
+	private static String decode(BinaryBitmap basemap, Set<Rect> set) {
+		Reader reader = new MultiFormatReader();
+		for (Rect rect : set) {
+			BinaryBitmap bitmap = crop(basemap, rect);
+
+			// デコードを実行
+			Result result;
+			try {
+				result = reader.decode(bitmap);
+				// フォーマットを取得
+				BarcodeFormat format = result.getBarcodeFormat();
+				System.out.println("フォ－マット: " + format);
+				// コンテンツを取得
+				String text = result.getText();
+
+				System.out.println("テキスト: " + text);
+
+				// 位置検出パターンおよびアラインメントパターンの座標を取得
+				ResultPoint[] points = result.getResultPoints();
+				System.out.println("位置検出パターン／アライメントパターンの座標: ");
+				for (int i = 0; i < points.length; i++) {
+					System.out.println("    Point[" + i + "] = " + points[i]);
+				}
+
+				if (format.toString().equals("EAN_13")) {
+					return text;
+				}
+
+			} catch (NotFoundException e) {
+				// TODO 自動生成された catch ブロック
+				// e.printStackTrace();
+			} catch (ChecksumException e) {
+				// TODO 自動生成された catch ブロック
+				// e.printStackTrace();
+			} catch (FormatException e) {
+				// TODO 自動生成された catch ブロック
+				// e.printStackTrace();
+			}
+
+		}
+
+		// TODO
+		return null;
 	}
 
 }
