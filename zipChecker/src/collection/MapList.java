@@ -11,11 +11,9 @@ public class MapList<K, V> {
 
 	private Map<K, Collection<V>> innerMap = new HashMap<K, Collection<V>>();
 
-	//private Class<? super Collection> listCls;
+
 
 	public MapList(){
-
-		//this.listCls=ArrayList.class;
 	}
 
 	public MapList(Class<Collection<V>> c){

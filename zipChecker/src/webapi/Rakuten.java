@@ -30,31 +30,9 @@ public class Rakuten {
 
 	private static final String KEY = "572475de8b4c52837e32a6777584c734";
 
-	public static void main(String[] args) throws Exception {
-
-		test("Psyren");
-		test("龍狼伝");
-		test("龍狼伝　(２");
-
-	}
-
-	private static void test(String key) {
-
-		Set<String> author = getAuthor(key);
-
-		for (String string : author) {
-			System.out.println(key + "\t" + string);
-		}
-
-		SortedSet<BookInfo> info = getInfo(key);
-
-		for (BookInfo i : info) {
-			System.out.println(key + "\t" + i.getInfo());
-		}
 
 
 
-	}
 
 	private static String createName(String key) {
 
@@ -68,8 +46,16 @@ public class Rakuten {
 
 	}
 
+	static class Query{
+		public void setCustomQuery(AbaronRESTClient stub ){
+
+		}
+	}
+
+
 	private static AbaronResultNode getWebInfo(String title) {
 		AbaronRESTClient stub = new AbaronRESTClient();
+
 
 		// Amazon WebサービスのエンドポイントURL
 		stub.setEndpointUrl("http://api.rakuten.co.jp/rws/3.0/rest");
@@ -83,6 +69,8 @@ public class Rakuten {
 		stub.setParameter("ResponseGroup", "Small");
 		stub.setParameter("booksGenreID", "001");
 		stub.setParameter("size", "9");
+
+		//"isbnjan"
 
 		// Webサービスを呼び出す
 		AbaronResultNode result = stub.doRequest();
@@ -113,7 +101,7 @@ public class Rakuten {
 		SortedSet<BookInfo> set = new TreeSet<BookInfo>();
 		AbaronResultNode result = getWebInfo(title);
 
-		result.print(false);
+
 
 		try {
 			String xmlString = result.getXmlString();
@@ -151,27 +139,22 @@ public class Rakuten {
 			}
 
 		} catch (XPathExpressionException e) {
-			// TODO 自動生成された catch ブロック
+
 			e.printStackTrace();
 			result.print(false);
 		} catch (DOMException e) {
-			// TODO 自動生成された catch ブロック
 			e.printStackTrace();
 			result.print(false);
 		} catch (ParserConfigurationException e) {
-			// TODO 自動生成された catch ブロック
 			e.printStackTrace();
 			result.print(false);
 		} catch (SAXException e) {
-			// TODO 自動生成された catch ブロック
 			e.printStackTrace();
 			result.print(false);
 		} catch (IOException e) {
-			// TODO 自動生成された catch ブロック
 			e.printStackTrace();
 			result.print(false);
 		} catch (RuntimeException e) {
-			e.printStackTrace();
 			result.print(false);
 		}
 		return set;
