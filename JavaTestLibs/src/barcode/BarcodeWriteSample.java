@@ -1,4 +1,4 @@
-package sample;
+package barcode;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -13,7 +13,7 @@ import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 
-public class B {
+public class BarcodeWriteSample {
 	public static void main(String[] args) {
 		// バーコードに埋め込むコンテンツ
 		String contents = "マイコミジャーナル: http://journal.mycom.co.jp/";
