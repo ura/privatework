@@ -23,6 +23,7 @@ import util.MapList;
 import util.NameUtil;
 import util.UserInput;
 import util.WinRARWrapper;
+import util.file.filter.DirFilter;
 import zip.State;
 import zip.ZipChecker;
 import conf.ConfConst;
@@ -150,14 +151,25 @@ public class FileUtilExt extends ObjectUtil {
 
 	public static void decodeAll(File workDir, File arcFile)
 			throws IOException, InterruptedException {
+		decodeAll(workDir, arcFile, false);
+	}
 
-		WinRARWrapper.decode(arcFile, workDir);
-		FileMoveUtil.moveParent(workDir, true);
-		arcFile.delete();
-		File[] list = FileMoveUtil.listFiles(workDir, ".rar", ".zip");
+	public static void decodeAll(File workDir, File arcFile, boolean del)
+			throws IOException, InterruptedException {
+
+		WinRARWrapper.decode(arcFile, new File(workDir.getAbsolutePath()
+				+ File.separatorChar + arcFile.getName()));
+		if (del) {
+			arcFile.delete();
+		}
+
+		KeywordCollector coll = new KeywordCollector(".rar", ".zip");
+		new FileWalker().walk(workDir, coll);
+
+		List<File> list = coll.getFiles();
 
 		for (File file : list) {
-			decodeAll(workDir, file);
+			decodeAll(workDir, file, true);
 		}
 
 	}
@@ -204,38 +216,27 @@ public class FileUtilExt extends ObjectUtil {
 
 		for (File zipFile : newList) {
 
-			if (NameUtil.isMultiFile(zipFile)) {
-				WinRARWrapper.decode(zipFile, workF);
-				FileMoveUtil.moveParent(workF, "zip", "rar");
-				File[] childList = FileMoveUtil
-						.listFiles(workF, ".rar", ".zip");
-
-				for (File z : childList) {
-
-					String childDir = work + "/" + NameUtil.kan(z);
-					File cDir = new File(childDir);
-
-					// 解凍して、フォルダ内のファイルを全部上に上げる。
-					WinRARWrapper.decode(z, cDir);
-					FileMoveUtil.moveParent(cDir, true);
-
-				}
-
-			} else {
-				String childDir = work + "/" + NameUtil.kan(zipFile);
-				File cDir = new File(childDir);
-
-				// 解凍して、フォルダ内のファイルを全部上に上げる。
-				WinRARWrapper.decode(zipFile, cDir);
-				FileMoveUtil.moveParent(cDir, true);
-
-			}
-
-			// zipFile.delete();
+			decodeAll(workF, zipFile);
 
 		}
 
+		FileMoveUtil.moveFolderToParent(workF);
 		FileMoveUtil.deleteEmptyDir(workF);
+
+		File[] dirs = workF.listFiles(new DirFilter());
+
+		for (File dir : dirs) {
+			String no = NameUtil.bookNo(dir.getName());
+			File newDir = new File(dir.getParent() + File.separatorChar + no);
+			boolean b = false;
+			if (!newDir.exists()) {
+				b = dir.renameTo(newDir);
+			}
+
+			if (!b) {
+				log.warn("フォルダのリネームに失敗しました:" + no);
+			}
+		}
 
 		WinRARWrapper.encode(work,
 				WORK_DIR + "/" + NameUtil.createCominName(name, newList));

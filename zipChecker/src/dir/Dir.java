@@ -4,9 +4,9 @@ import java.io.File;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.SortedSet;
 import java.util.TreeSet;
-import java.util.Map.Entry;
 
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
@@ -15,14 +15,14 @@ import org.slf4j.LoggerFactory;
 import socre.name.FileNameParseCoreOnly;
 import socre.name.FileNameParser;
 import util.CollectionUtil;
-import util.StringUtil;
 import util.CollectionUtil.Counter;
+import util.StringUtil;
 import util.file.FileMoveUtil;
 
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
-public class Dir {
+public class Dir implements Comparable<Dir> {
 
 	private static Logger log = LoggerFactory.getLogger(Dir.class);
 
@@ -54,7 +54,7 @@ public class Dir {
 		fileNameSet.add(f.getPath());
 	}
 
-	//TODO ここに機能があるのがいいのかは検討。
+	//TODO ここに機能があるのがいいのかは検討。未完成
 	/**
 	 * ディレクトリの中を確認し、ファイルの類似性を見つけ、フォルダ作成、および、MOVEを行う。
 	 *
@@ -110,7 +110,7 @@ public class Dir {
 
 	/**
 	 * 移動検討時の管理用のクラス
-	
+
 	 *
 	 */
 	private class MoveFiles implements Comparable<Dir.MoveFiles> {
@@ -159,6 +159,12 @@ public class Dir {
 	public String toString() {
 
 		return dir.getPath() + ": file=" + fileNameSet.size();
+	}
+
+	@Override
+	public int compareTo(Dir o) {
+
+		return (int) (dir.length() - o.dir.length());
 	}
 
 }

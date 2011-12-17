@@ -3,6 +3,10 @@ package util.file;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.Collection;
 import java.util.regex.Matcher;
 
@@ -15,7 +19,7 @@ import org.slf4j.LoggerFactory;
 
 import util.NameUtil;
 import util.Util;
-
+import dir.Dir;
 import dir.DirCollector;
 
 /**
@@ -61,6 +65,11 @@ public class FileMoveUtil {
 
 	}
 
+	/**
+	 * 変なロジックに見えるが、遅延をしないと消したファイルが見えるとか、
+	 * 消せないとかそんなんだったはず。
+	 * @param dir
+	 */
 	private static void deleteEmptyDirImpl(File dir) {
 
 		File[] listFiles = dir.listFiles();
@@ -170,6 +179,28 @@ public class FileMoveUtil {
 		if (ext == null && allFileFullPath.size() != count) {
 			log.info("{}  {}", new Object[] { allFileFullPath.size(), count });
 			throw new IllegalStateException("");
+		}
+
+		return true;
+	}
+
+	public static boolean moveFolderToParent(File src) {
+
+		DirCollector srcDir = new DirCollector();
+		new FileWalker().walk(src, srcDir);
+		Collection<Dir> values = srcDir.dirSet.values();
+		for (Dir dir : values) {
+			Path srcPath = Paths.get(dir.dir.getAbsolutePath());
+			Path destPath = Paths.get(src.getAbsolutePath()
+					+ File.separatorChar + dir.dir.getName());
+
+			try {
+				Files.move(srcPath, destPath, StandardCopyOption.ATOMIC_MOVE);
+			} catch (IOException e) {
+				log.error("COPYに失敗", e);
+				throw new IllegalStateException();
+			}
+
 		}
 
 		return true;

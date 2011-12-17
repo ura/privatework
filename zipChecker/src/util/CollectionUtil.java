@@ -1,9 +1,11 @@
 package util;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -35,6 +37,18 @@ public class CollectionUtil {
 		videoPattern.add(divx);
 		videoPattern.add(xvid);
 		videoPattern.add(wmv);
+	}
+
+	public static List<File> conv(Collection<String> array) {
+		ArrayList<File> list = new ArrayList<File>();
+
+		for (String a : array) {
+			list.add(new File(a));
+
+		}
+
+		return list;
+
 	}
 
 	public static Collection<String> nameVideoFilter(

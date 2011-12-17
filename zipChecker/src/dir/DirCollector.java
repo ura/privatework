@@ -3,8 +3,8 @@ package dir;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import util.file.FileHandler;
 import util.file.FileWalker;
@@ -18,7 +18,7 @@ import util.file.FileWalker;
  */
 public class DirCollector implements FileHandler {
 
-	public Map<File, Dir> dirSet = new HashMap<File, Dir>();
+	public SortedMap<File, Dir> dirSet = new TreeMap<File, Dir>();
 
 	public boolean isHamdleFile(File f) {
 

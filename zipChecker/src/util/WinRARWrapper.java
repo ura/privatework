@@ -6,7 +6,6 @@ import java.io.IOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import util.file.FileMoveUtil;
 import conf.ConfConst;
 
 public class WinRARWrapper {
@@ -55,7 +54,7 @@ public class WinRARWrapper {
 		execZip.waitFor();
 		int exitValue = execZip.exitValue();
 		if (exitValue == 0) {
-			FileMoveUtil.deleteDir(new File(src));
+			//FileMoveUtil.deleteDir(new File(src));
 		}
 	}
 
