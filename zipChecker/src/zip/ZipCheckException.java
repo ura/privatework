@@ -1,6 +1,5 @@
 package zip;
 
-
 public class ZipCheckException extends RuntimeException {
 
 	private State state;
@@ -20,18 +19,17 @@ public class ZipCheckException extends RuntimeException {
 		// TODO 自動生成されたコンストラクター・スタブ
 	}
 
-	public ZipCheckException(String message, State state,Throwable cause) {
+	public ZipCheckException(String message, State state, Throwable cause) {
 		super(message, cause);
 		this.state = state;
 		// TODO 自動生成されたコンストラクター・スタブ
 	}
 
-	public ZipCheckException(String message,State state) {
+	public ZipCheckException(String message, State state) {
 		super(message);
 		this.state = state;
 		// TODO 自動生成されたコンストラクター・スタブ
 	}
-
 
 	public ZipCheckException(Throwable cause) {
 		super(cause);
@@ -50,9 +48,7 @@ public class ZipCheckException extends RuntimeException {
 	@Override
 	public String getMessage() {
 
-		return super.getMessage()+"  "+state;
+		return super.getMessage() + "  " + state;
 	}
-
-
 
 }

@@ -13,7 +13,7 @@ public class ImgZip extends Img {
 
 	private static Logger log = LoggerFactory.getLogger(ImgZip.class);
 
-	public ImgZip(String filename,String entrys[]) {
+	public ImgZip(String filename, String entrys[]) {
 		super(filename);
 		// TODO 自動生成されたコンストラクター・スタブ
 	}

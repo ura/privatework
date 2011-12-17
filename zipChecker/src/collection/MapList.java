@@ -11,12 +11,10 @@ public class MapList<K, V> {
 
 	private Map<K, Collection<V>> innerMap = new HashMap<K, Collection<V>>();
 
-
-
-	public MapList(){
+	public MapList() {
 	}
 
-	public MapList(Class<Collection<V>> c){
+	public MapList(Class<Collection<V>> c) {
 
 	}
 
@@ -25,28 +23,25 @@ public class MapList<K, V> {
 		Collection<V> c = innerMap.get(k);
 
 		if (c == null) {
-			c=new ArrayList<V>();
+			c = new ArrayList<V>();
 
 			innerMap.put(k, c);
 		}
 
 		c.add(v);
 
-
 	}
 
-	public Set<K> keySet(){
+	public Set<K> keySet() {
 
-		Set<Entry<K,Collection<V>>> set = innerMap.entrySet();
+		Set<Entry<K, Collection<V>>> set = innerMap.entrySet();
 
 		return innerMap.keySet();
 	}
 
-	public Set<Entry<K,Collection<V>>>  entrySet(){
-		return  innerMap.entrySet();
+	public Set<Entry<K, Collection<V>>> entrySet() {
+		return innerMap.entrySet();
 	}
-
-
 
 	public Collection<V> get(K k) {
 		return innerMap.get(k);
@@ -59,7 +54,5 @@ public class MapList<K, V> {
 	public int size() {
 		return innerMap.size();
 	}
-
-
 
 }

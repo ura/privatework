@@ -21,7 +21,7 @@ import dir.Dir;
  * 例：あるフォルダに「世界遺産」「.avi」といったファイルばかり入っている場合、
  * その特徴に一致するファイルを高く評価する。
  *
- * @author poti
+
  *
  */
 public class ScoreCalculatorByDirFile implements ScoreCalculator {
@@ -57,14 +57,15 @@ public class ScoreCalculatorByDirFile implements ScoreCalculator {
 
 		//フォルダの状態を分析
 		for (String dirFile : dir.fileNameSet) {
-			map = CollectionUtil.count(map, this.fileNameParser
-					.parse(FilenameUtils.getName(fileName)), fCount);
+			map = CollectionUtil.count(map,
+					this.fileNameParser.parse(FilenameUtils.getName(fileName)),
+					fCount);
 		}
 
 		int score = 0;
 		if (map != null) {
-			log.info("FILE FULL.{} ,Path.{} ", new Object[] { set,
-					dir.dir.getPath() });
+			log.info("FILE FULL.{} ,Path.{} ",
+					new Object[] { set, dir.dir.getPath() });
 
 			for (Map.Entry<String, CollectionUtil.Counter> e : map.entrySet()) {
 				//フォルダの分析結果をつかって、
@@ -91,9 +92,9 @@ public class ScoreCalculatorByDirFile implements ScoreCalculator {
 				//それ以下は、ノイズとして足きり。
 				if (e.getValue().per() > 30) {
 					int score = e.getValue().per();
-					log.info("FILE.{} ,DIR.{},Per.{},Count.{}", new Object[] {
-							filePart, e.getKey(), e.getValue().per(),
-							e.getValue().count });
+					log.info("FILE.{} ,DIR.{},Per.{},Count.{}",
+							new Object[] { filePart, e.getKey(),
+									e.getValue().per(), e.getValue().count });
 
 					return score;
 				}

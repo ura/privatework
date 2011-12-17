@@ -20,7 +20,8 @@ public class FileNameParseCoreOnly implements FileNameParser {
 	@Override
 	public Collection<String> parse(String file) {
 
-		Collection<String> c = CollectionUtil.toSortSet(StringUtil.parse(file, 2));
+		Collection<String> c = CollectionUtil.toSortSet(StringUtil.parse(file,
+				2));
 		CollectionUtil.nameFilter(c, patterns, true);
 
 		return c;

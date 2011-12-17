@@ -2,7 +2,8 @@ package webapi;
 
 public class BookInfo implements Comparable<BookInfo> {
 
-	public BookInfo(String publisherName, String seriesName, String author,String title) {
+	public BookInfo(String publisherName, String seriesName, String author,
+			String title) {
 		super();
 		this.seriesName = seriesName;
 		this.publisherName = publisherName;

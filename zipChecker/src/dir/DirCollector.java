@@ -9,12 +9,11 @@ import java.util.Map;
 import util.file.FileHandler;
 import util.file.FileWalker;
 
-
 /**
  * ディレクトリ、ファイルを収集して、溜め込む。
  * 情報は、Dirに溜め込む。
  *
- * @author poti
+
  *
  */
 public class DirCollector implements FileHandler {

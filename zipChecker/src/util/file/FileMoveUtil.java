@@ -21,7 +21,7 @@ import dir.DirCollector;
 /**
  * ファイルの移動、削除、ディレクトリ作成、リネームなどなどのUtil
  *
- * @author poti
+
  *
  */
 public class FileMoveUtil {
@@ -117,7 +117,7 @@ public class FileMoveUtil {
 	}
 
 	public static boolean moveParent(File src, String... ext) {
-		return moveParent(src, false,ext);
+		return moveParent(src, false, ext);
 	}
 
 	/**

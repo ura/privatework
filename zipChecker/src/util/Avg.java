@@ -46,8 +46,6 @@ public class Avg {
 
 	}
 
-
-
 	static public class Filter {
 		public boolean filter(int max, int min, int num, int index) {
 			return true;

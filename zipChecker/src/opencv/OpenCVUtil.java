@@ -120,9 +120,11 @@ public class OpenCVUtil {
 		System.out.println("Max:" + max_val.getValue());
 
 		IplImage clone = image.clone();
-		cvRectangle(clone, max_loc.byValue(), cvPoint(max_loc.x
-				+ template.width, max_loc.y + template.height), CV_RGB(255, 0,
-				0), 3, 1, 0);
+		cvRectangle(
+				clone,
+				max_loc.byValue(),
+				cvPoint(max_loc.x + template.width, max_loc.y + template.height),
+				CV_RGB(255, 0, 0), 3, 1, 0);
 
 		return clone;
 	}
@@ -175,9 +177,11 @@ public class OpenCVUtil {
 		System.out.println("Max:" + max_val.getValue());
 
 		IplImage clone = image.clone();
-		cvRectangle(clone, max_loc.byValue(), cvPoint(max_loc.x
-				+ template.width, max_loc.y + template.height), CV_RGB(255, 0,
-				0), 3, 1, 0);
+		cvRectangle(
+				clone,
+				max_loc.byValue(),
+				cvPoint(max_loc.x + template.width, max_loc.y + template.height),
+				CV_RGB(255, 0, 0), 3, 1, 0);
 
 		return clone;
 
@@ -215,7 +219,9 @@ public class OpenCVUtil {
 			 */
 			{
 				String yotu = "./testdata/img/YXM_no1.png";
-				String[] yotu_ama = {"./testdata/img/YXM_no1_Ama.png","./testdata/img/YXM_no10_Ama.png","./testdata/img/YXM_no11_Ama.png"};
+				String[] yotu_ama = { "./testdata/img/YXM_no1_Ama.png",
+						"./testdata/img/YXM_no10_Ama.png",
+						"./testdata/img/YXM_no11_Ama.png" };
 
 				for (int i = 0; i < yotu_ama.length; i++) {
 					IplImage yotuImg = loadImage(yotu);
@@ -228,15 +234,11 @@ public class OpenCVUtil {
 							yotuAmaImg, new BookStrategy());
 
 					System.out.println("----------");
-					showImg(cutImg,10000,"result");
+					showImg(cutImg, 10000, "result");
 
 				}
 
-
 			}
-
-
-
 
 			{
 				String yotu = "./testdata/img/YXM_no1.png";

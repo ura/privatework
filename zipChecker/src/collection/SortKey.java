@@ -1,13 +1,14 @@
 package collection;
 
-public class SortKey <K1 extends Comparable,K2> implements Comparable<SortKey <K1  ,K2>> {
+public class SortKey<K1 extends Comparable, K2> implements
+		Comparable<SortKey<K1, K2>> {
 
 	private K1 key1;
 	private K2 key2;
 
-	public SortKey(K1 k1 ,K2 k2){
-		this.key1=k1;
-		this.key2=k2;
+	public SortKey(K1 k1, K2 k2) {
+		this.key1 = k1;
+		this.key2 = k2;
 
 	}
 
@@ -55,6 +56,5 @@ public class SortKey <K1 extends Comparable,K2> implements Comparable<SortKey <K
 	public K2 getKey2() {
 		return key2;
 	}
-
 
 }

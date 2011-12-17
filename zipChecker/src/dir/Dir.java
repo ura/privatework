@@ -67,8 +67,9 @@ public class Dir {
 
 		//フォルダの状態を分析
 		for (String dirFile : this.fileNameSet) {
-			map = CollectionUtil.count(map, fileNameParser.parse(FilenameUtils
-					.getName(dirFile)), fileNameSet.size());
+			map = CollectionUtil.count(map,
+					fileNameParser.parse(FilenameUtils.getName(dirFile)),
+					fileNameSet.size());
 		}
 		if (map != null) {
 			SortedSet<MoveFiles> sort = new TreeSet<MoveFiles>();
@@ -109,7 +110,7 @@ public class Dir {
 
 	/**
 	 * 移動検討時の管理用のクラス
-	 * @author poti
+	
 	 *
 	 */
 	private class MoveFiles implements Comparable<Dir.MoveFiles> {

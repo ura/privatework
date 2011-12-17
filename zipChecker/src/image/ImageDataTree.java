@@ -79,8 +79,8 @@ public class ImageDataTree implements Serializable {
 	}
 
 	private String getSaveFileName() {
-		return (this.getPath().getName() + "_" + this.key + ".sar")
-				.replace(':', '_');
+		return (this.getPath().getName() + "_" + this.key + ".sar").replace(
+				':', '_');
 	}
 
 	public void save() {

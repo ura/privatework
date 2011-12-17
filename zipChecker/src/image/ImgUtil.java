@@ -41,29 +41,30 @@ public class ImgUtil {
 		for (int i = 0; i < divide; i++) {
 			for (int j = 0; j < divide; j++) {
 
-				int[] rect=new int[]{wBlock*i,hBlock*j,wBlock,hBlock};
-				array[i][j]=rect;
+				int[] rect = new int[] { wBlock * i, hBlock * j, wBlock, hBlock };
+				array[i][j] = rect;
 
 			}
 
 		}
 
-		return  array;
+		return array;
 
 	}
 
-	public static  void view( Img img){
+	public static void view(Img img) {
 		ArrayList<Img> list = new ArrayList<Img>();
 		list.add(img);
 		new ImgFrame().viewStop(list);
 
 	}
-	public static  void viewList( Collection<Img> list){
+
+	public static void viewList(Collection<Img> list) {
 		new ImgFrame().viewStop(list);
 
 	}
 
-	public static  void viewList(Img img, Collection<Img> list){
+	public static void viewList(Img img, Collection<Img> list) {
 		ArrayList<Img> list2 = new ArrayList<Img>();
 		list2.add(img);
 		list2.addAll(list);
@@ -72,14 +73,14 @@ public class ImgUtil {
 
 	}
 
-	public static  void viewList(Img img, Collection<Img> list, Collection<Img> list2){
+	public static void viewList(Img img, Collection<Img> list,
+			Collection<Img> list2) {
 		ArrayList<Img> l = new ArrayList<Img>();
 		l.add(img);
 		l.addAll(list);
 
-		new ImgFrame().viewStop(l,list2);
+		new ImgFrame().viewStop(l, list2);
 
 	}
-
 
 }

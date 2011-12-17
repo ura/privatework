@@ -13,7 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * @author poti
+
  *
  */
 public class CollectionUtil {
@@ -82,8 +82,8 @@ public class CollectionUtil {
 				boolean b = pattern.matcher(s.toLowerCase()).find();
 
 				if (!(pattern.matcher(s.toLowerCase()).find() ^ matchDeleteFlag)) {
-					log.debug("remove {},pattern {}", new Object[] { s,
-							pattern.pattern() });
+					log.debug("remove {},pattern {}",
+							new Object[] { s, pattern.pattern() });
 					iterator.remove();
 					break;
 

@@ -21,7 +21,6 @@ public class Util {
 
 		long time = System.nanoTime();
 
-
 		if ((time % 100) < percent) {
 			return true;
 		} else {
@@ -29,12 +28,12 @@ public class Util {
 		}
 
 	}
+
 	public static boolean easyRandom(float percent) {
 
 		long time = System.nanoTime();
 
-
-		if ((time % 10000) < (percent*100)) {
+		if ((time % 10000) < (percent * 100)) {
 			return true;
 		} else {
 			return false;

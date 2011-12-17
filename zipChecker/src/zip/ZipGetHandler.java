@@ -21,6 +21,7 @@ public class ZipGetHandler implements ZipUtilHandler {
 	public ZipGetHandler(String[] entry) {
 		this.entrys = entry;
 	}
+
 	public ZipGetHandler(Collection<String> entry) {
 		this.entrys = entry.toArray(new String[0]);
 	}

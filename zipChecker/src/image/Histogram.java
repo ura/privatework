@@ -41,7 +41,6 @@ public class Histogram implements Serializable {
 
 	private static Logger log = LoggerFactory.getLogger(Histogram.class);
 
-
 	private HistogramBlock[][] histogramBlockArray;
 	private String comment;
 	private final Settings setting;
@@ -49,7 +48,7 @@ public class Histogram implements Serializable {
 	public static final int CLOOR_RATE = 10000;
 
 	public Histogram(Settings setting) {
-		this.setting=setting;
+		this.setting = setting;
 	}
 
 	public void createHistogram(BufferedImage img) {

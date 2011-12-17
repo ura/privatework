@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * ディレクトリ、ファイルを収集して、溜め込む。
  *
- * @author poti
+
  *
  */
 public class KeywordCollector implements FileHandler {

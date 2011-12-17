@@ -63,8 +63,6 @@ public class Img implements Serializable {
 				color = false;
 			}
 
-
-
 		} catch (IOException e) {
 			log.error("イメージロードエラー {}", imgFile.getName(), e);
 
@@ -91,9 +89,10 @@ public class Img implements Serializable {
 		}
 
 		BufferedImage shrinkImage = new BufferedImage(w, h, image.getType());
-		AffineTransformOp atOp = new AffineTransformOp(AffineTransform
-				.getScaleInstance(((double) w) / image.getWidth(), ((double) h)
-						/ image.getHeight()), null);
+		AffineTransformOp atOp = new AffineTransformOp(
+				AffineTransform.getScaleInstance(
+						((double) w) / image.getWidth(),
+						((double) h) / image.getHeight()), null);
 		atOp.filter(image, shrinkImage);
 
 		freeMemory();
@@ -185,8 +184,8 @@ public class Img implements Serializable {
 		StringBuilder sb = new StringBuilder();
 
 		sb.append("path:").append(imgFile.getAbsolutePath()).append("  ");
-		sb.append("size:").append(w).append("*").append(h).append(" (").append(
-				this.imgFile.length() / 1000).append("kb)").append(" ");
+		sb.append("size:").append(w).append("*").append(h).append(" (")
+				.append(this.imgFile.length() / 1000).append("kb)").append(" ");
 		sb.append("color:").append(color).append(":").append(numComponents);
 
 		return sb.toString();

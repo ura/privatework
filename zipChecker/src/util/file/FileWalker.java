@@ -3,8 +3,6 @@ package util.file;
 import java.io.File;
 import java.io.FileFilter;
 
-
-
 public class FileWalker {
 
 	public void walk(File root, final FileHandler... handlers) {

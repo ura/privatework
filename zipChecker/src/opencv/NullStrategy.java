@@ -4,7 +4,7 @@ import com.googlecode.javacv.jna.cxcore.IplImage;
 
 /**
  *
- * @author poti
+
  *
  */
 public class NullStrategy implements CutStrategy {

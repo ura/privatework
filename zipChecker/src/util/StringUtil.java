@@ -4,7 +4,7 @@ import java.util.regex.Pattern;
 
 /**
  * 文字列操作系のユーティル
- * @author poti
+
  *
  */
 public class StringUtil {
@@ -20,6 +20,12 @@ public class StringUtil {
 		return parterm.split(s);
 	}
 
+	/**
+	 * 区切りとみなす可能性がある文字でパースする
+	 * @param s
+	 * @param len
+	 * @return
+	 */
 	public static String[] parse(String s, int len) {
 		String[] temp = _parse(s);
 		int count = 0;

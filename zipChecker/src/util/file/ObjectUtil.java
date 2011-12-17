@@ -15,7 +15,7 @@ public class ObjectUtil {
 	private static Logger log = LoggerFactory.getLogger(ObjectUtil.class);
 
 	@SuppressWarnings("unchecked")
-	public static Object load(String path)  {
+	public static Object load(String path) {
 
 		try {
 			FileInputStream fos = new FileInputStream(path);
@@ -28,19 +28,19 @@ public class ObjectUtil {
 
 			return o;
 		} catch (FileNotFoundException e) {
-			log.error("LOAD ERROR",e);
+			log.error("LOAD ERROR", e);
 			throw new IllegalArgumentException(e);
 		} catch (IOException e) {
-			log.error("LOAD ERROR",e);
+			log.error("LOAD ERROR", e);
 			throw new IllegalArgumentException(e);
 		} catch (ClassNotFoundException e) {
-			log.error("LOAD ERROR",e);
+			log.error("LOAD ERROR", e);
 			throw new IllegalArgumentException(e);
 		}
 
 	}
 
-	public static void save(String path, Object o)  {
+	public static void save(String path, Object o) {
 
 		try {
 			FileOutputStream fos = new FileOutputStream(path);
@@ -51,11 +51,10 @@ public class ObjectUtil {
 			oos.close();
 			fos.close();
 		} catch (Exception e) {
-			log.error("SAVE ERROR",e);
+			log.error("SAVE ERROR", e);
 
 			throw new IllegalArgumentException(e);
 		}
-
 
 	}
 

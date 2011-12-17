@@ -33,9 +33,9 @@ public class ImgComparatorMiddle extends SimpleHistogramComparator {
 			if (result < level1Limit) {
 				return result;
 			} else if (result < level2Limit) {
-				int result2 = comparate(image1
-						.createHistogram(Histogram.Settings.MID), image2
-						.createHistogram(Histogram.Settings.MID));
+				int result2 = comparate(
+						image1.createHistogram(Histogram.Settings.MID),
+						image2.createHistogram(Histogram.Settings.MID));
 
 				log.info("result1:{}\tresult2:{}", result, result2);
 				return result2;

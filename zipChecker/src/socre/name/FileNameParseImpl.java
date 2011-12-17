@@ -10,8 +10,8 @@ public class FileNameParseImpl implements FileNameParser {
 	@Override
 	public Collection<String> parse(String file) {
 
-		return CollectionUtil.nameVideoFilter(CollectionUtil.toSortSet(StringUtil
-				.parse(file, 2)));
+		return CollectionUtil.nameVideoFilter(CollectionUtil
+				.toSortSet(StringUtil.parse(file, 2)));
 	}
 
 }

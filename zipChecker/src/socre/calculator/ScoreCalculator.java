@@ -4,7 +4,7 @@ import dir.Dir;
 
 /**
  * スコアの算出。
- * @author poti
+
  *
  */
 public interface ScoreCalculator {

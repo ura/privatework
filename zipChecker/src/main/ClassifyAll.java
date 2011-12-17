@@ -10,7 +10,7 @@ import conf.Config;
 
 /**
  * MAINクラス。分類したり、フォルダを定義したり。
- * @author poti
+
  *
  */
 public class ClassifyAll {
@@ -27,9 +27,8 @@ public class ClassifyAll {
 		} else if (cmd.equals("checkZip")) {
 			checkZip(args);
 		} else if (cmd.equals("rebuildArc")) {
-			FileUtilExt.rebuildArc(args[1],args[2],args[3]);
+			FileUtilExt.rebuildArc(args[1], args[2], args[3]);
 		}
-
 
 	}
 

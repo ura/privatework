@@ -2,7 +2,6 @@ package util.file;
 
 import java.io.File;
 
-
 public class DirHandler implements FileHandler {
 
 	public boolean isHamdleFile(File f) {

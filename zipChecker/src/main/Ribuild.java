@@ -21,8 +21,8 @@ public class Ribuild {
 		List<String> i2 = UserInput.getUserInputsSwing("正式名を入力", 1);
 		List<String> i3 = UserInput.getUserInputsSwing("ファイル名を入力", 5);
 
-		FileUtilExt.rebuildArc(i1.get(0), i2.get(0), i3.toArray(new String[i3
-				.size()]));
+		FileUtilExt.rebuildArc(i1.get(0), i2.get(0),
+				i3.toArray(new String[i3.size()]));
 		System.exit(0);
 
 	}

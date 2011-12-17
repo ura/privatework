@@ -145,14 +145,13 @@ public class ZipJpegHandler implements ZipUtilHandler {
 			entryMap(map, ze);
 		}
 
-
 		for (Set<String> nameSet : map.values()) {
 			int count = 0;
 			for (String s : nameSet) {
 
 				if (count < TOP_COUNT) {
 					this.topNameSet.add(s);
-				}else{
+				} else {
 					break;
 				}
 
@@ -172,14 +171,13 @@ public class ZipJpegHandler implements ZipUtilHandler {
 		Set<String> nameSet;
 		String name = ze.getName();
 
-
 		String dir;
-		 String[] args = name.split("/");
+		String[] args = name.split("/");
 		if (args.length == 1) {
 			dir = "root";
 
 		} else {
-			dir = args[args.length-2];
+			dir = args[args.length - 2];
 
 		}
 

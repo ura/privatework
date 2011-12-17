@@ -32,7 +32,7 @@ import javax.swing.table.TableModel;
  *
  * 標準入力対応用簡易クラス。 マルチスレッドのことは考慮せず。
  *
- * @author poti
+
  *
  */
 public class UserInput {

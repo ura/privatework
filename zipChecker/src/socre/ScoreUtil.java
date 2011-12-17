@@ -20,7 +20,7 @@ import dir.Dir;
 
 /**
  * 距離判別
- * @author poti
+
  *
  */
 public class ScoreUtil {
@@ -118,7 +118,7 @@ public class ScoreUtil {
 
 	/**
 	 *
-	 * @author poti
+	
 	 *
 	 */
 	static class ScoreInfo implements Comparable<ScoreInfo> {

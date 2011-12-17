@@ -72,7 +72,6 @@ public class ImageDataZipTree extends ImageDataTree {
 
 			zip = new org.apache.tools.zip.ZipFile(is);
 
-
 			Enumeration<ZipEntry> e = zip.getEntries();
 
 			boolean passCheck = false;
@@ -81,8 +80,6 @@ public class ImageDataZipTree extends ImageDataTree {
 
 			while (e.hasMoreElements()) {
 				ZipEntry ze = e.nextElement();
-
-
 
 				// System.out.println(ze.getName());
 

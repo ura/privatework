@@ -164,7 +164,7 @@ public class FileUtilExt extends ObjectUtil {
 
 				if (NameUtil.isMultiFile(zipFile)) {
 					WinRARWrapper.decode(zipFile, workF);
-					FileMoveUtil.moveParent(workF,  "zip", "rar");
+					FileMoveUtil.moveParent(workF, "zip", "rar");
 					File[] childList = FileMoveUtil.listFiles(workF, ".rar",
 							".zip");
 
@@ -195,8 +195,8 @@ public class FileUtilExt extends ObjectUtil {
 
 			FileMoveUtil.deleteEmptyDir(workF);
 
-			WinRARWrapper.encode(work, WORK_DIR + "/"
-					+ NameUtil.createCominName(name, files));
+			WinRARWrapper.encode(work,
+					WORK_DIR + "/" + NameUtil.createCominName(name, files));
 			for (File zipFile : files) {
 				FileMoveUtil.move(zipFile, "L:\\tmp");
 			}
