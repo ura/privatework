@@ -115,18 +115,18 @@ public class ImgFrame extends AbstractAction implements WindowListener {
 
 	private void createMenu() {
 		JMenuBar mb = new JMenuBar();
-		JMenu mn1 = new JMenu("‘€ì");
+		JMenu mn1 = new JMenu("æ“ä½œ");
 
-		// ƒj[ƒ‚ƒbƒNŠ„‚è“–‚Ä
+		// ãƒ‹ãƒ¼ãƒ¢ãƒƒã‚¯å‰²ã‚Šå½“ã¦
 		mn1.setMnemonic(KeyEvent.VK_B);
 
-		JMenuItem m1 = new JMenuItem("•Â‚¶‚é");
+		JMenuItem m1 = new JMenuItem("é–‰ã˜ã‚‹");
 
 		frame.setJMenuBar(mb);
 		mb.add(mn1);
 		mn1.add(m1);
 
-		// ƒj[ƒ‚ƒbƒNŠ„‚è“–‚Ä
+		// ãƒ‹ãƒ¼ãƒ¢ãƒƒã‚¯å‰²ã‚Šå½“ã¦
 		m1.addActionListener(this);
 		m1.setMnemonic(KeyEvent.VK_B);
 
@@ -134,8 +134,8 @@ public class ImgFrame extends AbstractAction implements WindowListener {
 
 	private void createButton() {
 		JPanel buttonPane = new JPanel();
-		addButton = new JButton("’Ç‰Á");
-		// u’Ç‰Ávƒ{ƒ^ƒ“‚ÆƒAƒNƒVƒ‡ƒ“EƒŠƒXƒi[‚ÌŠÖ˜A•t‚¯
+		addButton = new JButton("è¿½åŠ ");
+		// ã€Œè¿½åŠ ã€ãƒœã‚¿ãƒ³ã¨ã‚¢ã‚¯ã‚·ãƒ§ãƒ³ãƒ»ãƒªã‚¹ãƒŠãƒ¼ã®é–¢é€£ä»˜ã‘
 		addButton.addActionListener(this);
 		buttonPane = new JPanel();
 		buttonPane.add(addButton);

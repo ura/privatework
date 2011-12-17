@@ -13,13 +13,13 @@ public class Ribuild {
 	public static void main(String[] args) {
 
 		List<String> i1 = UserInput.getUserInputsSwing(
-				"ƒpƒX‚ğ“ü—Í( ƒfƒtƒHƒ‹ƒg@L:\\DATA\\COMIC)", 1);
+				"ãƒ‘ã‚¹ã‚’å…¥åŠ›( ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã€€L:\\DATA\\COMIC)", 1);
 		if (i1.size() == 0) {
 			i1.add("L:\\DATA\\COMIC");
 		}
 
-		List<String> i2 = UserInput.getUserInputsSwing("³®–¼‚ğ“ü—Í", 1);
-		List<String> i3 = UserInput.getUserInputsSwing("ƒtƒ@ƒCƒ‹–¼‚ğ“ü—Í", 5);
+		List<String> i2 = UserInput.getUserInputsSwing("æ­£å¼åã‚’å…¥åŠ›", 1);
+		List<String> i3 = UserInput.getUserInputsSwing("ãƒ•ã‚¡ã‚¤ãƒ«åã‚’å…¥åŠ›", 5);
 
 		FileUtilExt.rebuildArc(i1.get(0), i2.get(0), i3.toArray(new String[i3
 				.size()]));

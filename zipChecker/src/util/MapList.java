@@ -18,7 +18,7 @@ public class MapList<K, V> {
 
 		@Override
 		public List<V> put(K key, List<V> value) {
-			// TODO ©“®¶¬‚³‚ê‚½ƒƒ\ƒbƒhEƒXƒ^ƒu
+			// TODO è‡ªå‹•ç”Ÿæˆã•ã‚ŒãŸãƒ¡ã‚½ãƒƒãƒ‰ãƒ»ã‚¹ã‚¿ãƒ–
 			return super.put(key, value);
 		}
 
@@ -42,7 +42,7 @@ public class MapList<K, V> {
 	}
 
 	/**
-	 * ˆê‚Â‚ÌƒL[‚É‘Î‚µ‚ÄA•¡”‚ÌƒoƒŠƒ…[‚ª‚ ‚é‚à‚Ì‚¾‚¯•Ô‚µ‚Ü‚·B
+	 * ä¸€ã¤ã®ã‚­ãƒ¼ã«å¯¾ã—ã¦ã€è¤‡æ•°ã®ãƒãƒªãƒ¥ãƒ¼ãŒã‚ã‚‹ã‚‚ã®ã ã‘è¿”ã—ã¾ã™ã€‚
 	 * @return
 	 */
 	public Collection<Map.Entry<K, List<V>>> duplicationEntrys() {
@@ -51,7 +51,7 @@ public class MapList<K, V> {
 		for (Map.Entry<K, List<V>> e : map.entrySet()) {
 			if (e.getValue().size() != 1) {
 				for (V v : e.getValue()) {
-					log.info("KEY d•¡ƒtƒ@ƒCƒ‹F{}:{}", e.getKey(), v);
+					log.info("KEY é‡è¤‡ãƒ•ã‚¡ã‚¤ãƒ«ï¼š{}:{}", e.getKey(), v);
 				}
 				log.info("");
 

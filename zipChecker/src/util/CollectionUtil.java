@@ -26,8 +26,8 @@ public class CollectionUtil {
 	private static Pattern xvid = Pattern.compile("xvid[\\d\\.]{1,7}");
 	private static Pattern wmv = Pattern.compile("wmv\\d{0,4}");
 
-	//�G���X�L����
-	//�A�j���f��
+	//雑誌スキャン
+	//アニメ映画
 
 	private static Collection<Pattern> videoPattern = new ArrayList<Pattern>();
 	static {
@@ -48,7 +48,7 @@ public class CollectionUtil {
 	 *
 	 * @param collection
 	 * @param patterns
-	 * @param matchDeleteFlag true�̏ꍇ�A��v�������̂��폜�Bfalse�̏ꍇ�s��v�̂��̂��폜
+	 * @param matchDeleteFlag trueの場合、一致したものを削除。falseの場合不一致のものを削除
 	 * @return
 	 */
 	public static Collection<String> nameFilter(Collection<String> collection,
@@ -68,7 +68,7 @@ public class CollectionUtil {
 	 *
 	 * @param collection
 	 * @param patterns
-	 * @param matchDeleteFlag true�̏ꍇ�A��v�������̂��폜�Bfalse�̏ꍇ�s��v�̂��̂��폜
+	 * @param matchDeleteFlag trueの場合、一致したものを削除。falseの場合不一致のものを削除
 	 * @return
 	 */
 	public static Collection<String> nameFilter(Collection<String> collection,

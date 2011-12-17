@@ -41,7 +41,7 @@ public class Config {
 	public Collection<String[]> getMoveSetting() {
 		List<String[]> list = new ArrayList<String[]>();
 
-		//TODO İ’èü‚è‚Ì‚ ‚è•û‚Íl‚¦‚é
+		//TODO è¨­å®šå‘¨ã‚Šã®ã‚ã‚Šæ–¹ã¯è€ƒãˆã‚‹
 		for (Map.Entry<Object, Object> e : prop.entrySet()) {
 			String s = (String) e.getValue();
 

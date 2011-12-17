@@ -6,17 +6,17 @@ import org.slf4j.MarkerFactory;
 public class Log {
 
 	/**
-	 * ‘€ì‚ğ¦‚·ƒ}[ƒJBÀÛ‚Ìƒtƒ@ƒCƒ‹ˆÚ“®Aíœ‚Ì‚Æ‚«‚Ég—p‚·‚éB
+	 * æ“ä½œã‚’ç¤ºã™ãƒãƒ¼ã‚«ã€‚å®Ÿéš›ã®ãƒ•ã‚¡ã‚¤ãƒ«ç§»å‹•ã€å‰Šé™¤ã®ã¨ãã«ä½¿ç”¨ã™ã‚‹ã€‚
 	 */
 	public static final Marker OP = MarkerFactory.getMarker("OP");
 
 	/**
-	 * WŒv—p‚Ìƒ}[ƒJ
+	 * é›†è¨ˆç”¨ã®ãƒãƒ¼ã‚«
 	 */
 	public static final Marker SUMMARY = MarkerFactory.getMarker("SUMMARY");
 
 	/**
-	 * ‘€ì‚Ì–³‚¢î•ñƒ}[ƒJ
+	 * æ“ä½œã®ç„¡ã„æƒ…å ±ãƒãƒ¼ã‚«
 	 */
 	public static final Marker INFO = MarkerFactory.getMarker("INFO");
 

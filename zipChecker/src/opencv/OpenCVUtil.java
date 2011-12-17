@@ -44,17 +44,17 @@ public class OpenCVUtil {
 	}
 
 	/**
-	 * ƒCƒ[ƒW‚ğ‹éŒ`‚Å”²‚«o‚·B
+	 * ã‚¤ãƒ¡ãƒ¼ã‚¸ã‚’çŸ©å½¢ã§æŠœãå‡ºã™ã€‚
 	 *
 	 * @param image
 	 * @param x
-	 *            ”²‚«o‚·”ÍˆÍ(0`1.0)
+	 *            æŠœãå‡ºã™ç¯„å›²(0ï½1.0)
 	 * @param y
-	 *            ”²‚«o‚·”ÍˆÍ(0`1.0)
+	 *            æŠœãå‡ºã™ç¯„å›²(0ï½1.0)
 	 * @param xx
-	 *            ’†S“_‚Ìw’è
+	 *            ä¸­å¿ƒç‚¹ã®æŒ‡å®š
 	 * @param yy
-	 *            ’†S“_‚Ìw’è
+	 *            ä¸­å¿ƒç‚¹ã®æŒ‡å®š
 	 * @return
 	 */
 	public static IplImage cut(IplImage image, double x, double y, double xx,
@@ -71,7 +71,7 @@ public class OpenCVUtil {
 
 	public static IplImage resize(IplImage image, float f) {
 
-		// TODO Œ³‰æ‘œ‚©‚çƒ`ƒƒƒlƒ‹‚Ìæ‚è•û‚ª‚í‚©‚ç‚È‚¢EEE
+		// TODO å…ƒç”»åƒã‹ã‚‰ãƒãƒ£ãƒãƒ«ã®å–ã‚Šæ–¹ãŒã‚ã‹ã‚‰ãªã„ãƒ»ãƒ»ãƒ»
 		IplImage cvCreateImage = cvCreateImage(new ByValue(
 				(int) (image.width * f), (int) (image.height * f)),
 				image.depth, 3);
@@ -81,7 +81,7 @@ public class OpenCVUtil {
 	}
 
 	public static IplImage resize(IplImage image, int width, int height) {
-		// TODO Œ³‰æ‘œ‚©‚çƒ`ƒƒƒlƒ‹‚Ìæ‚è•û‚ª‚í‚©‚ç‚È‚¢EEE
+		// TODO å…ƒç”»åƒã‹ã‚‰ãƒãƒ£ãƒãƒ«ã®å–ã‚Šæ–¹ãŒã‚ã‹ã‚‰ãªã„ãƒ»ãƒ»ãƒ»
 		IplImage cvCreateImage = cvCreateImage(new ByValue(width, height),
 				image.depth, 3);
 		cvResize(image, cvCreateImage, 0);
@@ -188,8 +188,8 @@ public class OpenCVUtil {
 
 			// main1();
 			/*
-			 * { String yotu = "./testdata/img/‚æ‚Â‚Î‚Æ‚P.png"; String yotu_ama =
-			 * "./testdata/img/‚æ‚Â‚Î‚Æ‚P_amazon_a.png";
+			 * { String yotu = "./testdata/img/ã‚ˆã¤ã°ã¨ï¼‘.png"; String yotu_ama =
+			 * "./testdata/img/ã‚ˆã¤ã°ã¨ï¼‘_amazon_a.png";
 			 *
 			 * IplImage yotuImg = loadImage(yotu); IplImage yotuAmaImg =
 			 * loadImage(yotu_ama);
@@ -240,7 +240,7 @@ public class OpenCVUtil {
 
 			{
 				String yotu = "./testdata/img/YXM_no1.png";
-				String yotu_ama = "./testdata/img/‚æ‚Â‚Î‚Æ‚P_amazon.png";
+				String yotu_ama = "./testdata/img/ã‚ˆã¤ã°ã¨ï¼‘_amazon.png";
 
 				IplImage yotuImg = loadImage(yotu);
 				IplImage yotuAmaImg = loadImage(yotu_ama);
@@ -255,7 +255,7 @@ public class OpenCVUtil {
 			}
 
 		} catch (Throwable e) {
-			// TODO ©“®¶¬‚³‚ê‚½ catch ƒuƒƒbƒN
+			// TODO è‡ªå‹•ç”Ÿæˆã•ã‚ŒãŸ catch ãƒ–ãƒ­ãƒƒã‚¯
 			e.printStackTrace();
 		}
 	}
@@ -279,7 +279,7 @@ public class OpenCVUtil {
 		try {
 			Thread.sleep(l);
 		} catch (InterruptedException e) {
-			// TODO ©“®¶¬‚³‚ê‚½ catch ƒuƒƒbƒN
+			// TODO è‡ªå‹•ç”Ÿæˆã•ã‚ŒãŸ catch ãƒ–ãƒ­ãƒƒã‚¯
 			e.printStackTrace();
 		}
 	}

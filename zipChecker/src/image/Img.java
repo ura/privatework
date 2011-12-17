@@ -48,7 +48,7 @@ public class Img implements Serializable {
 	}
 
 	/**
-	 * ƒCƒ[ƒW‚ğƒ[ƒh‚µ‚Ü‚·B
+	 * ã‚¤ãƒ¡ãƒ¼ã‚¸ã‚’ãƒ­ãƒ¼ãƒ‰ã—ã¾ã™ã€‚
 	 */
 	public void loadImage() {
 		try {
@@ -66,7 +66,7 @@ public class Img implements Serializable {
 
 
 		} catch (IOException e) {
-			log.error("ƒCƒ[ƒWƒ[ƒhƒGƒ‰[ {}", imgFile.getName(), e);
+			log.error("ã‚¤ãƒ¡ãƒ¼ã‚¸ãƒ­ãƒ¼ãƒ‰ã‚¨ãƒ©ãƒ¼ {}", imgFile.getName(), e);
 
 		}
 	}
@@ -78,7 +78,7 @@ public class Img implements Serializable {
 	}
 
 	/**
-	 * ƒTƒCƒY‚ğw’è‚µ‚Äƒ[ƒh‚µ‚Ü‚·
+	 * ã‚µã‚¤ã‚ºã‚’æŒ‡å®šã—ã¦ãƒ­ãƒ¼ãƒ‰ã—ã¾ã™
 	 *
 	 * @param w
 	 * @param h
@@ -102,7 +102,7 @@ public class Img implements Serializable {
 	}
 
 	/**
-	 * FƒqƒXƒgƒOƒ‰ƒ€‚ğ¶¬‚µ‚Ü‚·B
+	 * è‰²ãƒ’ã‚¹ãƒˆã‚°ãƒ©ãƒ ã‚’ç”Ÿæˆã—ã¾ã™ã€‚
 	 *
 	 * @param frreImage
 	 */
@@ -116,7 +116,7 @@ public class Img implements Serializable {
 	}
 
 	/**
-	 * FƒqƒXƒgƒOƒ‰ƒ€‚ğ¶¬‚µ‚Ü‚·B
+	 * è‰²ãƒ’ã‚¹ãƒˆã‚°ãƒ©ãƒ ã‚’ç”Ÿæˆã—ã¾ã™ã€‚
 	 *
 	 * @param frreImage
 	 */

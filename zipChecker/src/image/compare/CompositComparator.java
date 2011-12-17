@@ -68,7 +68,7 @@ public class CompositComparator implements ImgComparator {
 	public void printInfo(Img base){
 		if (log.isInfoEnabled()) {
 
-			log.info("ベース画像情報:\t\t\t{}\t{}",base.getImgFile().getName(), base.getInfo());
+			log.info("繝吶�ｼ繧ｹ逕ｻ蜒乗ュ蝣ｱ:\t\t\t{}\t{}",base.getImgFile().getName(), base.getInfo());
 
 			log("sameList  \t"+sameLimit ,base, sameList);
 			log("nearList  \t"+nearLimit ,base, nearList);
@@ -83,7 +83,7 @@ public class CompositComparator implements ImgComparator {
 			int result = entry.getKey().getKey1();
 			Img img2 = entry.getKey().getKey2();
 
-			log.info("{}\t一致度[{}]\t{}\t{} ", new Object[] {msg, result,
+			log.info("{}\t荳閾ｴ蠎ｦ[{}]\t{}\t{} ", new Object[] {msg, result,
 					base.getImgFile().getName(), img2.getInfo() });
 		}
 	}

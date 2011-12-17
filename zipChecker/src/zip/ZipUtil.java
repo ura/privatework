@@ -25,7 +25,7 @@ public class ZipUtil {
 	private static Logger log = LoggerFactory.getLogger(FileUtilExt.class);
 
 	/**
-	 * ‚ ‚é’ö“xOK‚¾‚Á‚½‚çƒXƒ‹[‚·‚éB Zip‚Ì’†‚É•¡”ZIP‚ª“ü‚Á‚Ä‚¢‚Ä‚àA1‚Â‰ğ“€‚Å‚«‚ê‚ÎAŒã‚à‚Ì‚Í
+	 * ã‚ã‚‹ç¨‹åº¦OKã ã£ãŸã‚‰ã‚¹ãƒ«ãƒ¼ã™ã‚‹ã€‚ Zipã®ä¸­ã«è¤‡æ•°ZIPãŒå…¥ã£ã¦ã„ã¦ã‚‚ã€1ã¤è§£å‡ã§ãã‚Œã°ã€å¾Œã‚‚ã®ã¯
 	 */
 	private static final int PASS_COUNT = 4;
 
@@ -50,7 +50,7 @@ public class ZipUtil {
 	private void _handle(File is, ZipUtilHandler handler) {
 		org.apache.tools.zip.ZipFile zip = null;
 		try {
-			// TODO •s³‚Èƒtƒ@ƒCƒ‹‚ğ—áA‚Pƒtƒ@ƒCƒ‹‚µ‚©“ü‚Á‚Ä‚¢‚È‚¢@“™‚ğœŠOŒŸ“¢
+			// TODO ä¸æ­£ãªãƒ•ã‚¡ã‚¤ãƒ«ã‚’ä¾‹ã€ï¼‘ãƒ•ã‚¡ã‚¤ãƒ«ã—ã‹å…¥ã£ã¦ã„ãªã„ã€€ç­‰ã‚’é™¤å¤–æ¤œè¨
 
 			zip = new org.apache.tools.zip.ZipFile(is);
 			handler.start(this, zip);
@@ -130,8 +130,8 @@ public class ZipUtil {
 	 * @param zis
 	 */
 	public void testRead(ZipFile zip, ZipEntry ze) {
-		// ƒCƒ“ƒ^[ƒtƒF[ƒXãAƒAƒEƒgƒvƒbƒgƒXƒgƒŠ[ƒ€‚ğ“n‚·‚±‚Æ‚É‚È‚Á‚Ä‚¢‚é‚ªA
-		// “Ç‚ß‚é‚©Šm‚©‚ß‚é‚¾‚¯‚È‚Ì‚ÅAŒ‹‰Ê‚ÍƒKƒ“ƒKƒ“Ì‚Ä‚Ä‚©‚Ü‚í‚È‚¢
+		// ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ãƒ¼ã‚¹ä¸Šã€ã‚¢ã‚¦ãƒˆãƒ—ãƒƒãƒˆã‚¹ãƒˆãƒªãƒ¼ãƒ ã‚’æ¸¡ã™ã“ã¨ã«ãªã£ã¦ã„ã‚‹ãŒã€
+		// èª­ã‚ã‚‹ã‹ç¢ºã‹ã‚ã‚‹ã ã‘ãªã®ã§ã€çµæœã¯ã‚¬ãƒ³ã‚¬ãƒ³æ¨ã¦ã¦ã‹ã¾ã‚ãªã„
 		NullOutputStream baos = new NullOutputStream();
 		readZip(zip, ze, baos);
 
@@ -166,7 +166,7 @@ public class ZipUtil {
 				}
 			} catch (IOException e) {
 
-				throw new ZipCheckException("ƒpƒXƒ[ƒh‚É‚æ‚Á‚Ä“Ç‚İæ‚ê‚È‚¢EEH",
+				throw new ZipCheckException("ãƒ‘ã‚¹ãƒ¯ãƒ¼ãƒ‰ã«ã‚ˆã£ã¦èª­ã¿å–ã‚Œãªã„ãƒ»ãƒ»ï¼Ÿ",
 						State.UNZIP_ERROR, e);
 			}
 
@@ -189,7 +189,7 @@ public class ZipUtil {
 			return f2;
 		} catch (IOException e) {
 
-			throw new ZipCheckException("‚»‚Ì‘¼‚ÌƒGƒ‰[", State.OTHER, e);
+			throw new ZipCheckException("ãã®ä»–ã®ã‚¨ãƒ©ãƒ¼", State.OTHER, e);
 		} finally {
 			close(bos);
 		}

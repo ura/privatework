@@ -2,39 +2,41 @@ package util;
 
 import java.io.File;
 import java.text.DecimalFormat;
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import webapi.BookInfo;
 import webapi.Rakuten;
 
 public class NameUtil {
 
-	private static Pattern parterm = Pattern.compile("‘æ([0-9]+)Šª");
+	private static Logger log = LoggerFactory.getLogger(NameUtil.class);
+
+	private static Pattern parterm = Pattern.compile("ç¬¬([0-9]+)å·»");
 	private static Pattern partermEng = Pattern.compile("v([0-9]+)\\.");
 	private static Pattern partermEng2 = Pattern.compile("v([0-9]+)_");
 	private static Pattern partermSimple = Pattern.compile(" ([0-9]+)\\.");
 
-	private static Pattern partermAll = Pattern.compile("‘S.*([0-9]+)");
+	private static Pattern partermAll = Pattern.compile("å…¨.*([0-9]+)");
 
 	/**
-	 * “ú•t‚ğl—¶‚µ‚½³‹K•\Œ»@“ú•t‚Í [] ‚ÅˆÍ‚Ü‚ê‚Ä‚¢‚éê‡‘½‚µB
+	 * æ—¥ä»˜ã‚’è€ƒæ…®ã—ãŸæ­£è¦è¡¨ç¾ã€€æ—¥ä»˜ã¯ [] ã§å›²ã¾ã‚Œã¦ã„ã‚‹å ´åˆå¤šã—ã€‚
 	 */
 	private static Pattern partermBetween = Pattern
 			.compile("[^\\[0-9]([0-9]{1,2})[-]+([0-9]{2})[^\\]]+");
 
-	private static Pattern fileName = Pattern.compile("([A-Za-z‚`-‚y‚-‚š_\\.0-9#-_\\s]+\\.[A-Za-z0-9]+)");
-
-
+	private static Pattern fileName = Pattern
+			.compile("([A-Za-zï¼¡-ï¼ºï½-ï½š_\\.0-9#-_\\s]+\\.[A-Za-z0-9]+)");
 
 	public static String createName(File f) {
 
@@ -72,12 +74,12 @@ public class NameUtil {
 	public static String kan(String s) {
 
 		try {
-			return "‘æ" + bookNo(s) + "Šª";
+			return "ç¬¬" + bookNo(s) + "å·»";
 		} catch (IllegalArgumentException e) {
 
-			System.out.println(e.getMessage());
-			System.out.println("Šª”‚Ìæ“¾‚Å‚«‚È‚¢ƒtƒ@ƒCƒ‹‚ª‘¶İ‚µ‚Ü‚µ‚½B");
-			System.out.println("‚Ç‚Ì‚æ‚¤‚É‘Î‰‚µ‚Ü‚·‚©H‘Î‰‚·‚éê‡‚ÍA•¶Œ¾‚ğ“ü—Í‚µ‚Ä‚­‚¾‚³‚¢");
+			log.warn(e.getMessage());
+			log.warn("å·»æ•°ã®å–å¾—ã§ããªã„ãƒ•ã‚¡ã‚¤ãƒ«ãŒå­˜åœ¨ã—ã¾ã—ãŸã€‚");
+			log.warn("ã©ã®ã‚ˆã†ã«å¯¾å¿œã—ã¾ã™ã‹ï¼Ÿå¯¾å¿œã™ã‚‹å ´åˆã¯ã€æ–‡è¨€ã‚’å…¥åŠ›ã—ã¦ãã ã•ã„");
 
 			if (UserInput.isInput()) {
 
@@ -167,14 +169,15 @@ public class NameUtil {
 			}
 
 		} else {
-			throw new IllegalStateException("•Ï");
+			throw new IllegalStateException("å¤‰");
 		}
 		return l;
 	}
 
 	public static String createCominName(String name, Collection<File> list) {
 
-		SortedSet<BookInfo> author = Rakuten.getInfo(new Rakuten.TitleQuery(name));
+		SortedSet<BookInfo> author = Rakuten.getInfo(new Rakuten.TitleQuery(
+				name));
 		int size = author.size();
 		String authorText;
 
@@ -183,8 +186,8 @@ public class NameUtil {
 			authorText = author.first().getInfo();
 		} else {
 
-			System.out.println("•¡”‚Ì’˜ÒŒó•â‚ª‚ ‚è‚Ü‚µ‚½B");
-			System.out.println("–³‹‚·‚éê‡‚ÍAENTER‚ğ‰Ÿ‚µ‚Ä‚­‚¾‚³‚¢");
+			log.warn("è¤‡æ•°ã®è‘—è€…å€™è£œãŒã‚ã‚Šã¾ã—ãŸã€‚");
+			log.warn("ç„¡è¦–ã™ã‚‹å ´åˆã¯ã€ENTERã‚’æŠ¼ã—ã¦ãã ã•ã„");
 
 			BookInfo selectOne = UserInput.selectOne(author);
 			if (selectOne != null) {
@@ -197,7 +200,7 @@ public class NameUtil {
 
 		}
 
-		String s = "[ˆê”ÊƒRƒ~ƒbƒN]" + authorText + name + " " + NameUtil.kan(list);
+		String s = "[ä¸€èˆ¬ã‚³ãƒŸãƒƒã‚¯]" + authorText + name + " " + NameUtil.kan(list);
 
 		return s.replace("/", "_");
 
@@ -205,10 +208,10 @@ public class NameUtil {
 
 	private static Map<String, String> map = new HashMap<String, String>();
 	static {
-		map.put("ƒWƒƒƒ“ƒvEƒRƒ~ƒbƒNƒX", "WƒWƒƒƒ“ƒv");
-		map.put("Monthly shonen magazine comics", "Mƒ}ƒKƒWƒ“");
-		map.put("ƒ„ƒ“ƒOƒWƒƒƒ“ƒvEƒRƒ~ƒbƒNƒX", "YƒWƒƒƒ“ƒv");
-		map.put("’Ps–{ƒRƒ~ƒbƒNƒX", "");
+		map.put("ã‚¸ãƒ£ãƒ³ãƒ—ãƒ»ã‚³ãƒŸãƒƒã‚¯ã‚¹", "Wã‚¸ãƒ£ãƒ³ãƒ—");
+		map.put("Monthly shonen magazine comics", "Mãƒã‚¬ã‚¸ãƒ³");
+		map.put("ãƒ¤ãƒ³ã‚°ã‚¸ãƒ£ãƒ³ãƒ—ãƒ»ã‚³ãƒŸãƒƒã‚¯ã‚¹", "Yã‚¸ãƒ£ãƒ³ãƒ—");
+		map.put("å˜è¡Œæœ¬ã‚³ãƒŸãƒƒã‚¯ã‚¹", "");
 		map.put("", "");
 		map.put("", "");
 		map.put("", "");
@@ -236,10 +239,10 @@ public class NameUtil {
 					set.add(bookNo(f.getName()));
 				}
 			} catch (IllegalArgumentException e) {
-				System.out.println(e.getMessage());
-				System.out.println("Šª”‚Ìæ“¾‚Å‚«‚È‚¢ƒtƒ@ƒCƒ‹‚ª‘¶İ‚µ‚Ü‚µ‚½B");
-				System.out.println("‚Ç‚Ì‚æ‚¤‚É‘Î‰‚µ‚Ü‚·‚©H–³‹‚·‚éê‡‚ÍAENTER‚ğ‰Ÿ‚µ‚Ä‚­‚¾‚³‚¢");
-				System.out.println("“ü—Í‚ğs‚Á‚½ê‡‚ÍA‚»‚ê‚ªƒtƒ@ƒCƒ‹‚ÌÚ”öq‚É‚È‚è‚Ü‚·Bi01-15Šª{‰æWj");
+				log.warn(e.getMessage());
+				log.warn("å·»æ•°ã®å–å¾—ã§ããªã„ãƒ•ã‚¡ã‚¤ãƒ«ãŒå­˜åœ¨ã—ã¾ã—ãŸã€‚");
+				log.warn("ã©ã®ã‚ˆã†ã«å¯¾å¿œã—ã¾ã™ã‹ï¼Ÿç„¡è¦–ã™ã‚‹å ´åˆã¯ã€ENTERã‚’æŠ¼ã—ã¦ãã ã•ã„");
+				log.warn("å…¥åŠ›ã‚’è¡Œã£ãŸå ´åˆã¯ã€ãã‚ŒãŒãƒ•ã‚¡ã‚¤ãƒ«ã®æ¥å°¾å­ã«ãªã‚Šã¾ã™ã€‚ï¼ˆ01-15å·»ï¼‹ç”»é›†ï¼‰");
 
 				if (UserInput.isInput()) {
 
@@ -255,7 +258,7 @@ public class NameUtil {
 		String first = set.first();
 		String last = set.last();
 
-		return "‘æ" + first + "-" + last + "Šª";
+		return "ç¬¬" + first + "-" + last + "å·»";
 
 	}
 

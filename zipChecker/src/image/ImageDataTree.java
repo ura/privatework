@@ -70,7 +70,7 @@ public class ImageDataTree implements Serializable {
 
 				if (count % 10 == 0) {
 
-					log.info("ˆ—’†‚Å‚·EEEE  I—¹–‡”: " + count);
+					log.info("å‡¦ç†ä¸­ã§ã™ãƒ»ãƒ»ãƒ»ãƒ»  çµ‚äº†æšæ•°: " + count);
 				}
 			}
 
@@ -146,10 +146,10 @@ public class ImageDataTree implements Serializable {
 
 		if (cb != null) {
 
-			// ‘ædepthˆÊ‚ÌFƒOƒ‰ƒt‚Æ
+			// ç¬¬depthä½ã®è‰²ã‚°ãƒ©ãƒ•ã¨
 			String key1 = cb.getRed() + ":" + cb.getGreen() + ":"
 					+ cb.getBlue();
-			// ‚»‚ÌŠ„‡‚ÅƒOƒ‹[ƒsƒ“ƒO
+			// ãã®å‰²åˆã§ã‚°ãƒ«ãƒ¼ãƒ”ãƒ³ã‚°
 			String key2 = String.valueOf(cb.rate()
 					/ (Histogram.CLOOR_RATE / cloorBacuket));
 			tmpKey = key1 + ":" + key2;
@@ -193,7 +193,7 @@ public class ImageDataTree implements Serializable {
 
 	}
 
-	// TODO ˆê’v“x‚ÍƒƒWƒbƒN‚ÌˆêŠÂ‚È‚Ì‚ÅAƒRƒ“ƒpƒŒ[ƒ^‚ÉŠÜ‚ß‚é‚×‚«‚à‚Ì‚Ì‚Í‚¸AAA
+	// TODO ä¸€è‡´åº¦ã¯ãƒ­ã‚¸ãƒƒã‚¯ã®ä¸€ç’°ãªã®ã§ã€ã‚³ãƒ³ãƒ‘ãƒ¬ãƒ¼ã‚¿ã«å«ã‚ã‚‹ã¹ãã‚‚ã®ã®ã¯ãšã€ã€ã€
 	public Collection<Img> check(Img img, int def) {
 		return check(img, def, new SimpleHistogramComparator());
 	}
@@ -203,7 +203,7 @@ public class ImageDataTree implements Serializable {
 	 *
 	 * @param img
 	 * @param def
-	 *            ˆê’v“x‚ğw’è‚·‚éB0‚ÍŠ®‘Sˆê’vB10000‚Ü‚ÅB
+	 *            ä¸€è‡´åº¦ã‚’æŒ‡å®šã™ã‚‹ã€‚0ã¯å®Œå…¨ä¸€è‡´ã€‚10000ã¾ã§ã€‚
 	 * @return
 	 */
 	public Collection<Img> check(Img img, int def, ImgComparator comparator) {
@@ -242,7 +242,7 @@ public class ImageDataTree implements Serializable {
 
 		if (child == null) {
 			// TODO
-			log.info("ˆê’v‚·‚é‰æ‘œ‚Í‚È‚¢—l‚Å‚·‚ªAAAA:{} :{}", getKey(), img.getImgFile()
+			log.info("ä¸€è‡´ã™ã‚‹ç”»åƒã¯ãªã„æ§˜ã§ã™ãŒã€ã€ã€ã€:{} :{}", getKey(), img.getImgFile()
 					.getName());
 
 		} else {

@@ -36,13 +36,13 @@ public class SimpleHistogramComparator implements ImgComparator {
 			}
 		}
 
-		throw new IllegalArgumentException("•ªŠ„“x‚ª‘µ‚Á‚Ä‚¢‚Ü‚¹‚ñ");
+		throw new IllegalArgumentException("åˆ†å‰²åº¦ãŒæƒã£ã¦ã„ã¾ã›ã‚“");
 
 	}
 
 	public int comparate(HistogramBlock[][] b1, HistogramBlock[][] b2) {
 
-		// TODO ’Pƒ‚É•½‹Ï‚Æ‚é‚©A—vŒŸ“¢
+		// TODO å˜ç´”ã«å¹³å‡ã¨ã‚‹ã‹ã€è¦æ¤œè¨
 		Avg avg = new Avg();
 
 		for (int i = 0; i < b1.length; i++) {

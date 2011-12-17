@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * ƒfƒBƒŒƒNƒgƒŠAƒtƒ@ƒCƒ‹‚ğûW‚µ‚ÄA—­‚ß‚ŞB
+ * ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã€ãƒ•ã‚¡ã‚¤ãƒ«ã‚’åé›†ã—ã¦ã€æºœã‚è¾¼ã‚€ã€‚
  *
  * @author poti
  *
@@ -47,7 +47,7 @@ public class KeywordCollector implements FileHandler {
 	}
 
 	/**
-	 * ûW‚µ‚½ƒtƒ@ƒCƒ‹‚ğ•Ô‚·B ‚È‚¨A‚±‚Ì“_‚ÅAd•¡ƒtƒ@ƒCƒ‹‚Ì”rœ‚ğs‚Á‚Ä‚¨‚­B
+	 * åé›†ã—ãŸãƒ•ã‚¡ã‚¤ãƒ«ã‚’è¿”ã™ã€‚ ãªãŠã€ã“ã®æ™‚ç‚¹ã§ã€é‡è¤‡ãƒ•ã‚¡ã‚¤ãƒ«ã®æ’é™¤ã‚’è¡Œã£ã¦ãŠãã€‚
 	 *
 	 * @return
 	 */

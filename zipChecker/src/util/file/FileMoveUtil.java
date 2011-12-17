@@ -19,7 +19,7 @@ import util.Util;
 import dir.DirCollector;
 
 /**
- * �t�@�C���̈ړ��A�폜�A�f�B���N�g���쐬�A���l�[���ȂǂȂǂ�Util
+ * ファイルの移動、削除、ディレクトリ作成、リネームなどなどのUtil
  *
  * @author poti
  *
@@ -29,7 +29,7 @@ public class FileMoveUtil {
 	static Logger log = LoggerFactory.getLogger(FileMoveUtil.class);
 
 	/**
-	 * �t�@�C�����f�B���N�g���Ɉړ����܂��B �t�@�C�������d�����Ă���ꍇ�́A�t�@�C�������������܂��B �f�B���N�g�����Ȃ��ꍇ�̓f�B���N�g�������܂��B
+	 * ファイルをディレクトリに移動します。 ファイル名が重複している場合は、ファイル名をつけ直します。 ディレクトリがない場合はディレクトリを作ります。
 	 *
 	 * @param f
 	 * @param dirPath
@@ -50,7 +50,7 @@ public class FileMoveUtil {
 	}
 
 	/**
-	 * ��t�H���_���ċA�I�ɏ���
+	 * 空フォルダを再帰的に消す
 	 */
 
 	public static void deleteEmptyDir(File dir) {
@@ -121,11 +121,11 @@ public class FileMoveUtil {
 	}
 
 	/**
-	 * �e�̃t�H���_�Ƀt�@�C�����W�߂�B ZIP�𓀎��̊K�w�̐�����
+	 * 親のフォルダにファイルを集める。 ZIP解凍時の階層の整理に
 	 *
 	 * @param src
 	 * @param ext
-	 *            ����̊g���q������������ꍇ��
+	 *            特定の拡張子だけ引っ張る場合に
 	 * @return
 	 */
 	public static boolean moveParent(File src, boolean rename, String... ext) {
@@ -154,7 +154,7 @@ public class FileMoveUtil {
 
 		}
 
-		//���O�̕ύX�ɂ��
+		//名前の変更により
 
 		log.info("{}", src);
 		int count = src.listFiles(new FilenameFilter() {
@@ -176,7 +176,7 @@ public class FileMoveUtil {
 	}
 
 	/**
-	 * �e�̃t�H���_�Ƀt�@�C�����W�߂�B ZIP�𓀎��̊K�w�̐�����
+	 * 親のフォルダにファイルを集める。 ZIP解凍時の階層の整理に
 	 *
 	 * @param src
 	 * @return
@@ -187,7 +187,7 @@ public class FileMoveUtil {
 	}
 
 	/**
-	 * �ċN�ŁA�t�H���_�̒��g�����ׂď����B �t�@�C����������B
+	 * 再起で、フォルダの中身をすべて消す。 ファイルも消える。
 	 *
 	 * @param f
 	 */
@@ -211,7 +211,7 @@ public class FileMoveUtil {
 	}
 
 	/**
-	 * �}���`�X���b�h���ł��t�H���_�������Ȃ��悤�ȃt�H���_���쐬����B
+	 * マルチスレッド時でもフォルダ名が被らないようなフォルダを作成する。
 	 */
 	public static String createTempDir(String base) throws IOException {
 
@@ -226,8 +226,8 @@ public class FileMoveUtil {
 	}
 
 	/**
-	 * �t�@�C�������쐬����B�ΏۂƂ���f�B���N�g���ɁA�����̃t�@�C�������݂��邩�A �m�F���A�����̃t�@�C�������݂��Ă����ꍇ��
-	 * �u���̖��O_����.�g���q�v �Ƃ���������������B�����́A�C���N�������g�����B
+	 * ファイル名を作成する。対象とするディレクトリに、同名のファイルが存在するか、 確認し、同名のファイルが存在していた場合は
+	 * 「元の名前_数字.拡張子」 といった処理をする。数字は、インクリメントされる。
 	 *
 	 * @param filename
 	 * @param dir
@@ -270,7 +270,7 @@ public class FileMoveUtil {
 	}
 
 	/**
-	 * �t�@�C���̈ړ����[�e�B���B�t�@�C�����d�����ɂ́A�t�@�C������t���ւ��B
+	 * ファイルの移動ユーティル。ファイル名重複時には、ファイル名を付け替え。
 	 *
 	 * @param f
 	 * @param dir

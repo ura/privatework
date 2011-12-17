@@ -34,7 +34,7 @@ public class FileUtilExt extends ObjectUtil {
 	static Logger log = LoggerFactory.getLogger(FileUtilExt.class);
 
 	/**
-	 * ƒpƒXƒ[ƒh‚Â‚«‚Ìƒtƒ@ƒCƒ‹‚ğíœ‚µ‚Ü‚·B
+	 * ãƒ‘ã‚¹ãƒ¯ãƒ¼ãƒ‰ã¤ãã®ãƒ•ã‚¡ã‚¤ãƒ«ã‚’å‰Šé™¤ã—ã¾ã™ã€‚
 	 * 
 	 */
 	public static void movePassZipAll(String src) {
@@ -43,7 +43,7 @@ public class FileUtilExt extends ObjectUtil {
 		new FileWalker().walk(new File(src), srcDir);
 		Collection<String> allFileFullPath = srcDir.getAllFileFullPath();
 
-		File moveDir = new File(src + "\\" + "ƒSƒ~” ");
+		File moveDir = new File(src + "\\" + "ã‚´ãƒŸç®±");
 		moveDir.mkdir();
 
 		Checker checker = new Checker(new File(src));
@@ -82,7 +82,7 @@ public class FileUtilExt extends ObjectUtil {
 				break;
 
 			default:
-				log.error(Log.OP, "•s³‚Èswitch file:{}", string);
+				log.error(Log.OP, "ä¸æ­£ãªswitch file:{}", string);
 
 				break;
 
@@ -96,7 +96,7 @@ public class FileUtilExt extends ObjectUtil {
 	private static final String WORK_DIR = "N:\\tmp";
 
 	/**
-	 * ˆ³kƒtƒ@ƒCƒ‹‚ÌŒ`®‚ğ•Ï‚¦‚Ü‚·B rar¨zip‚ÉB ‚³‚ç‚ÉA“ü‚êqˆ³k‚Ìê‡A“ü‚êq‚Ì“WŠJ‚ğs‚¤B
+	 * åœ§ç¸®ãƒ•ã‚¡ã‚¤ãƒ«ã®å½¢å¼ã‚’å¤‰ãˆã¾ã™ã€‚ rarâ†’zipã«ã€‚ ã•ã‚‰ã«ã€å…¥ã‚Œå­åœ§ç¸®ã®å ´åˆã€å…¥ã‚Œå­ã®å±•é–‹ã‚’è¡Œã†ã€‚
 	 * 
 	 */
 	public static void convertArc(String src) {
@@ -109,8 +109,8 @@ public class FileUtilExt extends ObjectUtil {
 
 			File dir = new File(work);
 
-			// ‰ğ“€Œã‚ÌƒtƒHƒ‹ƒ_“à‚ÅA[‚¢‚Æ‚±‚ë‚ÉƒA[ƒJƒCƒu‚ª‚ ‚éê‡A
-			// ’¼‰º‚É‚Á‚Ä‚«‚ÄA‚»‚ê‚Ì‚İ‚ğƒŠƒXƒg‚·‚é
+			// è§£å‡å¾Œã®ãƒ•ã‚©ãƒ«ãƒ€å†…ã§ã€æ·±ã„ã¨ã“ã‚ã«ã‚¢ãƒ¼ã‚«ã‚¤ãƒ–ãŒã‚ã‚‹å ´åˆã€
+			// ç›´ä¸‹ã«æŒã£ã¦ãã¦ã€ãã‚Œã®ã¿ã‚’ãƒªã‚¹ãƒˆã™ã‚‹
 			FileMoveUtil.moveParent(dir, "zip", "rar");
 			File[] list = FileMoveUtil.listFiles(dir, ".rar", ".zip");
 
@@ -119,7 +119,7 @@ public class FileUtilExt extends ObjectUtil {
 				String childDir = work + "/" + NameUtil.kan(zipFile);
 				File cDir = new File(childDir);
 
-				// ‰ğ“€‚µ‚ÄAƒtƒHƒ‹ƒ_“à‚Ìƒtƒ@ƒCƒ‹‚ğ‘S•”ã‚Éã‚°‚éB
+				// è§£å‡ã—ã¦ã€ãƒ•ã‚©ãƒ«ãƒ€å†…ã®ãƒ•ã‚¡ã‚¤ãƒ«ã‚’å…¨éƒ¨ä¸Šã«ä¸Šã’ã‚‹ã€‚
 				WinRARWrapper.decode(zipFile, cDir);
 				FileMoveUtil.moveParent(cDir, true);
 				zipFile.delete();
@@ -130,17 +130,17 @@ public class FileUtilExt extends ObjectUtil {
 					+ srcFile.getName().replace("rar", "zip"));
 
 		} catch (IOException e) {
-			log.error("‰ğ“€‚É‘z’èŠOƒGƒ‰[", e);
+			log.error("è§£å‡æ™‚ã«æƒ³å®šå¤–ã‚¨ãƒ©ãƒ¼", e);
 		} catch (InterruptedException e) {
-			log.error("‰ğ“€‚É‘z’èŠOƒGƒ‰[", e);
+			log.error("è§£å‡æ™‚ã«æƒ³å®šå¤–ã‚¨ãƒ©ãƒ¼", e);
 		} catch (Exception e) {
-			log.error("‰ğ“€‚É‘z’èŠOƒGƒ‰[", e);
+			log.error("è§£å‡æ™‚ã«æƒ³å®šå¤–ã‚¨ãƒ©ãƒ¼", e);
 		}
 
 	}
 
 	/**
-	 * ˆ³kƒtƒ@ƒCƒ‹‚Ì“”p‡‚ğs‚¢‚Ü‚·B 1ŠªA2ŠªA3Šª‚Æ•ª‚©‚ê‚Ä‚¢‚éƒtƒ@ƒCƒ‹‚ğŒ‹‡‚µAˆêŒÂ‚Ìƒtƒ@ƒCƒ‹‚É‚µ‚Ü‚·B
+	 * åœ§ç¸®ãƒ•ã‚¡ã‚¤ãƒ«ã®çµ±å»ƒåˆã‚’è¡Œã„ã¾ã™ã€‚ 1å·»ã€2å·»ã€3å·»ã¨åˆ†ã‹ã‚Œã¦ã„ã‚‹ãƒ•ã‚¡ã‚¤ãƒ«ã‚’çµåˆã—ã€ä¸€å€‹ã®ãƒ•ã‚¡ã‚¤ãƒ«ã«ã—ã¾ã™ã€‚
 	 * 
 	 * 
 	 */
@@ -173,7 +173,7 @@ public class FileUtilExt extends ObjectUtil {
 						String childDir = work + "/" + NameUtil.kan(z);
 						File cDir = new File(childDir);
 
-						// ‰ğ“€‚µ‚ÄAƒtƒHƒ‹ƒ_“à‚Ìƒtƒ@ƒCƒ‹‚ğ‘S•”ã‚Éã‚°‚éB
+						// è§£å‡ã—ã¦ã€ãƒ•ã‚©ãƒ«ãƒ€å†…ã®ãƒ•ã‚¡ã‚¤ãƒ«ã‚’å…¨éƒ¨ä¸Šã«ä¸Šã’ã‚‹ã€‚
 						WinRARWrapper.decode(z, cDir);
 						FileMoveUtil.moveParent(cDir, true);
 
@@ -183,7 +183,7 @@ public class FileUtilExt extends ObjectUtil {
 					String childDir = work + "/" + NameUtil.kan(zipFile);
 					File cDir = new File(childDir);
 
-					// ‰ğ“€‚µ‚ÄAƒtƒHƒ‹ƒ_“à‚Ìƒtƒ@ƒCƒ‹‚ğ‘S•”ã‚Éã‚°‚éB
+					// è§£å‡ã—ã¦ã€ãƒ•ã‚©ãƒ«ãƒ€å†…ã®ãƒ•ã‚¡ã‚¤ãƒ«ã‚’å…¨éƒ¨ä¸Šã«ä¸Šã’ã‚‹ã€‚
 					WinRARWrapper.decode(zipFile, cDir);
 					FileMoveUtil.moveParent(cDir, true);
 
@@ -202,17 +202,17 @@ public class FileUtilExt extends ObjectUtil {
 			}
 
 		} catch (IOException e) {
-			log.error("‰ğ“€‚É‘z’èŠOƒGƒ‰[", e);
+			log.error("è§£å‡æ™‚ã«æƒ³å®šå¤–ã‚¨ãƒ©ãƒ¼", e);
 		} catch (InterruptedException e) {
-			log.error("‰ğ“€‚É‘z’èŠOƒGƒ‰[", e);
+			log.error("è§£å‡æ™‚ã«æƒ³å®šå¤–ã‚¨ãƒ©ãƒ¼", e);
 		} catch (Exception e) {
-			log.error("‰ğ“€‚É‘z’èŠOƒGƒ‰[", e);
+			log.error("è§£å‡æ™‚ã«æƒ³å®šå¤–ã‚¨ãƒ©ãƒ¼", e);
 		}
 
 	}
 
 	/**
-	 * —‚½ƒtƒ@ƒCƒ‹‚ª“ü‚Á‚Ä‚¢‚éƒfƒBƒŒƒNƒgƒŠ‚ğŒ©‚Â‚¯A ƒtƒHƒ‹ƒ_‚ğV‹K‚Éì¬AˆÚ“®‚ğs‚¢‚Ü‚·B
+	 * ä¼¼ãŸãƒ•ã‚¡ã‚¤ãƒ«ãŒå…¥ã£ã¦ã„ã‚‹ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã‚’è¦‹ã¤ã‘ã€ ãƒ•ã‚©ãƒ«ãƒ€ã‚’æ–°è¦ã«ä½œæˆã€ç§»å‹•ã‚’è¡Œã„ã¾ã™ã€‚
 	 * 
 	 * @param src
 	 */
@@ -228,7 +228,7 @@ public class FileUtilExt extends ObjectUtil {
 	}
 
 	/**
-	 * “¯‚¶ƒtƒ@ƒCƒ‹‚ğíœ‚µ‚Ü‚·B
+	 * åŒã˜ãƒ•ã‚¡ã‚¤ãƒ«ã‚’å‰Šé™¤ã—ã¾ã™ã€‚
 	 */
 	public static void deleteSameFile(String src) {
 
@@ -258,8 +258,8 @@ public class FileUtilExt extends ObjectUtil {
 			map.add(l, f);
 		}
 		for (Map.Entry<Long, List<File>> e : map.duplicationEntrys()) {
-			// TODO ‘å‚«‚¢ƒtƒ@ƒCƒ‹‚ÍACRC‚ªd‚¢‚©‚Æv‚Á‚Ä‚¢‚½‚ªA‚Æ‚è‚ ‚¦‚¸A‚â‚Á‚Ä‚İ‚é•ûj‚Å
-			// 1000MˆÈ‰º‚¾‚Á‚½‚ç
+			// TODO å¤§ãã„ãƒ•ã‚¡ã‚¤ãƒ«ã¯ã€CRCãŒé‡ã„ã‹ã¨æ€ã£ã¦ã„ãŸãŒã€ã¨ã‚Šã‚ãˆãšã€ã‚„ã£ã¦ã¿ã‚‹æ–¹é‡ã§
+			// 1000Mä»¥ä¸‹ã ã£ãŸã‚‰
 			if (e.getKey().longValue() < 5000 * 1000 * 1000l) {
 				deleteSamaFileByCRC(e.getValue());
 			} else {
@@ -272,7 +272,7 @@ public class FileUtilExt extends ObjectUtil {
 		MapList<Long, File> mapList = new MapList<Long, File>();
 
 		if (list.size() == 1) {
-			log.info("‚±‚Ìƒtƒ@ƒCƒ‹‚Íd•¡‚Ì‰Â”\«‚ª‚È‚¢‚½‚ßAƒXƒLƒbƒv‚µ‚Ü‚·B FILE {}", list.get(0));
+			log.info("ã“ã®ãƒ•ã‚¡ã‚¤ãƒ«ã¯é‡è¤‡ã®å¯èƒ½æ€§ãŒãªã„ãŸã‚ã€ã‚¹ã‚­ãƒƒãƒ—ã—ã¾ã™ã€‚ FILE {}", list.get(0));
 			return;
 		}
 
@@ -293,7 +293,7 @@ public class FileUtilExt extends ObjectUtil {
 
 			if (log.isInfoEnabled()) {
 				for (File file : value) {
-					log.info("d•¡CRC [{}] FILE {}", e.getKey(), file.getName());
+					log.info("é‡è¤‡CRC [{}] FILE {}", e.getKey(), file.getName());
 				}
 			}
 			List<File> deleteFile = deleteFile(value);
@@ -305,7 +305,7 @@ public class FileUtilExt extends ObjectUtil {
 	}
 
 	/**
-	 * ‚Ğ‚Æ‚Â‚Ìƒtƒ@ƒCƒ‹‚ğc‚µ‚Äíœ‚µ‚Ü‚·B
+	 * ã²ã¨ã¤ã®ãƒ•ã‚¡ã‚¤ãƒ«ã‚’æ®‹ã—ã¦å‰Šé™¤ã—ã¾ã™ã€‚
 	 * 
 	 * @param list
 	 */
@@ -324,7 +324,7 @@ public class FileUtilExt extends ObjectUtil {
 	}
 
 	/**
-	 * ƒtƒ@ƒCƒ‹–¼‚ÌƒtƒBƒ‹ƒ^‚Â‚«A•ª—ŞB
+	 * ãƒ•ã‚¡ã‚¤ãƒ«åã®ãƒ•ã‚£ãƒ«ã‚¿ã¤ãã€åˆ†é¡ã€‚
 	 * 
 	 * @param src
 	 * @param nameFilter
@@ -346,7 +346,7 @@ public class FileUtilExt extends ObjectUtil {
 	}
 
 	/**
-	 * ƒtƒ@ƒCƒ‹‚ğ•ª—Ş‚µ‚Ü‚·B•¡”‚Ìƒtƒ@ƒCƒ‹‚ğ“¯‚É‘ÎÛ‚É‚µ‚Ü‚·B
+	 * ãƒ•ã‚¡ã‚¤ãƒ«ã‚’åˆ†é¡ã—ã¾ã™ã€‚è¤‡æ•°ã®ãƒ•ã‚¡ã‚¤ãƒ«ã‚’åŒæ™‚ã«å¯¾è±¡ã«ã—ã¾ã™ã€‚
 	 * 
 	 * @param dirs
 	 * @param fileNames
@@ -364,7 +364,7 @@ public class FileUtilExt extends ObjectUtil {
 	}
 
 	/**
-	 * ƒtƒ@ƒCƒ‹‚ğ•ª—Ş‚µ‚Ü‚·B
+	 * ãƒ•ã‚¡ã‚¤ãƒ«ã‚’åˆ†é¡ã—ã¾ã™ã€‚
 	 * 
 	 * @param dirs
 	 * @param fileName
@@ -375,7 +375,7 @@ public class FileUtilExt extends ObjectUtil {
 	}
 
 	/**
-	 * ƒtƒ@ƒCƒ‹‚ğ•ª—Ş‚µ‚Ü‚·B
+	 * ãƒ•ã‚¡ã‚¤ãƒ«ã‚’åˆ†é¡ã—ã¾ã™ã€‚
 	 * 
 	 * @param dirs
 	 * @param fileName

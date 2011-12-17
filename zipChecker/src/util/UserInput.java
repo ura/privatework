@@ -30,7 +30,7 @@ import javax.swing.table.TableModel;
 
 /**
  *
- * •W€“ü—Í‘Î‰—pŠÈˆÕƒNƒ‰ƒXB ƒ}ƒ‹ƒ`ƒXƒŒƒbƒh‚Ì‚±‚Æ‚Íl—¶‚¹‚¸B
+ * æ¨™æº–å…¥åŠ›å¯¾å¿œç”¨ç°¡æ˜“ã‚¯ãƒ©ã‚¹ã€‚ ãƒãƒ«ãƒã‚¹ãƒ¬ãƒƒãƒ‰ã®ã“ã¨ã¯è€ƒæ…®ã›ãšã€‚
  *
  * @author poti
  *
@@ -48,7 +48,7 @@ public class UserInput {
 	public static boolean isInput() {
 		try {
 
-			// “ü—Í‚³‚ê‚½•¶š‚ğ•Ï”‚É‘ã“ü
+			// å…¥åŠ›ã•ã‚ŒãŸæ–‡å­—ã‚’å¤‰æ•°ã«ä»£å…¥
 			st = br.readLine();
 			if (!st.equals("")) {
 				return true;
@@ -71,7 +71,7 @@ public class UserInput {
 
 	public static <V> V selectOne(Collection<V> list) {
 
-		System.out.println("Œó•â‚ğ•\¦‚µ‚Ü‚·Bˆê‚Â‘I‘ğ‚µ‚Ä‚­‚¾‚³‚¢");
+		System.out.println("å€™è£œã‚’è¡¨ç¤ºã—ã¾ã™ã€‚ä¸€ã¤é¸æŠã—ã¦ãã ã•ã„");
 		Map<String, V> m = new HashMap<String, V>();
 
 		int i = 0;
@@ -97,7 +97,7 @@ public class UserInput {
 
 	public static <V> List<V> selectMany(Collection<V> list) {
 
-		System.out.println("Œó•â‚ğ•\¦‚µ‚Ü‚·B•¡”‘I‘ğ‚Å‚«‚Ü‚·B");
+		System.out.println("å€™è£œã‚’è¡¨ç¤ºã—ã¾ã™ã€‚è¤‡æ•°é¸æŠã§ãã¾ã™ã€‚");
 		Map<String, V> m = new HashMap<String, V>();
 
 		List<V> r = new ArrayList<V>();
@@ -111,7 +111,7 @@ public class UserInput {
 		}
 
 		if (UserInput.isInputs()) {
-			System.out.println("‰º‹L‚Ì‘ÎÛ‚ª‘I‘ğ‚³‚ê‚Ü‚µ‚½B");
+			System.out.println("ä¸‹è¨˜ã®å¯¾è±¡ãŒé¸æŠã•ã‚Œã¾ã—ãŸã€‚");
 			for (String k : UserInput.getUserInputs()) {
 				V remove = m.remove(k);
 
@@ -119,14 +119,14 @@ public class UserInput {
 					System.out.println(k + "\t" + toString(remove));
 					r.add(remove);
 				} else {
-					System.out.println("³‚µ‚¢œŠO‘ÎÛ‚ªw’è‚³‚ê‚Ü‚¹‚ñ‚Å‚µ‚½B");
+					System.out.println("æ­£ã—ã„é™¤å¤–å¯¾è±¡ãŒæŒ‡å®šã•ã‚Œã¾ã›ã‚“ã§ã—ãŸã€‚");
 					return null;
 				}
 
 			}
 
 		} else {
-			System.out.println("‘ÎÛ‚ªw’è‚³‚ê‚Ü‚¹‚ñ‚Å‚µ‚½B");
+			System.out.println("å¯¾è±¡ãŒæŒ‡å®šã•ã‚Œã¾ã›ã‚“ã§ã—ãŸã€‚");
 		}
 
 		return r;
@@ -159,7 +159,7 @@ public class UserInput {
 		TableCellEditor editor = new DefaultCellEditor(comboBox);
 		table.getColumnModel().getColumn(1).setCellEditor(editor);
 
-		JButton addButton = new JButton("Œˆ’è");
+		JButton addButton = new JButton("æ±ºå®š");
 
 		addButton.setMaximumSize(new Dimension(Short.MAX_VALUE, addButton
 				.getPreferredSize().height));
@@ -222,7 +222,7 @@ public class UserInput {
 
 	public static List<String> getUserInputsSwing(String title, int size) {
 
-		JButton addButton = new JButton("Œˆ’è");
+		JButton addButton = new JButton("æ±ºå®š");
 
 		class MyActionListener implements ActionListener {
 
@@ -284,7 +284,7 @@ public class UserInput {
 	private static <V> String toString(V v) {
 
 		if (v instanceof File) {
-			return ((File) v).getAbsolutePath() + "@@@@@"
+			return ((File) v).getAbsolutePath() + "ã€€ã€€ã€€ã€€ã€€"
 					+ (((File) v).length() / 1024 / 1024) + "M";
 		} else {
 			return v.toString();
@@ -297,7 +297,7 @@ public class UserInput {
 		try {
 
 			while (true) {
-				// “ü—Í‚³‚ê‚½•¶š‚ğ•Ï”‚É‘ã“ü
+				// å…¥åŠ›ã•ã‚ŒãŸæ–‡å­—ã‚’å¤‰æ•°ã«ä»£å…¥
 				String st = br.readLine();
 
 				if (!st.equals("")) {

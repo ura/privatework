@@ -6,16 +6,16 @@ import util.CollectionUtil;
 import util.StringUtil;
 
 /**
- * ƒtƒ@ƒCƒ‹‚ÌƒRƒA“I‚È—v‘f‚Ì‚İØ‚èo‚·B‰p”š‚Ì‚İ‚©‚ç‚È‚éƒp[ƒcA˜b”‚Ìƒp[ƒc‚ğ–³‹‚·‚éB
+ * ãƒ•ã‚¡ã‚¤ãƒ«ã®ã‚³ã‚¢çš„ãªè¦ç´ ã®ã¿åˆ‡ã‚Šå‡ºã™ã€‚è‹±æ•°å­—ã®ã¿ã‹ã‚‰ãªã‚‹ãƒ‘ãƒ¼ãƒ„ã€è©±æ•°ã®ãƒ‘ãƒ¼ãƒ„ã‚’ç„¡è¦–ã™ã‚‹ã€‚
  *
  */
 public class FileNameParseCoreOnly implements FileNameParser {
 
 	/**
-	 * ƒRƒA‚Ì—v‘f‚Ì‚İØ‚èo‚·B
-	 * ‚»‚Ì‚½‚ßAu”šE‰pŒê‚Ì‚İ‚Ì—v‘fvu˜b”‚Ì—v‘fv
+	 * ã‚³ã‚¢ã®è¦ç´ ã®ã¿åˆ‡ã‚Šå‡ºã™ã€‚
+	 * ãã®ãŸã‚ã€ã€Œæ•°å­—ãƒ»è‹±èªã®ã¿ã®è¦ç´ ã€ã€Œè©±æ•°ã®è¦ç´ ã€
 	 */
-	private static String[] patterns = new String[] { "^[\\w-]*$", "‘æ[0-9]*˜b" };
+	private static String[] patterns = new String[] { "^[\\w-]*$", "ç¬¬[0-9]*è©±" };
 
 	@Override
 	public Collection<String> parse(String file) {

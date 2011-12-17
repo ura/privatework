@@ -57,7 +57,7 @@ public class ImageDataZipTree extends ImageDataTree {
 
 				if (count % 10 == 0) {
 
-					log.info("ˆ—’†‚Å‚·EEEE  I—¹–‡”: " + count);
+					log.info("å‡¦ç†ä¸­ã§ã™ãƒ»ãƒ»ãƒ»ãƒ»  çµ‚äº†æšæ•°: " + count);
 				}
 			}
 
@@ -68,7 +68,7 @@ public class ImageDataZipTree extends ImageDataTree {
 	private static void _check(File is) {
 		org.apache.tools.zip.ZipFile zip = null;
 		try {
-			// TODO •s³‚Èƒtƒ@ƒCƒ‹‚ğ—áA‚Pƒtƒ@ƒCƒ‹‚µ‚©“ü‚Á‚Ä‚¢‚È‚¢@“™‚ğœŠOŒŸ“¢
+			// TODO ä¸æ­£ãªãƒ•ã‚¡ã‚¤ãƒ«ã‚’ä¾‹ã€ï¼‘ãƒ•ã‚¡ã‚¤ãƒ«ã—ã‹å…¥ã£ã¦ã„ãªã„ã€€ç­‰ã‚’é™¤å¤–æ¤œè¨
 
 			zip = new org.apache.tools.zip.ZipFile(is);
 
@@ -114,7 +114,7 @@ public class ImageDataZipTree extends ImageDataTree {
 			}
 
 			if (zipcount < 2 && nozipcount < 7) {
-				throw new ZipCheckException("•s³‚Èƒtƒ@ƒCƒ‹‚Ì‹C‚ª‚µ‚Ü‚·", State.FEW_FILE);
+				throw new ZipCheckException("ä¸æ­£ãªãƒ•ã‚¡ã‚¤ãƒ«ã®æ°—ãŒã—ã¾ã™", State.FEW_FILE);
 			}
 
 		} catch (ZipException e) {
@@ -151,8 +151,8 @@ public class ImageDataZipTree extends ImageDataTree {
 	}
 
 	private static void testRead(ZipFile zip, ZipEntry ze) {
-		// ƒCƒ“ƒ^[ƒtƒF[ƒXãAƒAƒEƒgƒvƒbƒgƒXƒgƒŠ[ƒ€‚ğ“n‚·‚±‚Æ‚É‚È‚Á‚Ä‚¢‚é‚ªA
-		// “Ç‚ß‚é‚©Šm‚©‚ß‚é‚¾‚¯‚È‚Ì‚ÅAŒ‹‰Ê‚ÍƒKƒ“ƒKƒ“Ì‚Ä‚Ä‚©‚Ü‚í‚È‚¢
+		// ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ãƒ¼ã‚¹ä¸Šã€ã‚¢ã‚¦ãƒˆãƒ—ãƒƒãƒˆã‚¹ãƒˆãƒªãƒ¼ãƒ ã‚’æ¸¡ã™ã“ã¨ã«ãªã£ã¦ã„ã‚‹ãŒã€
+		// èª­ã‚ã‚‹ã‹ç¢ºã‹ã‚ã‚‹ã ã‘ãªã®ã§ã€çµæœã¯ã‚¬ãƒ³ã‚¬ãƒ³æ¨ã¦ã¦ã‹ã¾ã‚ãªã„
 		NullOutputStream baos = new NullOutputStream();
 		readZip(zip, ze, baos);
 
@@ -170,7 +170,7 @@ public class ImageDataZipTree extends ImageDataTree {
 			return f;
 		} catch (IOException e) {
 
-			throw new ZipCheckException("‚»‚Ì‘¼‚ÌƒGƒ‰[", State.OTHER, e);
+			throw new ZipCheckException("ãã®ä»–ã®ã‚¨ãƒ©ãƒ¼", State.OTHER, e);
 		} finally {
 			close(bos);
 		}
@@ -206,7 +206,7 @@ public class ImageDataZipTree extends ImageDataTree {
 				}
 			} catch (IOException e) {
 
-				throw new ZipCheckException("ƒpƒXƒ[ƒh‚É‚æ‚Á‚Ä“Ç‚İæ‚ê‚È‚¢EEH",
+				throw new ZipCheckException("ãƒ‘ã‚¹ãƒ¯ãƒ¼ãƒ‰ã«ã‚ˆã£ã¦èª­ã¿å–ã‚Œãªã„ãƒ»ãƒ»ï¼Ÿ",
 						State.UNZIP_ERROR, e);
 			}
 

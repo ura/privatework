@@ -12,7 +12,7 @@ public class ZipChecker {
 	private static Logger log = LoggerFactory.getLogger(FileUtilExt.class);
 
 	/**
-	 * ‚ ‚é’ö“xOK‚¾‚Á‚½‚çƒXƒ‹[‚·‚éB Zip‚Ì’†‚É•¡”ZIP‚ª“ü‚Á‚Ä‚¢‚Ä‚àA1‚Â‰ğ“€‚Å‚«‚ê‚ÎAŒã‚à‚Ì‚Í
+	 * ã‚ã‚‹ç¨‹åº¦OKã ã£ãŸã‚‰ã‚¹ãƒ«ãƒ¼ã™ã‚‹ã€‚ Zipã®ä¸­ã«è¤‡æ•°ZIPãŒå…¥ã£ã¦ã„ã¦ã‚‚ã€1ã¤è§£å‡ã§ãã‚Œã°ã€å¾Œã‚‚ã®ã¯
 	 */
 	private static final int PASS_COUNT = 4;
 

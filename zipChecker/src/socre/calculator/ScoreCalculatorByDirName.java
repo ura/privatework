@@ -33,12 +33,12 @@ public class ScoreCalculatorByDirName implements ScoreCalculator {
 	}
 
 	/**
-	 * ƒƒWƒbƒNF
-	 * uƒtƒHƒ‹ƒ_‚ÌƒpƒXv‚Æuƒtƒ@ƒCƒ‹–¼v‚ð”äŠrAŒŸ“¢‚·‚éB
+	 * ãƒ­ã‚¸ãƒƒã‚¯ï¼š
+	 * ã€Œãƒ•ã‚©ãƒ«ãƒ€ã®ãƒ‘ã‚¹ã€ã¨ã€Œãƒ•ã‚¡ã‚¤ãƒ«åã€ã‚’æ¯”è¼ƒã€æ¤œè¨Žã™ã‚‹ã€‚
 	 *
 	 *
 	 * @param dir
-	 * @param filePart ƒtƒ@ƒCƒ‹–¼B•ªŠ„Ï‚ÝB•ªŠ„‚µ‚Ä‚ ‚é•K—v‚ª‚ ‚é‚Ì‚©HHH
+	 * @param filePart ãƒ•ã‚¡ã‚¤ãƒ«åã€‚åˆ†å‰²æ¸ˆã¿ã€‚åˆ†å‰²ã—ã¦ã‚ã‚‹å¿…è¦ãŒã‚ã‚‹ã®ã‹ï¼Ÿï¼Ÿï¼Ÿ
 	 * @return
 	 */
 	public int score(Dir dir, String fileName) {
@@ -48,17 +48,17 @@ public class ScoreCalculatorByDirName implements ScoreCalculator {
 
 		int score = 0;
 		for (String filePart : set) {
-			//ƒtƒ@ƒCƒ‹–¼‚ªƒtƒHƒ‹ƒ_–¼iƒpƒXj‚ðŠÜ‚ñ‚Å‚¢‚½‚çAAA
-			//Ž©g‚ÌƒtƒHƒ‹ƒ_–¼‚ª’¼Ú“ü‚Á‚Ä‚¢‚é•K—v‚Í‚È‚¢B
-			// [data][avi][¢ŠEˆâŽY]
-			//‚Æ‚¢‚¤ƒtƒHƒ‹ƒ_\‘¢‚È‚çA
+			//ãƒ•ã‚¡ã‚¤ãƒ«åãŒãƒ•ã‚©ãƒ«ãƒ€åï¼ˆãƒ‘ã‚¹ï¼‰ã‚’å«ã‚“ã§ã„ãŸã‚‰ã€ã€ã€
+			//è‡ªèº«ã®ãƒ•ã‚©ãƒ«ãƒ€åãŒç›´æŽ¥å…¥ã£ã¦ã„ã‚‹å¿…è¦ã¯ãªã„ã€‚
+			// [data][avi][ä¸–ç•Œéºç”£]
+			//ã¨ã„ã†ãƒ•ã‚©ãƒ«ãƒ€æ§‹é€ ãªã‚‰ã€
 
 			Collection<String> dirPartSet = new HashSet<String>();
 
-			//ŠeƒtƒHƒ‹ƒ_–¼‚ð•ª‰ð‚µ‚ÄWÏB
-			//ƒtƒHƒ‹ƒ_–¼‚²‚Æ‚É“¯—l‚Ì–¼‘O‚ªŠÜ‚Ü‚ê‚Ä‚¢‚½‚Î‚ ‚¢‚É‘Î‚·‚é‘Î‰ž
-			// *****ƒAƒjƒ\\****ƒAƒjƒ\\******ƒAƒjƒ
-			//‚Ý‚½‚¢‚ÈEEEE
+			//å„ãƒ•ã‚©ãƒ«ãƒ€åã‚’åˆ†è§£ã—ã¦é›†ç©ã€‚
+			//ãƒ•ã‚©ãƒ«ãƒ€åã”ã¨ã«åŒæ§˜ã®åå‰ãŒå«ã¾ã‚Œã¦ã„ãŸã°ã‚ã„ã«å¯¾ã™ã‚‹å¯¾å¿œ
+			// *****ã‚¢ãƒ‹ãƒ¡\\****ã‚¢ãƒ‹ãƒ¡\\******ã‚¢ãƒ‹ãƒ¡
+			//ã¿ãŸã„ãªãƒ»ãƒ»ãƒ»ãƒ»
 			for (String dirPart : dir.nameSet) {
 				dirPartSet.addAll(fileNameParser.parse(dirPart));
 			}

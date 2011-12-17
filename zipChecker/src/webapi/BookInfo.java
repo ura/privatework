@@ -29,7 +29,7 @@ public class BookInfo implements Comparable<BookInfo> {
 
 	@Override
 	public String toString() {
-		// TODO 自動生成されたメソッド・スタブ
+
 		return getInfo();
 	}
 

@@ -54,18 +54,18 @@ public class Dir {
 		fileNameSet.add(f.getPath());
 	}
 
-	//TODO ‚±‚±‚É‹@”\‚ª‚ ‚é‚Ì‚ª‚¢‚¢‚Ì‚©‚ÍŒŸ“¢B
+	//TODO ã“ã“ã«æ©Ÿèƒ½ãŒã‚ã‚‹ã®ãŒã„ã„ã®ã‹ã¯æ¤œè¨ã€‚
 	/**
-	 * ƒfƒBƒŒƒNƒgƒŠ‚Ì’†‚ğŠm”F‚µAƒtƒ@ƒCƒ‹‚Ì—Ş—«‚ğŒ©‚Â‚¯AƒtƒHƒ‹ƒ_ì¬A‚¨‚æ‚ÑAMOVE‚ğs‚¤B
+	 * ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã®ä¸­ã‚’ç¢ºèªã—ã€ãƒ•ã‚¡ã‚¤ãƒ«ã®é¡ä¼¼æ€§ã‚’è¦‹ã¤ã‘ã€ãƒ•ã‚©ãƒ«ãƒ€ä½œæˆã€ãŠã‚ˆã³ã€MOVEã‚’è¡Œã†ã€‚
 	 *
 	 */
 	public void createNewDir() {
-		//TODO ƒp[ƒT‚Ì“ü‚ê‘Ö‚¦
+		//TODO ãƒ‘ãƒ¼ã‚µã®å…¥ã‚Œæ›¿ãˆ
 		FileNameParser fileNameParser = new FileNameParseCoreOnly();
 
 		Map<String, CollectionUtil.Counter> map = null;
 
-		//ƒtƒHƒ‹ƒ_‚Ìó‘Ô‚ğ•ªÍ
+		//ãƒ•ã‚©ãƒ«ãƒ€ã®çŠ¶æ…‹ã‚’åˆ†æ
 		for (String dirFile : this.fileNameSet) {
 			map = CollectionUtil.count(map, fileNameParser.parse(FilenameUtils
 					.getName(dirFile)), fileNameSet.size());
@@ -73,17 +73,17 @@ public class Dir {
 		if (map != null) {
 			SortedSet<MoveFiles> sort = new TreeSet<MoveFiles>();
 			for (Entry<String, Counter> e : map.entrySet()) {
-				//‚»‚ÌƒtƒHƒ‹ƒ_‚ğ“Á’¥‚Æ‚È‚é—v‘f‚Å‚Í‚È‚­A
-				//‚©‚Âˆê’è”‚Ì‚Ó‚Ÿ‚¢‚é‚ª‚ ‚Á‚½‚ç
+				//ãã®ãƒ•ã‚©ãƒ«ãƒ€ã‚’ç‰¹å¾´ã¨ãªã‚‹è¦ç´ ã§ã¯ãªãã€
+				//ã‹ã¤ä¸€å®šæ•°ã®ãµãã„ã‚‹ãŒã‚ã£ãŸã‚‰
 				if (e.getValue().per() < 50 && e.getValue().count > 6) {
 
-					//e‚ÌƒpƒX‚Å’è‹`‚µ‚Ä‚¢‚é–¼Ì‚Å‚ÍƒtƒHƒ‹ƒ_‚ğì‚ç‚È‚¢B
+					//è¦ªã®ãƒ‘ã‚¹ã§å®šç¾©ã—ã¦ã„ã‚‹åç§°ã§ã¯ãƒ•ã‚©ãƒ«ãƒ€ã‚’ä½œã‚‰ãªã„ã€‚
 					if (!nameSet.contains(e.getKey())) {
 						sort.add(new MoveFiles(e.getKey(), e.getValue().count));
 					}
 				}
 			}
-			//‚Æ‚è‚ ‚¦‚¸A‚Ó‚è‚í‚¯
+			//ã¨ã‚Šã‚ãˆãšã€ãµã‚Šã‚ã‘
 			SortedSet<String> temp = new TreeSet<String>(this.fileNameSet);
 			for (MoveFiles key : sort) {
 				key.registFile(temp);
@@ -108,7 +108,7 @@ public class Dir {
 	}
 
 	/**
-	 * ˆÚ“®ŒŸ“¢‚ÌŠÇ——p‚ÌƒNƒ‰ƒX
+	 * ç§»å‹•æ¤œè¨æ™‚ã®ç®¡ç†ç”¨ã®ã‚¯ãƒ©ã‚¹
 	 * @author poti
 	 *
 	 */

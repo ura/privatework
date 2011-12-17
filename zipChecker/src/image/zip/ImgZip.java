@@ -15,7 +15,7 @@ public class ImgZip extends Img {
 
 	public ImgZip(String filename,String entrys[]) {
 		super(filename);
-		// TODO ©“®¶¬‚³‚ê‚½ƒRƒ“ƒXƒgƒ‰ƒNƒ^[EƒXƒ^ƒu
+		// TODO è‡ªå‹•ç”Ÿæˆã•ã‚ŒãŸã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ãƒ¼ãƒ»ã‚¹ã‚¿ãƒ–
 	}
 
 	public void loadImage() {
@@ -25,7 +25,7 @@ public class ImgZip extends Img {
 			this.h = image.getHeight();
 
 		} catch (IOException e) {
-			log.error("ƒCƒ[ƒWƒ[ƒhƒGƒ‰[ {}", imgFile.getName(), e);
+			log.error("ã‚¤ãƒ¡ãƒ¼ã‚¸ãƒ­ãƒ¼ãƒ‰ã‚¨ãƒ©ãƒ¼ {}", imgFile.getName(), e);
 
 		}
 	}

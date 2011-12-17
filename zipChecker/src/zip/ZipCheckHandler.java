@@ -15,22 +15,22 @@ public class ZipCheckHandler implements ZipUtilHandler {
 	public boolean needCheck(ZipUtil util, ZipFile zip, ZipEntry ze) {
 
 		boolean result = true;
-		// ”»’è
+		// åˆ¤å®š
 		if (ze.getName().endsWith(".zip")) {
 
-			//ZIP‚Ì’†‚ÌZIP‚ª‰ñ“š‚µ‚½‚±‚Æ‚ª‚ ‚ê‚ÎAOK‚Å
+			//ZIPã®ä¸­ã®ZIPãŒå›ç­”ã—ãŸã“ã¨ãŒã‚ã‚Œã°ã€OKã§
 			if (zipcount > 3) {
 				result = false;
 			}
 
 		} else {
-			//10–‡’ö“x‰ñ“š‚Å‚«‚Ä‚¢‚ê‚ÎAOK‚Å
+			//10æšç¨‹åº¦å›ç­”ã§ãã¦ã„ã‚Œã°ã€OKã§
 			if (zipcount > 10) {
 				result = false;
 			}
 		}
 
-		// WŒv
+		// é›†è¨ˆ
 		if (ze.getName().endsWith(".zip")) {
 			zipcount++;
 		} else {
@@ -43,7 +43,7 @@ public class ZipCheckHandler implements ZipUtilHandler {
 	@Override
 	public void end(ZipUtil util, ZipFile zip) throws ZipCheckException {
 		if (zipcount < 2 && nozipcount < 7) {
-			throw new ZipCheckException("•s³‚Èƒtƒ@ƒCƒ‹‚Ì‹C‚ª‚µ‚Ü‚·", State.FEW_FILE);
+			throw new ZipCheckException("ä¸æ­£ãªãƒ•ã‚¡ã‚¤ãƒ«ã®æ°—ãŒã—ã¾ã™", State.FEW_FILE);
 		}
 
 	}
@@ -60,7 +60,7 @@ public class ZipCheckHandler implements ZipUtilHandler {
 
 	@Override
 	public void start(ZipUtil util, ZipFile zip) throws ZipCheckException {
-		// TODO ©“®¶¬‚³‚ê‚½ƒƒ\ƒbƒhEƒXƒ^ƒu
+		// TODO è‡ªå‹•ç”Ÿæˆã•ã‚ŒãŸãƒ¡ã‚½ãƒƒãƒ‰ãƒ»ã‚¹ã‚¿ãƒ–
 
 	}
 }

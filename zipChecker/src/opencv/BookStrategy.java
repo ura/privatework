@@ -10,9 +10,9 @@ import static com.googlecode.javacv.jna.cvaux.*;
 
 /**
  *
- * ƒƒWƒbƒN‚Ì“à—eB
+ * ãƒ­ã‚¸ãƒƒã‚¯ã®å†…å®¹ã€‚
  *
- * tempate‚ğimg‚æ‚è¬‚³‚­‚·‚éB c•‚ÍA“¯‚¶ƒXƒP[ƒ‹‚Æ”F¯‚·‚éB ‘Ñ‚Æ‚©Aæ‚è‚İƒ~ƒX‚ğŒ©‚İA^‚ñ’†•”•ª‚ğØ‚èo‚·
+ * tempateã‚’imgã‚ˆã‚Šå°ã•ãã™ã‚‹ã€‚ ç¸¦å¹…ã¯ã€åŒã˜ã‚¹ã‚±ãƒ¼ãƒ«ã¨èªè­˜ã™ã‚‹ã€‚ å¸¯ã¨ã‹ã€å–ã‚Šè¾¼ã¿ãƒŸã‚¹ã‚’è¦‹è¾¼ã¿ã€çœŸã‚“ä¸­éƒ¨åˆ†ã‚’åˆ‡ã‚Šå‡ºã™
  *
  *
  *
@@ -22,8 +22,8 @@ public class BookStrategy implements CutStrategy {
 	@Override
 	public IplImage[] cut(IplImage image, IplImage template) {
 
-		// c•‚Íƒtƒ‹‚ÌƒTƒCƒY‚Ì‚Í‚¸B‰¡‚Í— •\†‚Ü‚Åæ‚è‚İ“™‚Ì‰Â”\«‚ ‚è
-		// c‚ÌƒXƒP[ƒ‹‚ğ³‚Æ‚µ‚ÄƒTƒCƒY‚ ‚í‚¹B
+		// ç¸¦å¹…ã¯ãƒ•ãƒ«ã®ã‚µã‚¤ã‚ºã®ã¯ãšã€‚æ¨ªã¯è£è¡¨ç´™ã¾ã§å–ã‚Šè¾¼ã¿ç­‰ã®å¯èƒ½æ€§ã‚ã‚Š
+		// ç¸¦ã®ã‚¹ã‚±ãƒ¼ãƒ«ã‚’æ­£ã¨ã—ã¦ã‚µã‚¤ã‚ºã‚ã‚ã›ã€‚
 		int height = image.height;
 		int height2 = template.height;
 

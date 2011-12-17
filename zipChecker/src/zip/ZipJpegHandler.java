@@ -85,7 +85,7 @@ public class ZipJpegHandler implements ZipUtilHandler {
 	}
 
 	/**
-	 * あまり参考にならない・・・・
+	 * 縺ゅ∪繧雁盾閠�縺ｫ縺ｪ繧峨↑縺�繝ｻ繝ｻ繝ｻ繝ｻ
 	 *
 	 * @param zip
 	 * @param ze

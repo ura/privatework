@@ -9,7 +9,7 @@ import util.file.FileUtilExt;
 import conf.Config;
 
 /**
- * MAINƒNƒ‰ƒXB•ª—Þ‚µ‚½‚èAƒtƒHƒ‹ƒ_‚ð’è‹`‚µ‚½‚èB
+ * MAINã‚¯ãƒ©ã‚¹ã€‚åˆ†é¡žã—ãŸã‚Šã€ãƒ•ã‚©ãƒ«ãƒ€ã‚’å®šç¾©ã—ãŸã‚Šã€‚
  * @author poti
  *
  */

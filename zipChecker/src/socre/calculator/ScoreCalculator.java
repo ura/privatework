@@ -3,7 +3,7 @@ package socre.calculator;
 import dir.Dir;
 
 /**
- * ƒXƒRƒA‚ÌZoB
+ * ã‚¹ã‚³ã‚¢ã®ç®—å‡ºã€‚
  * @author poti
  *
  */

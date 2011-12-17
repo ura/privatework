@@ -6,7 +6,7 @@ import java.util.Iterator;
 import java.util.Set;
 
 /**
- * ���łɃt�@�C�����`�F�b�N���Ă��邩���ׂ邽�߂̃��[�e�B��
+ * すでにファイルをチェックしているか調べるためのユーティル
  * @author poti
  *
  */
@@ -22,7 +22,7 @@ public class Checker {
 
 	public Checker(File rootPath){
 
-		//TODO �t�@�C���̑��݂��`�F�b�N
+		//TODO ファイルの存在をチェック
 		checkSet=new HashSet<Check>();
 
 		datatxt=new File(rootPath.getPath()+"\\"+DATA_FILE_NAME);

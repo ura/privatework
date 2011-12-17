@@ -2,8 +2,6 @@ package webapi;
 
 import java.io.CharArrayReader;
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -16,7 +14,8 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
-import org.w3c.dom.DOMException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -27,6 +26,8 @@ import com.web2driver.abaron.client.AbaronRESTClient;
 import com.web2driver.abaron.client.AbaronResultNode;
 
 public class Rakuten {
+
+	private static Logger log = LoggerFactory.getLogger(Rakuten.class);
 
 	private static final String KEY = "572475de8b4c52837e32a6777584c734";
 
@@ -81,10 +82,10 @@ public class Rakuten {
 	private static AbaronResultNode getWebInfo(Query q) {
 		AbaronRESTClient stub = new AbaronRESTClient();
 
-		// Amazon WebƒT[ƒrƒX‚ÌƒGƒ“ƒhƒ|ƒCƒ“ƒgURL
+		// Amazon Webã‚µãƒ¼ãƒ“ã‚¹ã®ã‚¨ãƒ³ãƒ‰ãƒã‚¤ãƒ³ãƒˆURL
 		stub.setEndpointUrl("http://api.rakuten.co.jp/rws/3.0/rest");
 
-		// URLƒpƒ‰ƒ[ƒ^‚ğİ’è‚·‚é
+		// URLãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚’è¨­å®šã™ã‚‹
 		stub.setParameter("developerId", KEY);
 		stub.setParameter("operation", "BooksBookSearch");
 		stub.setParameter("version", "2011-12-01");
@@ -96,7 +97,7 @@ public class Rakuten {
 
 		q.setCustomQuery(stub);
 
-		// WebƒT[ƒrƒX‚ğŒÄ‚Ño‚·
+		// Webã‚µãƒ¼ãƒ“ã‚¹ã‚’å‘¼ã³å‡ºã™
 		AbaronResultNode result = stub.doRequest();
 		return result;
 	}
@@ -120,8 +121,9 @@ public class Rakuten {
 	}
 
 	public static SortedSet<BookInfo> getInfoByTitle(String title) {
-		 return Rakuten.getInfo(new Rakuten.TitleQuery(title));
+		return Rakuten.getInfo(new Rakuten.TitleQuery(title));
 	}
+
 	public static SortedSet<BookInfo> getInfo(String isbn) {
 		return Rakuten.getInfo(new Rakuten.IsbnQuery(isbn));
 	}
@@ -165,23 +167,10 @@ public class Rakuten {
 				}
 			}
 
-		} catch (XPathExpressionException e) {
+		} catch (XPathExpressionException | ParserConfigurationException
+				| SAXException | IOException | RuntimeException e) {
 
-			e.printStackTrace();
-			result.print(false);
-		} catch (DOMException e) {
-			e.printStackTrace();
-			result.print(false);
-		} catch (ParserConfigurationException e) {
-			e.printStackTrace();
-			result.print(false);
-		} catch (SAXException e) {
-			e.printStackTrace();
-			result.print(false);
-		} catch (IOException e) {
-			e.printStackTrace();
-			result.print(false);
-		} catch (RuntimeException e) {
+			log.error("æƒ³å®šå¤–ã®ã‚¨ãƒ©ãƒ¼", e);
 			result.print(false);
 		}
 		return set;
@@ -211,30 +200,13 @@ public class Rakuten {
 				}
 			}
 
-		} catch (XPathExpressionException e) {
-			// TODO ©“®¶¬‚³‚ê‚½ catch ƒuƒƒbƒN
-			e.printStackTrace();
-			result.print(false);
-		} catch (DOMException e) {
-			// TODO ©“®¶¬‚³‚ê‚½ catch ƒuƒƒbƒN
-			e.printStackTrace();
-			result.print(false);
-		} catch (ParserConfigurationException e) {
-			// TODO ©“®¶¬‚³‚ê‚½ catch ƒuƒƒbƒN
-			e.printStackTrace();
-			result.print(false);
-		} catch (SAXException e) {
-			// TODO ©“®¶¬‚³‚ê‚½ catch ƒuƒƒbƒN
-			e.printStackTrace();
-			result.print(false);
-		} catch (IOException e) {
-			// TODO ©“®¶¬‚³‚ê‚½ catch ƒuƒƒbƒN
-			e.printStackTrace();
-			result.print(false);
-		} catch (RuntimeException e) {
-			e.printStackTrace();
+		} catch (XPathExpressionException | ParserConfigurationException
+				| SAXException | IOException | RuntimeException e) {
+
+			log.error("æƒ³å®šå¤–ã®ã‚¨ãƒ©ãƒ¼", e);
 			result.print(false);
 		}
+
 		return set;
 	}
 }

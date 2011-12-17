@@ -19,7 +19,7 @@ import util.DebugUtil;
 import dir.Dir;
 
 /**
- * ‹——£”»•Ê
+ * è·é›¢åˆ¤åˆ¥
  * @author poti
  *
  */
@@ -30,11 +30,11 @@ public class ScoreUtil {
 	public static ScoreUtil createDefault() {
 		ScoreUtil n = new ScoreUtil();
 
-		//ƒtƒHƒ‹ƒ_‚É“ü‚Á‚Ä‚¢‚éƒtƒ@ƒCƒ‹‚ğŒ³‚É
+		//ãƒ•ã‚©ãƒ«ãƒ€ã«å…¥ã£ã¦ã„ã‚‹ãƒ•ã‚¡ã‚¤ãƒ«ã‚’å…ƒã«
 		n.registSocreCalculator(new ScoreCalculatorByDirFile(
 				new FileNameParseImpl()));
 
-		//ƒtƒHƒ‹ƒ_‚ÌƒpƒX‚ğŒ³‚É
+		//ãƒ•ã‚©ãƒ«ãƒ€ã®ãƒ‘ã‚¹ã‚’å…ƒã«
 		n.registSocreCalculator(new ScoreCalculatorByDirName(
 				new FileNameParseImpl()));
 
@@ -54,16 +54,16 @@ public class ScoreUtil {
 	}
 
 	/**
-	 * ‹——£”»•Ê‚ğs‚¤B
-	 * ˆê”ÔƒXƒRƒA‚ª‚‚¢ƒtƒ@ƒ‹ƒ_‚ğ‘I‚Ño‚·B
-	 * @param dirs Œó•â‚Æ‚È‚éƒtƒHƒ‹ƒ_‚ÌƒZƒbƒg
-	 * @param fileName ”»’è‘ÎÛ‚Æ‚È‚éƒtƒ@ƒCƒ‹Bƒtƒ‹ƒpƒXB
+	 * è·é›¢åˆ¤åˆ¥ã‚’è¡Œã†ã€‚
+	 * ä¸€ç•ªã‚¹ã‚³ã‚¢ãŒé«˜ã„ãƒ•ã‚¡ãƒ«ãƒ€ã‚’é¸ã³å‡ºã™ã€‚
+	 * @param dirs å€™è£œã¨ãªã‚‹ãƒ•ã‚©ãƒ«ãƒ€ã®ã‚»ãƒƒãƒˆ
+	 * @param fileName åˆ¤å®šå¯¾è±¡ã¨ãªã‚‹ãƒ•ã‚¡ã‚¤ãƒ«ã€‚ãƒ•ãƒ«ãƒ‘ã‚¹ã€‚
 	 * @return
 	 */
 	public Dir dir(Collection<Dir> dirs, String fileName, int score) {
 
 		SortedSet<ScoreInfo> set = new TreeSet<ScoreInfo>();
-		//‚à‚Á‚Æ‚àAƒnƒCƒXƒRƒA‚ÌƒtƒHƒ‹ƒ_‚ğ’T‚·B
+		//ã‚‚ã£ã¨ã‚‚ã€ãƒã‚¤ã‚¹ã‚³ã‚¢ã®ãƒ•ã‚©ãƒ«ãƒ€ã‚’æ¢ã™ã€‚
 		for (Dir dir : dirs) {
 			ScoreInfo info = calcFileScore(dir, fileName);
 			set.add(info);
@@ -100,8 +100,8 @@ public class ScoreUtil {
 	}
 
 	/**
-	 * ‚ ‚éƒtƒHƒ‹ƒ_‚ÌƒXƒRƒA‚ğZo‚·‚éB
-	 * ƒƒWƒbƒN‚Íw’è‚³‚ê‚é‚à‚Ì‚ğ•¡”„—p‚·‚éB
+	 * ã‚ã‚‹ãƒ•ã‚©ãƒ«ãƒ€ã®ã‚¹ã‚³ã‚¢ã‚’ç®—å‡ºã™ã‚‹ã€‚
+	 * ãƒ­ã‚¸ãƒƒã‚¯ã¯æŒ‡å®šã•ã‚Œã‚‹ã‚‚ã®ã‚’è¤‡æ•°ç§ç”¨ã™ã‚‹ã€‚
 	 * @param dir
 	 * @param set
 	 * @return
@@ -138,7 +138,7 @@ public class ScoreUtil {
 		}
 
 		/**
-		 * ~‡
+		 * é™é †
 		 */
 		@Override
 		public int compareTo(ScoreInfo o) {

@@ -3,14 +3,14 @@ package util;
 import java.util.regex.Pattern;
 
 /**
- * •¶š—ñ‘€ìŒn‚Ìƒ†[ƒeƒBƒ‹
+ * æ–‡å­—åˆ—æ“ä½œç³»ã®ãƒ¦ãƒ¼ãƒ†ã‚£ãƒ«
  * @author poti
  *
  */
 public class StringUtil {
 
 	private static Pattern parterm = Pattern
-			.compile("[\\[\\]\\(\\)\\.\\y\\z E]");
+			.compile("[\\[\\]\\(\\)\\.\\ã€\\ã€‘ ãƒ»]");
 
 	public static String[] parse(String s) {
 		return _parse(s);

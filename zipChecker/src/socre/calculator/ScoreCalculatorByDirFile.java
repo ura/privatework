@@ -17,9 +17,9 @@ import com.google.inject.name.Named;
 import dir.Dir;
 
 /**
- * ‚»‚ÌƒtƒHƒ‹ƒ_‚É“ü‚Á‚Ä‚¢‚éƒtƒ@ƒCƒ‹‚Ì“Á’¥‚ğ‚İ‚ÄAƒXƒRƒA‚ğ“o˜^‚·‚éB
- * —áF‚ ‚éƒtƒHƒ‹ƒ_‚Éu¢ŠEˆâYvu.aviv‚Æ‚¢‚Á‚½ƒtƒ@ƒCƒ‹‚Î‚©‚è“ü‚Á‚Ä‚¢‚éê‡A
- * ‚»‚Ì“Á’¥‚Éˆê’v‚·‚éƒtƒ@ƒCƒ‹‚ğ‚‚­•]‰¿‚·‚éB
+ * ãã®ãƒ•ã‚©ãƒ«ãƒ€ã«å…¥ã£ã¦ã„ã‚‹ãƒ•ã‚¡ã‚¤ãƒ«ã®ç‰¹å¾´ã‚’ã¿ã¦ã€ã‚¹ã‚³ã‚¢ã‚’ç™»éŒ²ã™ã‚‹ã€‚
+ * ä¾‹ï¼šã‚ã‚‹ãƒ•ã‚©ãƒ«ãƒ€ã«ã€Œä¸–ç•Œéºç”£ã€ã€Œ.aviã€ã¨ã„ã£ãŸãƒ•ã‚¡ã‚¤ãƒ«ã°ã‹ã‚Šå…¥ã£ã¦ã„ã‚‹å ´åˆã€
+ * ãã®ç‰¹å¾´ã«ä¸€è‡´ã™ã‚‹ãƒ•ã‚¡ã‚¤ãƒ«ã‚’é«˜ãè©•ä¾¡ã™ã‚‹ã€‚
  *
  * @author poti
  *
@@ -39,12 +39,12 @@ public class ScoreCalculatorByDirFile implements ScoreCalculator {
 	}
 
 	/**
-	 * ƒƒWƒbƒNF
-	 * ƒtƒHƒ‹ƒ_‚ÉŠÜ‚Ü‚ê‚Ä‚¢‚éƒtƒ@ƒCƒ‹‚Ì–¼‘O‚ğ•ª‰ğ‚·‚éB
+	 * ãƒ­ã‚¸ãƒƒã‚¯ï¼š
+	 * ãƒ•ã‚©ãƒ«ãƒ€ã«å«ã¾ã‚Œã¦ã„ã‚‹ãƒ•ã‚¡ã‚¤ãƒ«ã®åå‰ã‚’åˆ†è§£ã™ã‚‹ã€‚
 	 *
 	 *
 	 * @param dir
-	 * @param filePart ƒtƒ@ƒCƒ‹–¼B•ªŠ„Ï‚İB•ªŠ„‚µ‚Ä‚ ‚é•K—v‚ª‚ ‚é‚Ì‚©HHH
+	 * @param filePart ãƒ•ã‚¡ã‚¤ãƒ«åã€‚åˆ†å‰²æ¸ˆã¿ã€‚åˆ†å‰²ã—ã¦ã‚ã‚‹å¿…è¦ãŒã‚ã‚‹ã®ã‹ï¼Ÿï¼Ÿï¼Ÿ
 	 * @return
 	 */
 	public int score(Dir dir, String fileName) {
@@ -55,7 +55,7 @@ public class ScoreCalculatorByDirFile implements ScoreCalculator {
 		Map<String, CollectionUtil.Counter> map = null;
 		int fCount = dir.fileNameSet.size();
 
-		//ƒtƒHƒ‹ƒ_‚Ìó‘Ô‚ğ•ªÍ
+		//ãƒ•ã‚©ãƒ«ãƒ€ã®çŠ¶æ…‹ã‚’åˆ†æ
 		for (String dirFile : dir.fileNameSet) {
 			map = CollectionUtil.count(map, this.fileNameParser
 					.parse(FilenameUtils.getName(fileName)), fCount);
@@ -67,7 +67,7 @@ public class ScoreCalculatorByDirFile implements ScoreCalculator {
 					dir.dir.getPath() });
 
 			for (Map.Entry<String, CollectionUtil.Counter> e : map.entrySet()) {
-				//ƒtƒHƒ‹ƒ_‚Ì•ªÍŒ‹‰Ê‚ğ‚Â‚©‚Á‚ÄA
+				//ãƒ•ã‚©ãƒ«ãƒ€ã®åˆ†æçµæœã‚’ã¤ã‹ã£ã¦ã€
 				score = score + folder(e, set);
 			}
 		} else {
@@ -78,7 +78,7 @@ public class ScoreCalculatorByDirFile implements ScoreCalculator {
 	}
 
 	/**
-	 * ƒtƒHƒ‹ƒ_“à‚Ìó‘Ô‚Ì1—v‘f‚ÆƒtƒHƒ‹ƒ_–¼‚Ì—v‘f‚ğƒXƒRƒA‰»B
+	 * ãƒ•ã‚©ãƒ«ãƒ€å†…ã®çŠ¶æ…‹ã®1è¦ç´ ã¨ãƒ•ã‚©ãƒ«ãƒ€åã®è¦ç´ ã‚’ã‚¹ã‚³ã‚¢åŒ–ã€‚
 	 * @param e
 	 * @param set
 	 * @return
@@ -87,8 +87,8 @@ public class ScoreCalculatorByDirFile implements ScoreCalculator {
 			Collection<String> set) {
 		for (String filePart : set) {
 			if (StringUtil.contain(e.getKey(), filePart)) {
-				//ƒtƒHƒ‹ƒ_“à‚ÅuHv%‚Ì¨—Í‚Ì—v‘f‚ª‚ ‚Á‚½‚çAƒvƒ‰ƒXB
-				//‚»‚êˆÈ‰º‚ÍAƒmƒCƒY‚Æ‚µ‚Ä‘«‚«‚èB
+				//ãƒ•ã‚©ãƒ«ãƒ€å†…ã§ã€Œï¼Ÿã€%ã®å‹¢åŠ›ã®è¦ç´ ãŒã‚ã£ãŸã‚‰ã€ãƒ—ãƒ©ã‚¹ã€‚
+				//ãã‚Œä»¥ä¸‹ã¯ã€ãƒã‚¤ã‚ºã¨ã—ã¦è¶³ãã‚Šã€‚
 				if (e.getValue().per() > 30) {
 					int score = e.getValue().per();
 					log.info("FILE.{} ,DIR.{},Per.{},Count.{}", new Object[] {
@@ -100,9 +100,9 @@ public class ScoreCalculatorByDirFile implements ScoreCalculator {
 			}
 		}
 
-		//‹t‚ÉA‚»‚ÌƒtƒHƒ‹ƒ_‚Ì“Á’¥“I‚È—v‘f‚Å‚ ‚é‚É‚à‚©‚©‚í‚ç‚¸A
-		//‚İ‚Â‚©‚ç‚È‚©‚Á‚½‚çAƒ}ƒCƒiƒXB
-		//”Ô‘g–¼‚Æ‚¤‚ªŠY“–
+		//é€†ã«ã€ãã®ãƒ•ã‚©ãƒ«ãƒ€ã®ç‰¹å¾´çš„ãªè¦ç´ ã§ã‚ã‚‹ã«ã‚‚ã‹ã‹ã‚ã‚‰ãšã€
+		//ã¿ã¤ã‹ã‚‰ãªã‹ã£ãŸã‚‰ã€ãƒã‚¤ãƒŠã‚¹ã€‚
+		//ç•ªçµ„åã¨ã†ãŒè©²å½“
 		int per = e.getValue().per();
 		if (per > 70) {
 			log.info("OUT!!! DIR.{},Per.{},Count.{}", new Object[] {
