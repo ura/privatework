@@ -97,7 +97,11 @@ public class FileUtilExt extends ObjectUtil {
 	}
 
 	/**
-	 * 圧縮ファイルの形式を変えます。 rar→zipに。 さらに、入れ子圧縮の場合、入れ子の展開を行う。
+	 * 圧縮ファイルの形式を変えます。 rar→zipに。
+	 *  さらに、入れ子圧縮の場合、入れ子の展開を行う。
+	 *  使用していない感じ
+	 *
+	 *  @deprecated
 	 *
 	 */
 	public static void convertArc(String srcArcFile) {
@@ -170,8 +174,6 @@ public class FileUtilExt extends ObjectUtil {
 
 		try {
 
-			String work = FileMoveUtil.createTempDir(WORK_DIR);
-			File workF = new File(work);
 			List<File> files = coll.getFiles();
 
 			Collection<File> newList = UserInput.selectManySwing(files);
@@ -179,43 +181,8 @@ public class FileUtilExt extends ObjectUtil {
 				log.info("rebuildArc target {}", file.toString());
 			}
 
-			for (File zipFile : newList) {
+			rebuildArc(name, newList);
 
-				if (NameUtil.isMultiFile(zipFile)) {
-					WinRARWrapper.decode(zipFile, workF);
-					FileMoveUtil.moveParent(workF, "zip", "rar");
-					File[] childList = FileMoveUtil.listFiles(workF, ".rar",
-							".zip");
-
-					for (File z : childList) {
-
-						String childDir = work + "/" + NameUtil.kan(z);
-						File cDir = new File(childDir);
-
-						// 解凍して、フォルダ内のファイルを全部上に上げる。
-						WinRARWrapper.decode(z, cDir);
-						FileMoveUtil.moveParent(cDir, true);
-
-					}
-
-				} else {
-					String childDir = work + "/" + NameUtil.kan(zipFile);
-					File cDir = new File(childDir);
-
-					// 解凍して、フォルダ内のファイルを全部上に上げる。
-					WinRARWrapper.decode(zipFile, cDir);
-					FileMoveUtil.moveParent(cDir, true);
-
-				}
-
-				// zipFile.delete();
-
-			}
-
-			FileMoveUtil.deleteEmptyDir(workF);
-
-			WinRARWrapper.encode(work,
-					WORK_DIR + "/" + NameUtil.createCominName(name, files));
 			for (File zipFile : files) {
 				FileMoveUtil.move(zipFile, "L:\\tmp");
 			}
@@ -227,6 +194,51 @@ public class FileUtilExt extends ObjectUtil {
 		} catch (Exception e) {
 			log.error("解凍時に想定外エラー", e);
 		}
+
+	}
+
+	public static void rebuildArc(String name, Collection<File> newList)
+			throws IOException, InterruptedException {
+		String work = FileMoveUtil.createTempDir(WORK_DIR);
+		File workF = new File(work);
+
+		for (File zipFile : newList) {
+
+			if (NameUtil.isMultiFile(zipFile)) {
+				WinRARWrapper.decode(zipFile, workF);
+				FileMoveUtil.moveParent(workF, "zip", "rar");
+				File[] childList = FileMoveUtil
+						.listFiles(workF, ".rar", ".zip");
+
+				for (File z : childList) {
+
+					String childDir = work + "/" + NameUtil.kan(z);
+					File cDir = new File(childDir);
+
+					// 解凍して、フォルダ内のファイルを全部上に上げる。
+					WinRARWrapper.decode(z, cDir);
+					FileMoveUtil.moveParent(cDir, true);
+
+				}
+
+			} else {
+				String childDir = work + "/" + NameUtil.kan(zipFile);
+				File cDir = new File(childDir);
+
+				// 解凍して、フォルダ内のファイルを全部上に上げる。
+				WinRARWrapper.decode(zipFile, cDir);
+				FileMoveUtil.moveParent(cDir, true);
+
+			}
+
+			// zipFile.delete();
+
+		}
+
+		FileMoveUtil.deleteEmptyDir(workF);
+
+		WinRARWrapper.encode(work,
+				WORK_DIR + "/" + NameUtil.createCominName(name, newList));
 
 	}
 
