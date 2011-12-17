@@ -22,6 +22,7 @@ import util.CollectionUtil;
 import util.MapList;
 import util.NameUtil;
 import util.UserInput;
+import util.Util;
 import util.WinRARWrapper;
 import util.file.filter.DirFilter;
 import zip.State;
@@ -219,8 +220,12 @@ public class FileUtilExt extends ObjectUtil {
 			decodeAll(workF, zipFile);
 
 		}
+		Util.sleep(1000l);
+		FileMoveUtil.deleteEmptyDir(workF);
+		Util.sleep(1000l);
 
 		FileMoveUtil.moveFolderToParent(workF);
+		Util.sleep(1000l);
 		FileMoveUtil.deleteEmptyDir(workF);
 
 		File[] dirs = workF.listFiles(new DirFilter());

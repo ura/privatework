@@ -194,11 +194,19 @@ public class FileMoveUtil {
 			Path destPath = Paths.get(src.getAbsolutePath()
 					+ File.separatorChar + dir.dir.getName());
 
-			try {
-				Files.move(srcPath, destPath, StandardCopyOption.ATOMIC_MOVE);
-			} catch (IOException e) {
-				log.error("COPYに失敗", e);
-				throw new IllegalStateException();
+			log.info(srcPath.toFile().getAbsolutePath() + "\t"
+					+ srcPath.toFile().exists() + "\t"
+					+ destPath.toFile().getAbsolutePath() + "\t"
+					+ destPath.toFile().exists());
+
+			if (srcPath.toFile().exists() || destPath.toFile().exists()) {
+				try {
+					Files.move(srcPath, destPath,
+							StandardCopyOption.ATOMIC_MOVE);
+				} catch (IOException e) {
+					log.error("COPYに失敗", e);
+					throw new IllegalStateException();
+				}
 			}
 
 		}
