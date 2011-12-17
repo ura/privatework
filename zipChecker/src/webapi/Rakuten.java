@@ -30,32 +30,56 @@ public class Rakuten {
 
 	private static final String KEY = "572475de8b4c52837e32a6777584c734";
 
+	private static String createName(Query q) {
 
-
-
-
-	private static String createName(String key) {
-
-		SortedSet<BookInfo> info = getInfo(key);
+		SortedSet<BookInfo> info = getInfo(q);
 		for (BookInfo bookInfo : info) {
 
-			return "["+bookInfo.getPublisherName()+"][" + bookInfo.getSeriesName()
-					+"][" + bookInfo.getAuthor()+"]["+bookInfo.getAuthor()+"]";
+			return "[" + bookInfo.getPublisherName() + "]["
+					+ bookInfo.getSeriesName() + "][" + bookInfo.getAuthor()
+					+ "][" + bookInfo.getAuthor() + "]";
 		}
 		return null;
 
 	}
 
-	static class Query{
-		public void setCustomQuery(AbaronRESTClient stub ){
+	static abstract class Query {
+		public abstract void setCustomQuery(AbaronRESTClient stub);
 
+	}
+
+	public static class TitleQuery extends Query {
+
+		private String title;
+
+		public TitleQuery(String t) {
+			this.title = t;
+		}
+
+		@Override
+		public void setCustomQuery(AbaronRESTClient stub) {
+
+			stub.setParameter("title", title);
 		}
 	}
 
+	public static class IsbnQuery extends Query {
 
-	private static AbaronResultNode getWebInfo(String title) {
+		private String isbn;
+
+		public IsbnQuery(String isbn) {
+			this.isbn = isbn;
+		}
+
+		@Override
+		public void setCustomQuery(AbaronRESTClient stub) {
+
+			stub.setParameter("isbn", isbn);
+		}
+	}
+
+	private static AbaronResultNode getWebInfo(Query q) {
 		AbaronRESTClient stub = new AbaronRESTClient();
-
 
 		// Amazon WebサービスのエンドポイントURL
 		stub.setEndpointUrl("http://api.rakuten.co.jp/rws/3.0/rest");
@@ -63,14 +87,14 @@ public class Rakuten {
 		// URLパラメータを設定する
 		stub.setParameter("developerId", KEY);
 		stub.setParameter("operation", "BooksBookSearch");
-		stub.setParameter("version", "2010-03-18");
-		stub.setParameter("title", title);
+		stub.setParameter("version", "2011-12-01");
+
 		stub.setParameter("Operation", "ItemLookup");
 		stub.setParameter("ResponseGroup", "Small");
-		stub.setParameter("booksGenreID", "001");
+		stub.setParameter("booksGenreID", "000");
 		stub.setParameter("size", "9");
 
-		//"isbnjan"
+		q.setCustomQuery(stub);
 
 		// Webサービスを呼び出す
 		AbaronResultNode result = stub.doRequest();
@@ -80,9 +104,8 @@ public class Rakuten {
 	private static Document createDoc(String xmlString) throws SAXException,
 			IOException, ParserConfigurationException {
 
-		xmlString = xmlString.substring(xmlString.indexOf("<Body>"), xmlString
-				.indexOf("</Body>")
-				+ "</Body>".length());
+		xmlString = xmlString.substring(xmlString.indexOf("<Body>"),
+				xmlString.indexOf("</Body>") + "</Body>".length());
 
 		xmlString = xmlString.replace(":BooksBookSearch", "");
 
@@ -96,12 +119,10 @@ public class Rakuten {
 		return doc;
 	}
 
-	public static SortedSet<BookInfo> getInfo(String title) {
+	public static SortedSet<BookInfo> getInfo(Query q) {
 
 		SortedSet<BookInfo> set = new TreeSet<BookInfo>();
-		AbaronResultNode result = getWebInfo(title);
-
-
+		AbaronResultNode result = getWebInfo(q);
 
 		try {
 			String xmlString = result.getXmlString();
@@ -132,8 +153,7 @@ public class Rakuten {
 					String t = (String) expr5.evaluate(item,
 							XPathConstants.STRING);
 
-
-					set.add(new BookInfo(publisherName, seriesName, author,t));
+					set.add(new BookInfo(publisherName, seriesName, author, t));
 
 				}
 			}
@@ -160,10 +180,10 @@ public class Rakuten {
 		return set;
 	}
 
-	public static SortedSet<String> getAuthor(String title) {
+	public static SortedSet<String> getAuthor(Query q) {
 
 		SortedSet<String> set = new TreeSet<String>();
-		AbaronResultNode result = getWebInfo(title);
+		AbaronResultNode result = getWebInfo(q);
 
 		// result.print(false);
 

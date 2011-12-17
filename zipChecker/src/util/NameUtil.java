@@ -174,7 +174,7 @@ public class NameUtil {
 
 	public static String createCominName(String name, Collection<File> list) {
 
-		SortedSet<BookInfo> author = Rakuten.getInfo(name);
+		SortedSet<BookInfo> author = Rakuten.getInfo(new Rakuten.TitleQuery(name));
 		int size = author.size();
 		String authorText;
 
