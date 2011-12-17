@@ -119,6 +119,13 @@ public class Rakuten {
 		return doc;
 	}
 
+	public static SortedSet<BookInfo> getInfoByTitle(String title) {
+		 return Rakuten.getInfo(new Rakuten.TitleQuery(title));
+	}
+	public static SortedSet<BookInfo> getInfo(String isbn) {
+		return Rakuten.getInfo(new Rakuten.IsbnQuery(isbn));
+	}
+
 	public static SortedSet<BookInfo> getInfo(Query q) {
 
 		SortedSet<BookInfo> set = new TreeSet<BookInfo>();
