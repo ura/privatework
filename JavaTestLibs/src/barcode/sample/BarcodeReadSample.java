@@ -24,6 +24,8 @@ import com.google.zxing.client.j2se.BufferedImageLuminanceSource;
 import com.google.zxing.common.HybridBinarizer;
 
 public class BarcodeReadSample {
+	private static final int MAX_DIV = 5;
+
 	public static void main(String[] args) {
 		read("result\\mycode.png");
 
@@ -34,9 +36,9 @@ public class BarcodeReadSample {
 		read("mysample\\0001-04.jpg");
 		read("mysample\\0001-05.jpg");
 
-		read2("mysample\\0001.jpg", 2);
-		read2("mysample\\0001.jpg", 3);
-		read2("mysample\\0001.jpg", 4);
+		autoRead("mysample\\0001.jpg", 2);
+		autoRead("mysample\\0001.jpg", 3);
+		autoRead("mysample\\0001.jpg", 4);
 
 		readDir("mysample\\hyoushi");
 	}
@@ -95,14 +97,14 @@ public class BarcodeReadSample {
 
 		for (File file : listFiles) {
 
-			read2(file.getAbsolutePath(), 3);
+			autoRead(file.getAbsolutePath(), 3);
 
 		}
 
 	}
 
-	public static String read2(String src, final int div) {
-		// マルチフォーマット対応の入力ストリームを生成
+	public static String autoRead(String src, final int div) {
+
 
 		System.out.println();
 		System.out.println(src);
@@ -119,8 +121,8 @@ public class BarcodeReadSample {
 
 			System.out.println(src + "\t" + decode);
 
-			if (decode == null && div < 5) {
-				decode = read2(src, div + 1);
+			if (decode == null && div <= MAX_DIV) {
+				decode = autoRead(src, div + 1);
 			}
 
 			return decode;

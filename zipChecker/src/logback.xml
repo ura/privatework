@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+  <appender name="STDOUT"
+    class="ch.qos.logback.core.ConsoleAppender">
+   <Target>System.out</Target>
+    <layout class="ch.qos.logback.classic.PatternLayout">
+
+    <!--
+      <Pattern>%d{HH:mm:ss} [%thread] %-5level %logger{36}  %msg%n</Pattern>
+            -->
+
+      <Pattern>%-5level %logger{36} - %msg%n</Pattern>
+    </layout>
+  </appender>
+  <appender name="FILE"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>log.log</file>
+		<append>true</append>
+		<rollingPolicy
+			class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<FileNamePattern>log.%d{yyyy-MM-dd}.log</FileNamePattern>
+		</rollingPolicy>
+		<encoding>UTF-8</encoding>
+		<layout class="ch.qos.logback.classic.PatternLayout">
+			<Pattern>
+				%date [%thread] %-5level %logger{35} - %msg%n%ex{full}
+			</Pattern>
+		</layout>
+	</appender>
+  <appender name="FILEX"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+<!--
+		<filter class="ch.qos.logback.core.filter.EvaluatorFilter">
+	      <evaluator name="myEval">
+	        <expression>marker.contains("OP")</expression>
+	      </evaluator>
+	      <OnMismatch>DENY</OnMismatch>
+	      <OnMatch>ACCEPT</OnMatch>
+	    </filter>
+ -->
+ 		<filter class="log.MarkerFilter">
+	      <marker>OP</marker>
+	      <OnMismatch>DENY</OnMismatch>
+	      <OnMatch>ACCEPT</OnMatch>
+	    </filter>
+
+
+		<file>summary.log</file>
+		<append>true</append>
+		<rollingPolicy
+			class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<FileNamePattern>samary.%d{yyyy-MM-dd}.log</FileNamePattern>
+		</rollingPolicy>
+		<encoding>UTF-8</encoding>
+		<layout class="ch.qos.logback.classic.PatternLayout">
+			<Pattern>
+				%date  %logger{35} \t- %msg%n
+			</Pattern>
+		</layout>
+	</appender>
+
+
+  <logger name="socre.calculator">
+    <level value="ERROR" />
+  </logger>
+<!--
+  <logger name="image.Histogram">
+    <level value="DEBUG" />
+  </logger>
+ -->
+
+  <root>
+    <level value="INFO" />
+    <appender-ref ref="STDOUT" />
+    <appender-ref ref="FILE" />
+    <appender-ref ref="FILEX" />
+  </root>
+</configuration>
