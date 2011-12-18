@@ -29,6 +29,8 @@ import zip.ZipChecker;
 import conf.ConfConst;
 import dir.Dir;
 import dir.DirCollector;
+import static util.file.FileNameUtil.createPath;
+import static util.file.FileNameUtil.getFileName;
 
 public class FileUtilExt extends ObjectUtil {
 	static Pattern fileNoPattern = Pattern.compile("(.*)_(\\d*)");
@@ -159,9 +161,7 @@ public class FileUtilExt extends ObjectUtil {
 	public static void decodeAll(File workDir, File arcFile, boolean del)
 			throws IOException, InterruptedException {
 
-		String newWork = workDir.getAbsolutePath() + File.separatorChar
-				+ arcFile.getName();
-		File newWorkDir = new File(newWork);
+		File newWorkDir = createPath(workDir, getFileName(arcFile));
 
 		WinRARWrapper.decode(arcFile, newWorkDir);
 		if (del) {

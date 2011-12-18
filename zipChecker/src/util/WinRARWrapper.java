@@ -53,9 +53,17 @@ public class WinRARWrapper {
 		}
 	}
 
+	/**
+	 *
+	 * @param src
+	 * @param dest
+	 * @throws IOException
+	 * @throws InterruptedException
+	 */
 	public static void decode(File src, File dest) throws IOException,
 			InterruptedException {
 
+		log.info(src.getAbsolutePath() + " >>" + dest.getAbsolutePath());
 		boolean b = decodeCore(src, dest);
 
 		if (!b) {

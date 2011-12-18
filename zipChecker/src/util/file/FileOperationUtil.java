@@ -4,8 +4,6 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Collection;
 import java.util.SortedSet;
@@ -188,6 +186,12 @@ public class FileOperationUtil {
 		return true;
 	}
 
+	/**
+	 * 下位にあるフォルダをすべてSRC直下に移動する
+	 *
+	 * @param src
+	 * @return
+	 */
 	public static boolean moveFolderToParent(File src) {
 
 		DirCollector srcDir = new DirCollector();
@@ -198,17 +202,15 @@ public class FileOperationUtil {
 		for (Dir dir : values) {
 			log.info(dir.dir.getPath());
 
-			Path srcPath = Paths.get(dir.dir.getAbsolutePath());
-			Path destPath = Paths.get(src.getAbsolutePath()
-					+ File.separatorChar + dir.dir.getName());
+			File srcPath = dir.dir;
+			File destPath = FileNameUtil.createNewPath(src, dir.dir);
 
-			log.debug(dir.dir.getAbsolutePath() + "\t" + dir.dir.exists()
-					+ "\t" + destPath.toFile().getAbsolutePath() + "\t"
-					+ destPath.toFile().exists());
+			log.info(srcPath.getAbsolutePath() + "\t" + srcPath.exists() + "\t"
+					+ destPath.getAbsolutePath() + "\t" + destPath.exists());
 
-			if (srcPath.toFile().exists()) {
+			if (srcPath.exists()) {
 				try {
-					Files.move(srcPath, destPath,
+					Files.move(srcPath.toPath(), destPath.toPath(),
 							StandardCopyOption.ATOMIC_MOVE);
 				} catch (IOException e) {
 					log.error("COPYに失敗", e);
