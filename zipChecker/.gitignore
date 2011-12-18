@@ -5,3 +5,6 @@
 *.sar
 /test
 /conf
+*.jpg
+*.jpeg
+*.png
