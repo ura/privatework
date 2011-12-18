@@ -4,13 +4,17 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import javax.imageio.ImageIO;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import util.file.filter.FileNameFilter;
+import util.file.filter.FileNameFilter.MODE;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.BinaryBitmap;
@@ -30,6 +34,33 @@ public class BarcodeReader {
 	private static Logger log = LoggerFactory.getLogger(BarcodeReader.class);
 
 	private static final int MAX_DIV = 5;
+
+	public static String autoReadDir(File dir) {
+
+		File[] files = dir.listFiles(new FileNameFilter(MODE.EXT_INCLUDE,
+				"jpg", "jpeg"));
+		List<File> asList = Arrays.asList(files);
+		Collections.sort(asList);
+
+		int param = 5;
+
+		//最初と最後にしか、バーコードはついていないと推定する
+		for (int i = 0; i < asList.size(); i++) {
+
+			if (i < param || (asList.size() - param) < i) {
+				File file = asList.get(i);
+				String barcord = autoRead(file.getAbsolutePath(), 3);
+				if (barcord != null) {
+					log.info("バーコード検出 IDX=" + i + "\t" + file.getAbsolutePath()
+							+ "\t" + barcord);
+					return barcord;
+				}
+			}
+
+		}
+		return null;
+
+	}
 
 	/**
 	 * バーコードが見つからなかった場合、ある程度分割して検出を試みる。
