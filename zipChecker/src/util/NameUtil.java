@@ -1,6 +1,8 @@
 package util;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -26,6 +28,22 @@ public class NameUtil {
 	private static Pattern partermEng = Pattern.compile("v([0-9]+)\\.");
 	private static Pattern partermEng2 = Pattern.compile("v([0-9]+)_");
 	private static Pattern partermSimple = Pattern.compile(" ([0-9]+)\\.");
+
+	private static Pattern partermBad1 = Pattern
+			.compile("[^0-9\\-]{1,2}([0-9]{1,2})$");
+	private static Pattern partermBad2 = Pattern
+			.compile("[^0-9\\-]{1,2}([0-9]{1,2})[^0-9\\-]{1,2}");
+
+	private static List<Pattern> regList = new ArrayList<Pattern>();
+	static {
+		regList.add(parterm);
+		regList.add(partermEng);
+		regList.add(partermEng2);
+		regList.add(partermSimple);
+		regList.add(partermBad1);
+		regList.add(partermBad2);
+
+	}
 
 	private static Pattern partermAll = Pattern.compile("全.*([0-9]+)");
 
@@ -95,31 +113,29 @@ public class NameUtil {
 
 	public static String bookNo(String no) {
 
-		Matcher matcher = parterm.matcher(no);
-		if (matcher.find()) {
-			String group = matcher.group(1);
-			return group;
-		}
+		for (Pattern reg : regList) {
+			Matcher matcher = reg.matcher(no);
 
-		Matcher matcher2 = partermEng.matcher(no);
-		if (matcher2.find()) {
-			String group = matcher2.group(1);
+			boolean result = matcher.find();
+			log.info(no + "\t" + reg.pattern() + "\t" + result);
 
-			return no_XX(group);
-		}
+			try {
+				String encode = URLEncoder.encode(no, "UTF-8");
+				log.info(encode);
+				String encode2 = URLEncoder.encode("ALL_ROUNDER_MEGURU Vol 01",
+						"UTF-8");
+				log.info(encode2);
+			} catch (UnsupportedEncodingException e) {
+				// TODO 自動生成された catch ブロック
+				e.printStackTrace();
+			}
 
-		Matcher matcher3 = partermSimple.matcher(no);
-		if (matcher3.find()) {
-			String group = matcher3.group(1);
+			if (result) {
+				String group = matcher.group(1);
 
-			return no_XX(group);
-		}
+				return no_XX(group);
+			}
 
-		Matcher matcher4 = partermEng2.matcher(no);
-		if (matcher4.find()) {
-			String group = matcher4.group(1);
-
-			return no_XX(group);
 		}
 
 		throw new IllegalArgumentException(no);

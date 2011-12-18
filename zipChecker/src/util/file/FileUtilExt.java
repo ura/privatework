@@ -159,19 +159,22 @@ public class FileUtilExt extends ObjectUtil {
 	public static void decodeAll(File workDir, File arcFile, boolean del)
 			throws IOException, InterruptedException {
 
-		WinRARWrapper.decode(arcFile, new File(workDir.getAbsolutePath()
-				+ File.separatorChar + arcFile.getName()));
+		String newWork = workDir.getAbsolutePath() + File.separatorChar
+				+ arcFile.getName();
+		File newWorkDir = new File(newWork);
+
+		WinRARWrapper.decode(arcFile, newWorkDir);
 		if (del) {
 			arcFile.delete();
 		}
 
 		KeywordFileCollector coll = new KeywordFileCollector(".rar", ".zip");
-		new FileWalker().walk(workDir, coll);
+		new FileWalker().walk(newWorkDir, coll);
 
 		List<File> list = coll.getFiles();
 
 		for (File file : list) {
-			decodeAll(workDir, file, true);
+			decodeAll(newWorkDir, file, true);
 		}
 
 	}
