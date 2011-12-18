@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 
 import javax.imageio.ImageIO;
@@ -27,7 +26,6 @@ public class BarcodeReadSample {
 	private static final int MAX_DIV = 5;
 
 	public static void main(String[] args) {
-		read("result\\mycode.png");
 
 		read("mysample\\0001.jpg");
 		read("mysample\\0001-only.jpg");
@@ -104,7 +102,6 @@ public class BarcodeReadSample {
 	}
 
 	public static String autoRead(String src, final int div) {
-
 
 		System.out.println();
 		System.out.println(src);
