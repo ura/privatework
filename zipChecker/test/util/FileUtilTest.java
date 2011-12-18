@@ -3,8 +3,8 @@ package util;
 import java.io.File;
 
 import junit.framework.TestCase;
-import util.file.FileUtilExt;
 import util.file.FileOperationUtil;
+import util.file.FileUtilExt;
 import util.file.FileWalker;
 import dir.DirCollector;
 
@@ -50,13 +50,6 @@ public class FileUtilTest extends TestCase {
 				.classifyAll(dirs.dirSet.values(), test.getAllFileFullPath());
 	}
 
-	public void _testConvertArc() {
-
-		FileUtilExt
-				.convertArc("L:\\DATA\\COMIC\\(��ʃR�~�b�N) [��������q] �߂���ꍏ ���C�h�� �S10��.rar");
-
-	}
-
 	public void testConvertArc() {
 
 		String[] args = { "BLOODY MONDAY " };
@@ -64,9 +57,10 @@ public class FileUtilTest extends TestCase {
 		// "���l�Y2030 ");
 
 		for (String s : args) {
-			UserInput.getUserInputsSwing("�p�X����",1);
+			UserInput.getUserInputsSwing("�p�X����", 1);
 			if (!s.trim().equals("")) {
-				FileUtilExt.rebuildArc("L:\\DATA\\COMIC","�L���O�_��","�L���O�_��","Kingdom");
+				FileUtilExt.rebuildArc("L:\\DATA\\COMIC", "�L���O�_��",
+						"�L���O�_��", "Kingdom");
 			}
 		}
 

@@ -32,7 +32,12 @@ import dir.DirCollector;
 import static util.file.FileNameUtil.createPath;
 import static util.file.FileNameUtil.getFileName;
 
-public class FileUtilExt extends ObjectUtil {
+/**
+ * フォルダの整理関連に特化。
+ * 圧縮ファイルの整理、フォルダの整理などを集約
+ *
+ */
+public class FileUtilExt {
 	static Pattern fileNoPattern = Pattern.compile("(.*)_(\\d*)");
 	private static Logger log = LoggerFactory.getLogger(FileUtilExt.class);
 
@@ -99,58 +104,6 @@ public class FileUtilExt extends ObjectUtil {
 		}
 
 		checker.save();
-	}
-
-	/**
-	 * 圧縮ファイルの形式を変えます。 rar→zipに。
-	 *  さらに、入れ子圧縮の場合、入れ子の展開を行う。
-	 *  使用していない感じ
-	 *
-	 *  @deprecated
-	 *
-	 */
-	public static void convertArc(String srcArcFile) {
-
-		File srcFile = new File(srcArcFile);
-
-		try {
-			String work = FileOperationUtil.createTempDir(WORK_DIR);
-			WinRARWrapper.decode(srcArcFile, work);
-
-			//TODO フォルダのアップ戦略を検討する
-
-			File dir = new File(work);
-
-			// 解凍後のフォルダ内で、深いところにアーカイブがある場合、
-			// 直下に持ってきて、それのみをリストする
-			FileOperationUtil.moveParent(dir, "zip", "rar");
-			File[] list = FileOperationUtil.listFiles(dir, ".rar", ".zip");
-
-			for (File zipFile : list) {
-
-				//TODO 巻数の戦略を書き換える
-
-				String childDir = work + "/" + NameUtil.kan(zipFile);
-				File cDir = new File(childDir);
-
-				// 解凍して、フォルダ内のファイルを全部上に上げる。
-				decodeAll(cDir, srcFile);
-
-			}
-
-			//TODO 失敗した場合に備え、フォルダ名を変えてから圧縮する
-
-			WinRARWrapper.encode(work, WORK_DIR + "/"
-					+ srcFile.getName().replace("rar", "zip"));
-
-		} catch (IOException e) {
-			log.error("解凍時に想定外エラー", e);
-		} catch (InterruptedException e) {
-			log.error("解凍時に想定外エラー", e);
-		} catch (Exception e) {
-			log.error("解凍時に想定外エラー", e);
-		}
-
 	}
 
 	public static void decodeAll(File workDir, File arcFile)
