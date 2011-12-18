@@ -8,6 +8,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Collection;
+import java.util.SortedSet;
 import java.util.regex.Matcher;
 
 import log.Log;
@@ -290,6 +291,40 @@ public class FileOperationUtil {
 		return moveToDir(f, dir, false);
 	}
 
+	public static void renameFiles(File dir) {
+
+		DirCollector srcDir = new DirCollector();
+		new FileWalker().walk(dir, srcDir);
+		Collection<Dir> values = srcDir.dirSet.values();
+
+		for (Dir dir2 : values) {
+			SortedSet<String> fileNameSet = dir2.fileNameSet;
+			for (String file : fileNameSet) {
+				File f = new File(file);
+				File dest = new File(dir2.dir.getPath() + File.separatorChar
+						+ NameUtil.createSimpleName(f));
+
+				if (f.equals(dest)) {
+					//ファイル名に変更がなければ無視
+					continue;
+				}
+
+				if (!dest.exists()) {
+					boolean b = f.renameTo(dest);
+					if (!b) {
+						throw new IllegalStateException("RENAME不能:" + file
+								+ " >>" + dest.getPath());
+					}
+				} else {
+					throw new IllegalStateException("他のファイル名と重複:" + file);
+				}
+
+			}
+
+		}
+
+	}
+
 	/**
 	 * ファイルの移動ユーティル。ファイル名重複時には、ファイル名を付け替え。
 	 *
@@ -302,7 +337,7 @@ public class FileOperationUtil {
 		boolean b = false;
 
 		if (rename) {
-			String name = NameUtil.createName(f);
+			String name = NameUtil.createSimpleName(f);
 			if (!f.getName().equals(name)) {
 				log.info(Log.OP, "RENAME {} >> {}", new Object[] { f.getName(),
 						name });

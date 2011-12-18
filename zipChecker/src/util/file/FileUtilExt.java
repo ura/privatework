@@ -214,6 +214,17 @@ public class FileUtilExt extends ObjectUtil {
 
 	}
 
+	public static void rebuildArc(String name, File[] array)
+			throws IOException, InterruptedException {
+		ArrayList<File> l = new ArrayList<File>();
+		for (File file : array) {
+			l.add(file);
+
+		}
+		rebuildArc(name, l);
+
+	}
+
 	public static void rebuildArc(String name, Collection<File> newList)
 			throws IOException, InterruptedException {
 		String work = FileOperationUtil.createTempDir(WORK_DIR);
@@ -227,6 +238,7 @@ public class FileUtilExt extends ObjectUtil {
 
 		FileOperationUtil.moveFolderToParent(workF);
 		FileOperationUtil.deleteEmptyDir(workF, "jpeg", "jpg");
+		FileOperationUtil.renameFiles(workF);
 
 		File[] dirs = workF.listFiles(new DirFilter());
 

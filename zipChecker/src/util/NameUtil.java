@@ -56,7 +56,10 @@ public class NameUtil {
 	private static Pattern fileName = Pattern
 			.compile("([A-Za-zＡ-Ｚａ-ｚ_\\.0-9#-_\\s]+\\.[A-Za-z0-9]+)");
 
-	public static String createName(File f) {
+	/**
+	 * アルファベット、数値のみのシンプルな名前に置換した名称を返します。
+	 */
+	public static String createSimpleName(File f) {
 
 		Matcher matcher = fileName.matcher(f.getName());
 
