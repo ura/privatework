@@ -3,8 +3,9 @@ package barcode;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
 import javax.imageio.ImageIO;
 
@@ -24,15 +25,15 @@ import com.google.zxing.ResultPoint;
 import com.google.zxing.client.j2se.BufferedImageLuminanceSource;
 import com.google.zxing.common.HybridBinarizer;
 
-public class BarcodeReadSample {
+public class BarcodeReader {
 
-	private static Logger log = LoggerFactory
-			.getLogger(BarcodeReadSample.class);
+	private static Logger log = LoggerFactory.getLogger(BarcodeReader.class);
 
 	private static final int MAX_DIV = 5;
 
 	/**
-	 * バーコードが見つからなかった場合、ある程度分割して検出を試みる
+	 * バーコードが見つからなかった場合、ある程度分割して検出を試みる。
+	 * 見つからなかったらNULL
 	 *
 	 * @param src
 	 * @param div
@@ -40,8 +41,7 @@ public class BarcodeReadSample {
 	 */
 	public static String autoRead(String src, final int div) {
 
-		System.out.println();
-		System.out.println(src);
+		log.info(src);
 		try {
 			// 画像を読み込んでビットマップデータを生成
 			BufferedImage image = ImageIO.read(new File(src));
@@ -49,7 +49,7 @@ public class BarcodeReadSample {
 			LuminanceSource source = new BufferedImageLuminanceSource(image);
 			BinaryBitmap bitmap = new BinaryBitmap(new HybridBinarizer(source));
 
-			Set<Rect> createRect = createRect(bitmap, div);
+			List<Rect> createRect = createRect(bitmap, div);
 
 			String decode = decode(bitmap, createRect);
 
@@ -62,19 +62,31 @@ public class BarcodeReadSample {
 			return decode;
 
 		} catch (IOException ex) {
-			ex.printStackTrace(System.out);
+			log.error(src, ex);
 		}
 
-		return "";
+		return null;
 	}
 
-	public static BinaryBitmap crop(BinaryBitmap bitmap, Rect rect) {
+	/**
+	 * 画像を切る。
+	 * @param bitmap
+	 * @param rect
+	 * @return
+	 */
+	private static BinaryBitmap crop(BinaryBitmap bitmap, Rect rect) {
 
 		return bitmap.crop(rect.left, rect.top, rect.width, rect.height);
 	}
 
-	public static Set<Rect> createRect(BinaryBitmap bitmap, int div) {
-		Set<Rect> set = new HashSet<BarcodeReadSample.Rect>();
+	/**
+	 * 指定された粒度で、分割用のパラメータを作成する。
+	 * @param bitmap
+	 * @param div
+	 * @return
+	 */
+	private static List<Rect> createRect(BinaryBitmap bitmap, int div) {
+		List<Rect> set = new ArrayList<BarcodeReader.Rect>();
 		System.out.println("Base  " + bitmap.getWidth() + ":"
 				+ bitmap.getHeight());
 		for (int i = 0; i < div; i++) {
@@ -118,7 +130,7 @@ public class BarcodeReadSample {
 
 	}
 
-	private static String decode(BinaryBitmap basemap, Set<Rect> set) {
+	private static String decode(BinaryBitmap basemap, List<Rect> set) {
 		Reader reader = new MultiFormatReader();
 		for (Rect rect : set) {
 			BinaryBitmap bitmap = crop(basemap, rect);
