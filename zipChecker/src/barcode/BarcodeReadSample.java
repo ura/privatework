@@ -2,13 +2,14 @@ package barcode;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 
 import javax.imageio.ImageIO;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.BinaryBitmap;
@@ -24,87 +25,20 @@ import com.google.zxing.client.j2se.BufferedImageLuminanceSource;
 import com.google.zxing.common.HybridBinarizer;
 
 public class BarcodeReadSample {
+
+	private static Logger log = LoggerFactory
+			.getLogger(BarcodeReadSample.class);
+
 	private static final int MAX_DIV = 5;
 
-	public static void main(String[] args) {
-		read("result\\mycode.png");
-
-		read("mysample\\0001.jpg");
-		read("mysample\\0001-only.jpg");
-		read("mysample\\0001-02.jpg");
-		read("mysample\\0001-03.jpg");
-		read("mysample\\0001-04.jpg");
-		read("mysample\\0001-05.jpg");
-
-		autoRead("mysample\\0001.jpg", 2);
-		autoRead("mysample\\0001.jpg", 3);
-		autoRead("mysample\\0001.jpg", 4);
-
-		readDir("mysample\\hyoushi");
-	}
-
-	public static void read(String src) {
-		// マルチフォーマット対応の入力ストリームを生成
-		Reader reader = new MultiFormatReader();
-
-		System.out.println();
-		System.out.println(src);
-		try {
-			// 画像を読み込んでビットマップデータを生成
-			BufferedImage image = ImageIO.read(new File(src));
-
-			LuminanceSource source = new BufferedImageLuminanceSource(image);
-			BinaryBitmap bitmap = new BinaryBitmap(new HybridBinarizer(source));
-
-			// デコードを実行
-			Result result = reader.decode(bitmap);
-
-			// フォーマットを取得
-			BarcodeFormat format = result.getBarcodeFormat();
-			System.out.println("フォ－マット: " + format);
-			// コンテンツを取得
-			String text = result.getText();
-			System.out.println("テキスト: " + text);
-
-			// 位置検出パターンおよびアラインメントパターンの座標を取得
-			ResultPoint[] points = result.getResultPoints();
-			System.out.println("位置検出パターン／アライメントパターンの座標: ");
-			for (int i = 0; i < points.length; i++) {
-				System.out.println("    Point[" + i + "] = " + points[i]);
-			}
-		} catch (NotFoundException ex) {
-			ex.printStackTrace(System.out);
-		} catch (ChecksumException ex) {
-			ex.printStackTrace(System.out);
-		} catch (FormatException ex) {
-			ex.printStackTrace(System.out);
-		} catch (IOException ex) {
-			ex.printStackTrace(System.out);
-		}
-	}
-
-	public static void readDir(String dir) {
-
-		File f = new File(dir);
-		File[] listFiles = f.listFiles(new FilenameFilter() {
-
-			@Override
-			public boolean accept(File dir, String name) {
-
-				return name.endsWith(".jpeg") || name.endsWith(".jpg");
-			}
-		});
-
-		for (File file : listFiles) {
-
-			autoRead(file.getAbsolutePath(), 3);
-
-		}
-
-	}
-
+	/**
+	 * バーコードが見つからなかった場合、ある程度分割して検出を試みる
+	 *
+	 * @param src
+	 * @param div
+	 * @return
+	 */
 	public static String autoRead(String src, final int div) {
-
 
 		System.out.println();
 		System.out.println(src);
@@ -119,7 +53,7 @@ public class BarcodeReadSample {
 
 			String decode = decode(bitmap, createRect);
 
-			System.out.println(src + "\t" + decode);
+			log.info(src + "\t" + decode);
 
 			if (decode == null && div <= MAX_DIV) {
 				decode = autoRead(src, div + 1);
@@ -195,17 +129,17 @@ public class BarcodeReadSample {
 				result = reader.decode(bitmap);
 				// フォーマットを取得
 				BarcodeFormat format = result.getBarcodeFormat();
-				System.out.println("フォ－マット: " + format);
+				log.info("フォ－マット: " + format);
 				// コンテンツを取得
 				String text = result.getText();
 
-				System.out.println("テキスト: " + text);
+				log.info("テキスト: " + text);
 
 				// 位置検出パターンおよびアラインメントパターンの座標を取得
 				ResultPoint[] points = result.getResultPoints();
-				System.out.println("位置検出パターン／アライメントパターンの座標: ");
+				log.info("位置検出パターン／アライメントパターンの座標: ");
 				for (int i = 0; i < points.length; i++) {
-					System.out.println("    Point[" + i + "] = " + points[i]);
+					log.info("    Point[" + i + "] = " + points[i]);
 				}
 
 				if (format.toString().equals("EAN_13")) {

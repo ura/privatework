@@ -34,7 +34,8 @@ import static util.file.FileNameUtil.createPath;
  */
 public class FileOperationUtil {
 
-	static Logger log = LoggerFactory.getLogger(FileOperationUtil.class);
+	private static Logger log = LoggerFactory
+			.getLogger(FileOperationUtil.class);
 
 	/**
 	 * ファイルをディレクトリに移動します。 ファイル名が重複している場合は、ファイル名をつけ直します。 ディレクトリがない場合はディレクトリを作ります。
