@@ -9,6 +9,10 @@ import javax.imageio.ImageIO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * 未完成・・？
+ *
+ */
 public class ImgZip extends Img {
 
 	private static Logger log = LoggerFactory.getLogger(ImgZip.class);

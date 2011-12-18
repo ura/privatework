@@ -28,7 +28,7 @@ public class ClassifyAll {
 		} else if (cmd.equals("checkZip")) {
 			checkZip(args);
 		} else if (cmd.equals("rebuildArc")) {
-			FileUtilExt.rebuildArc(args[1], args[2], args[3]);
+			FileUtilExt.rebuildArcWithUI(args[1], args[2], args[3]);
 		}
 
 	}

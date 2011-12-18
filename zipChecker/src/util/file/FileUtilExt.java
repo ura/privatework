@@ -133,11 +133,14 @@ public class FileUtilExt {
 	}
 
 	/**
-	 * 圧縮ファイルの統廃合を行います。 1巻、2巻、3巻と分かれているファイルを結合し、一個のファイルにします。
+	 * 圧縮ファイルの統廃合を行います。
+	 * 1巻、2巻、3巻と分かれているファイルを結合し、一個のファイルにします。
+	 * ファイルの選択UIを持ちます。
 	 *
 	 *
 	 */
-	public static void rebuildArc(String base, String name, String... keword) {
+	public static void rebuildArcWithUI(String base, String name,
+			String... keword) {
 
 		KeywordFileCollector coll = new KeywordFileCollector(keword);
 		new FileWalker().walk(new File(base), coll);

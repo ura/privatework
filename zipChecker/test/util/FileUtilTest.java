@@ -59,7 +59,7 @@ public class FileUtilTest extends TestCase {
 		for (String s : args) {
 			UserInput.getUserInputsSwing("�p�X����", 1);
 			if (!s.trim().equals("")) {
-				FileUtilExt.rebuildArc("L:\\DATA\\COMIC", "�L���O�_��",
+				FileUtilExt.rebuildArcWithUI("L:\\DATA\\COMIC", "�L���O�_��",
 						"�L���O�_��", "Kingdom");
 			}
 		}
