@@ -22,6 +22,7 @@ import util.file.filter.FileNameFilter;
 import util.file.filter.FileNameFilter.MODE;
 import dir.Dir;
 import dir.DirCollector;
+import static util.file.FileNameUtil.createPath;
 
 /**
  * ファイルの移動、削除、ディレクトリ作成、リネームなどなどのUtil。
@@ -303,8 +304,8 @@ public class FileOperationUtil {
 			SortedSet<String> fileNameSet = dir2.fileNameSet;
 			for (String file : fileNameSet) {
 				File f = new File(file);
-				File dest = new File(dir2.dir.getPath() + File.separatorChar
-						+ NameUtil.createSimpleName(f));
+
+				File dest = createPath(dir2.dir, NameUtil.createSimpleName(f));
 
 				if (f.equals(dest)) {
 					//ファイル名に変更がなければ無視

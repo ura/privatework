@@ -244,7 +244,8 @@ public class FileUtilExt extends ObjectUtil {
 
 		for (File dir : dirs) {
 			String no = NameUtil.bookNo(dir.getName());
-			File newDir = new File(dir.getParent() + File.separatorChar + no);
+			File newDir = createPath(dir.getParent(), no);
+
 			boolean b = false;
 			if (!newDir.exists()) {
 				b = dir.renameTo(newDir);

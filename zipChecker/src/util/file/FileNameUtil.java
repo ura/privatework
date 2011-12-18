@@ -76,6 +76,17 @@ public class FileNameUtil {
 	 * @param str
 	 * @return
 	 */
+	public static File createPath(String dir, String name) {
+
+		return createPath(new File(dir), name);
+
+	}
+
+	/**
+	 * フォルダとファイル名を渡してパスを作成します。
+	 * @param str
+	 * @return
+	 */
 	public static File createPath(File dir, File name) {
 
 		return new File(createPathStr(dir, name.getName()));
