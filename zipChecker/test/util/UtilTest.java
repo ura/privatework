@@ -18,7 +18,7 @@ public class UtilTest extends TestCase {
 		int count=0;
 		for (int i = 0; i < test; i++) {
 
-			if(Util.easyRandom(per)){
+			if(StaticUtil.easyRandom(per)){
 				count++;
 			}
 
@@ -49,7 +49,7 @@ public class UtilTest extends TestCase {
 		int count=0;
 		for (int i = 0; i < test; i++) {
 
-			if(Util.easyRandom(per)){
+			if(StaticUtil.easyRandom(per)){
 				count++;
 			}
 

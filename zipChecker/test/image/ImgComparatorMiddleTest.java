@@ -10,7 +10,7 @@ import junit.framework.TestCase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import util.Util;
+import util.StaticUtil;
 
 public class ImgComparatorMiddleTest extends TestCase {
 
@@ -35,9 +35,9 @@ public class ImgComparatorMiddleTest extends TestCase {
 			tree2 = tree2.load();
 			allImage = tree2.getAllImage();
 
-			log.info("ƒf[ƒ^‚Ì‰æ‘œ”F{}", allImage.size());
+			log.info("ï¿½fï¿½[ï¿½^ï¿½Ì‰æ‘œï¿½ï¿½ï¿½F{}", allImage.size());
 
-			//ƒeƒXƒg‰æ‘œ‚ÆA•Ç†ƒtƒHƒ‹ƒ_‚Ì”äŠrEEEE
+			//ï¿½eï¿½Xï¿½gï¿½æ‘œï¿½ÆAï¿½Çï¿½ï¿½tï¿½Hï¿½ï¿½ï¿½_ï¿½Ì”ï¿½rï¿½Eï¿½Eï¿½Eï¿½E
 //			for (Img img : allImage) {
 //				Collection<Img> list = tree.check(img, 100,new ImgComparatorMiddle());
 //				if (list.size() > 0) {
@@ -46,17 +46,17 @@ public class ImgComparatorMiddleTest extends TestCase {
 //			}
 
 			int percent=10;
-			log.info("‘Sƒf[ƒ^‚æ‚èŒŸØ‚ğŠJn‚µ‚Ü‚·BƒTƒ“ƒvƒ‹ƒf[ƒ^—¦:{}% ƒf[ƒ^”:{}",percent,manyImage.size());
-			//•Ç†ƒtƒHƒ‹ƒ_‚©‚çAƒ‰ƒ“ƒ_ƒ€‚É‰æ‘œ’Šo‚µA—‚Ä‚¢‚é‰æ‘œ‚ª‚ ‚é‚©‘¶İƒ`ƒFƒbƒN
+			log.info("ï¿½Sï¿½fï¿½[ï¿½^ï¿½ï¿½èŒŸï¿½Ø‚ï¿½ï¿½Jï¿½nï¿½ï¿½ï¿½Ü‚ï¿½ï¿½Bï¿½Tï¿½ï¿½ï¿½vï¿½ï¿½ï¿½fï¿½[ï¿½^ï¿½ï¿½:{}% ï¿½fï¿½[ï¿½^ï¿½ï¿½:{}",percent,manyImage.size());
+			//ï¿½Çï¿½ï¿½tï¿½Hï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½ï¿½Aï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½É‰æ‘œï¿½ï¿½ï¿½oï¿½ï¿½ï¿½Aï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½æ‘œï¿½ï¿½ï¿½ï¿½ï¿½é‚©ï¿½ï¿½ï¿½İƒ`ï¿½Fï¿½bï¿½N
 			for (Img img : manyImage) {
 
-				if (Util.easyRandom(percent)) {
+				if (StaticUtil.easyRandom(percent)) {
 					Collection<Img> list = tree.check(img, 1000,new ImgComparatorMiddle(50,2000));
 
 					if (list.size() > 0) {
 						ImgUtil.viewList(img, list);
 					}else{
-						log.info("ˆê’v‰æ‘œ‚Í‚ ‚è‚Ü‚¹‚ñ‚Å‚µ‚½B{}",img.getInfo());
+						log.info("ï¿½ï¿½vï¿½æ‘œï¿½Í‚ï¿½ï¿½ï¿½Ü‚ï¿½ï¿½ï¿½Å‚ï¿½ï¿½ï¿½ï¿½B{}",img.getInfo());
 					}
 				}else{
 					System.out.print(".");

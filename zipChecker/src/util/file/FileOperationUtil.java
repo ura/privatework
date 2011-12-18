@@ -91,7 +91,7 @@ public class FileOperationUtil {
 
 			if (dir2.isEmpty(new FileNameFilter(MODE.EXT_INCLUDE, ext))) {
 				log.info("削除対象:" + dir2.toString());
-				dir2.delete();
+				dir2.deleteForce();
 			}
 		}
 

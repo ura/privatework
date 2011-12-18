@@ -92,6 +92,22 @@ public class Dir implements Comparable<Dir> {
 
 	}
 
+	/**
+	 * 必要なファイルを示すフィルターを渡して、フォルダが必要か判定する。
+	 * @param filter
+	 * @return
+	 */
+	public void print(FileFilter filter) {
+
+		refreshFileInfo();
+		File[] listFiles = dir.listFiles(filter);
+
+		for (File file : listFiles) {
+			log.info(file.getAbsolutePath());
+		}
+
+	}
+
 	public boolean isEmpty() {
 
 		refreshFileInfo();

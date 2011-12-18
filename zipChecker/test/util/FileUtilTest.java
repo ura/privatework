@@ -4,7 +4,7 @@ import java.io.File;
 
 import junit.framework.TestCase;
 import util.file.FileUtilExt;
-import util.file.FileMoveUtil;
+import util.file.FileOperationUtil;
 import util.file.FileWalker;
 import dir.DirCollector;
 
@@ -32,7 +32,7 @@ public class FileUtilTest extends TestCase {
 		String[] files = dir.list();
 
 		for (String string : files) {
-			File f = FileMoveUtil.createFileName(string, dir);
+			File f = FileOperationUtil.createFileName(string, dir);
 			System.out.println(f.getName());
 		}
 
@@ -53,25 +53,25 @@ public class FileUtilTest extends TestCase {
 	public void _testConvertArc() {
 
 		FileUtilExt
-				.convertArc("L:\\DATA\\COMIC\\(ˆê”ÊƒRƒ~ƒbƒN) [‚‹´—¯”üq] ‚ß‚¼‚ñˆê ƒƒCƒh”Å ‘S10Šª.rar");
+				.convertArc("L:\\DATA\\COMIC\\(ï¿½ï¿½ÊƒRï¿½~ï¿½bï¿½N) [ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½q] ï¿½ß‚ï¿½ï¿½ï¿½ê ï¿½ï¿½ï¿½Cï¿½hï¿½ï¿½ ï¿½S10ï¿½ï¿½.rar");
 
 	}
 
 	public void testConvertArc() {
 
 		String[] args = { "BLOODY MONDAY " };
-		// FileUtilExt.rebuildArc("L:\\DATA\\COMIC", "(ˆê”ÊƒRƒ~ƒbƒN) ‹¶l˜Y2030",
-		// "‹¶l˜Y2030 ");
+		// FileUtilExt.rebuildArc("L:\\DATA\\COMIC", "(ï¿½ï¿½ÊƒRï¿½~ï¿½bï¿½N) ï¿½ï¿½ï¿½lï¿½Y2030",
+		// "ï¿½ï¿½ï¿½lï¿½Y2030 ");
 
 		for (String s : args) {
-			UserInput.getUserInputsSwing("ƒpƒX‚ğ“ü—Í",1);
+			UserInput.getUserInputsSwing("ï¿½pï¿½Xï¿½ï¿½ï¿½ï¿½",1);
 			if (!s.trim().equals("")) {
-				FileUtilExt.rebuildArc("L:\\DATA\\COMIC","ƒLƒ“ƒOƒ_ƒ€","ƒLƒ“ƒOƒ_ƒ€","Kingdom");
+				FileUtilExt.rebuildArc("L:\\DATA\\COMIC","ï¿½Lï¿½ï¿½ï¿½Oï¿½_ï¿½ï¿½","ï¿½Lï¿½ï¿½ï¿½Oï¿½_ï¿½ï¿½","Kingdom");
 			}
 		}
 
 		// FileUtilExt.rebuildArc("L:\\DATA\\COMIC",
-		// "(ˆê”ÊƒRƒ~ƒbƒN) CLAYMORE -ƒNƒŒƒCƒ‚ƒA-  ", "CLAYMORE -ƒNƒŒƒCƒ‚ƒA-");
+		// "(ï¿½ï¿½ÊƒRï¿½~ï¿½bï¿½N) CLAYMORE -ï¿½Nï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½A-  ", "CLAYMORE -ï¿½Nï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½A-");
 
 	}
 

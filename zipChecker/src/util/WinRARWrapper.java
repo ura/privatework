@@ -60,8 +60,18 @@ public class WinRARWrapper {
 
 		if (!b) {
 			File work1 = new File(FileOperationUtil.createTempDir(WORK_DIR));
+
+			String ext = "";
+			if (src.getName().endsWith(".rar")) {
+				ext = "rar";
+			} else if ((src.getName().endsWith(".zip"))) {
+				ext = "zip";
+			} else {
+				throw new IllegalArgumentException();
+			}
+
 			File temp = new File(work1.getAbsolutePath() + File.separator
-					+ "temp.rar");
+					+ "temp." + ext);
 
 			Files.copy(src.toPath(), temp.toPath());
 
