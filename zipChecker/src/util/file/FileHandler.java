@@ -6,6 +6,6 @@ public interface FileHandler {
 
 	boolean isHamdleFile(File f);
 
-	boolean handle(File f, FileHandler... handlers);
+	boolean handle(File f);
 
 }

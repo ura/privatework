@@ -18,12 +18,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import util.NameUtil;
-import util.Util;
+import util.StaticUtil;
 import dir.Dir;
 import dir.DirCollector;
 
 /**
- * ファイルの移動、削除、ディレクトリ作成、リネームなどなどのUtil
+ * ファイルの移動、削除、ディレクトリ作成、リネームなどなどのUtil。
+ * 操作系に特化。
+ *
  *
 
  *
@@ -53,14 +55,36 @@ public class FileMoveUtil {
 		return move(f, dirPath, false);
 	}
 
+	public static void deleteDir(File dir) {
+		for (int i = 0; i < 2; i++) {
+			deleteEmptyDirImpl(dir);
+			StaticUtil.sleep(500l);
+		}
+
+	}
+
 	/**
 	 * 空フォルダを再帰的に消す
 	 */
-
 	public static void deleteEmptyDir(File dir) {
+		/*
 		for (int i = 0; i < 2; i++) {
 			deleteEmptyDirImpl(dir);
-			Util.sleep(500l);
+			StaticUtil.sleep(500l);
+		}
+		*/
+
+		DirCollector srcDir = new DirCollector();
+		new FileWalker().walk(dir, srcDir);
+		Collection<Dir> values = srcDir.dirSet.values();
+
+		for (Dir dir2 : values) {
+			log.info(dir2.toString() + "\t hasFolder:" + dir2.hasFolder());
+
+			if (dir2.isEmpty()) {
+				log.info("削除対象:" + dir2.toString());
+				dir2.delete();
+			}
 		}
 
 	}
@@ -88,14 +112,14 @@ public class FileMoveUtil {
 		}
 
 		File[] x = new File(dir.getAbsolutePath()).listFiles();
-		if (x == null || listFiles.length == 0) {
+		if (x == null || x.length == 0) {
 			log.info(dir.toString());
 			log.info("{}", dir.delete());
 			return;
 		} else {
 
-			log.info(dir.toString() + " FileCount=" + listFiles.length);
-			if (listFiles.length < 10) {
+			log.info(dir.toString() + " FileCount=" + x.length);
+			if (x.length < 10) {
 				boolean b = false;
 				for (File file : x) {
 					b = b || file.exists();
@@ -115,15 +139,19 @@ public class FileMoveUtil {
 
 	}
 
-	private static void delete(File dir) {
+	public static boolean delete(File dir) {
 
 		for (int i = 0; i < 5; i++) {
 			if (dir.delete()) {
-				break;
+
+				return true;
 			} else {
-				Util.sleep(1000l);
+				StaticUtil.sleep(500l);
 			}
 		}
+
+		log.warn("[{}]が消えません", dir.getAbsolutePath());
+		return false;
 
 	}
 
@@ -191,6 +219,8 @@ public class FileMoveUtil {
 		DirCollector srcDir = new DirCollector();
 		new FileWalker().walk(src, srcDir);
 		Collection<Dir> values = srcDir.dirSet.values();
+		log.debug("Dir Count" + values.size());
+
 		for (Dir dir : values) {
 			log.info(dir.dir.getPath());
 
@@ -198,8 +228,8 @@ public class FileMoveUtil {
 			Path destPath = Paths.get(src.getAbsolutePath()
 					+ File.separatorChar + dir.dir.getName());
 
-			log.info(dir.dir.getAbsolutePath() + "\t" + dir.dir.exists() + "\t"
-					+ destPath.toFile().getAbsolutePath() + "\t"
+			log.debug(dir.dir.getAbsolutePath() + "\t" + dir.dir.exists()
+					+ "\t" + destPath.toFile().getAbsolutePath() + "\t"
 					+ destPath.toFile().exists());
 
 			if (srcPath.toFile().exists()) {
@@ -226,30 +256,6 @@ public class FileMoveUtil {
 	public static boolean moveParent(File src, boolean rename) {
 
 		return moveParent(src, rename, null);
-	}
-
-	/**
-	 * 再起で、フォルダの中身をすべて消す。 ファイルも消える。
-	 *
-	 * @param f
-	 */
-	public static void deleteDir(File f) {
-		if (f.exists() == false) {
-
-			return;
-		}
-
-		if (f.isFile()) {
-			f.delete();
-		}
-
-		if (f.isDirectory()) {
-			File[] files = f.listFiles();
-			for (int i = 0; i < files.length; i++) {
-				deleteDir(files[i]);
-			}
-			f.delete();
-		}
 	}
 
 	/**

@@ -178,7 +178,7 @@ public class UserInput {
 				while (true) {
 					if (!this.f) {
 
-						Util.sleep(100l);
+						StaticUtil.sleep(100l);
 
 					} else {
 						break;
@@ -237,7 +237,7 @@ public class UserInput {
 
 				while (true) {
 					if (!this.f) {
-						Util.sleep(100l);
+						StaticUtil.sleep(100l);
 					} else {
 						break;
 					}

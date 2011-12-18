@@ -6,7 +6,7 @@ import java.io.FileFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import util.Util;
+import util.StaticUtil;
 
 public class FileWalker {
 	static Logger log = LoggerFactory.getLogger(FileWalker.class);
@@ -21,7 +21,7 @@ public class FileWalker {
 	public void walk(File root, final FileHandler... handlers) {
 
 		while (!root.exists()) {
-			Util.sleep(20l);
+			StaticUtil.sleep(20l);
 			System.out.println(".");
 		}
 
@@ -32,7 +32,14 @@ public class FileWalker {
 			File[] files = root.listFiles(new FileFilter() {
 
 				@Override
+				/**
+				 * ハンドラーが受け入れるものと、フォルダを返す。
+				 */
 				public boolean accept(File pathname) {
+
+					if (pathname.isDirectory()) {
+						return true;
+					}
 
 					for (FileHandler handler : handlers) {
 						if (handler.isHamdleFile(pathname)) {
@@ -47,8 +54,11 @@ public class FileWalker {
 			for (File f : files) {
 				for (FileHandler handler : handlers) {
 					if (handler.isHamdleFile(f)) {
-						handler.handle(f, handlers);
+						handler.handle(f);
 					}
+				}
+				if (f.isDirectory()) {
+					walk(f, handlers);
 				}
 			}
 

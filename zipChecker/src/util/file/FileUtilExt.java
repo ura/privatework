@@ -22,7 +22,6 @@ import util.CollectionUtil;
 import util.MapList;
 import util.NameUtil;
 import util.UserInput;
-import util.Util;
 import util.WinRARWrapper;
 import util.file.filter.DirFilter;
 import zip.State;
@@ -164,7 +163,7 @@ public class FileUtilExt extends ObjectUtil {
 			arcFile.delete();
 		}
 
-		KeywordCollector coll = new KeywordCollector(".rar", ".zip");
+		KeywordFileCollector coll = new KeywordFileCollector(".rar", ".zip");
 		new FileWalker().walk(workDir, coll);
 
 		List<File> list = coll.getFiles();
@@ -182,7 +181,7 @@ public class FileUtilExt extends ObjectUtil {
 	 */
 	public static void rebuildArc(String base, String name, String... keword) {
 
-		KeywordCollector coll = new KeywordCollector(keword);
+		KeywordFileCollector coll = new KeywordFileCollector(keword);
 		new FileWalker().walk(new File(base), coll);
 
 		try {
@@ -220,12 +219,8 @@ public class FileUtilExt extends ObjectUtil {
 			decodeAll(workF, zipFile);
 
 		}
-		Util.sleep(1000l);
-		FileMoveUtil.deleteEmptyDir(workF);
-		Util.sleep(10000l);
 
 		FileMoveUtil.moveFolderToParent(workF);
-		Util.sleep(1000l);
 		FileMoveUtil.deleteEmptyDir(workF);
 
 		File[] dirs = workF.listFiles(new DirFilter());

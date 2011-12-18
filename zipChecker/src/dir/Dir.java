@@ -1,6 +1,7 @@
 package dir;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
@@ -16,8 +17,10 @@ import socre.name.FileNameParseCoreOnly;
 import socre.name.FileNameParser;
 import util.CollectionUtil;
 import util.CollectionUtil.Counter;
+import util.StaticUtil;
 import util.StringUtil;
 import util.file.FileMoveUtil;
+import util.file.filter.DirFilter;
 
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
@@ -29,6 +32,7 @@ public class Dir implements Comparable<Dir> {
 	public Dir(File dir) {
 		super();
 		this.dir = dir;
+		log.info(dir.getAbsolutePath());
 
 		String path = dir.getPath();
 
@@ -43,7 +47,17 @@ public class Dir implements Comparable<Dir> {
 	}
 
 	public File dir;
+
+	/**
+	 * パスごとの要素一覧。
+	 * 各階層のフォルダ名を表す
+	 */
 	public SortedSet<String> nameSet;
+
+	/**
+	 * 子ファイルのセット
+	 * フォルダは含まない
+	 */
 	public SortedSet<String> fileNameSet;
 
 	@Inject
@@ -52,6 +66,48 @@ public class Dir implements Comparable<Dir> {
 
 	public void addFile(File f) {
 		fileNameSet.add(f.getPath());
+	}
+
+	public void refreshFileInfo() {
+
+		SortedSet<String> s = new TreeSet<String>();
+		for (String fname : fileNameSet) {
+			if (new File(fname).exists()) {
+				s.add(fname);
+			}
+		}
+		this.fileNameSet = s;
+	}
+
+	/**
+	 * 必要なファイルを示すフィルターを渡して、フォルダが必要か判定する。
+	 * @param filter
+	 * @return
+	 */
+	public boolean isEmpty(FileFilter filter) {
+
+		refreshFileInfo();
+
+		return !(hasFolder() || (!StaticUtil.isEmpty(dir.listFiles(filter))));
+
+	}
+
+	public boolean isEmpty() {
+
+		refreshFileInfo();
+		return !(hasFolder() || fileNameSet.size() > 0);
+
+	}
+
+	public boolean delete() {
+		return FileMoveUtil.delete(dir);
+
+	}
+
+	public boolean hasFolder() {
+		File[] dirs = dir.listFiles(new DirFilter());
+		return !StaticUtil.isEmpty(dirs);
+
 	}
 
 	//TODO ここに機能があるのがいいのかは検討。未完成
@@ -162,9 +218,34 @@ public class Dir implements Comparable<Dir> {
 	}
 
 	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((dir == null) ? 0 : dir.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Dir other = (Dir) obj;
+		if (dir == null) {
+			if (other.dir != null)
+				return false;
+		} else if (!dir.equals(other.dir))
+			return false;
+		return true;
+	}
+
+	@Override
 	public int compareTo(Dir o) {
 
-		return (int) (dir.length() - o.dir.length());
+		return -dir.getAbsolutePath().compareTo(o.dir.getAbsolutePath());
 	}
 
 }

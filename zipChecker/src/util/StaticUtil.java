@@ -3,9 +3,18 @@ package util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Util {
+public class StaticUtil {
 
-	private static Logger log = LoggerFactory.getLogger(Util.class);
+	private static Logger log = LoggerFactory.getLogger(StaticUtil.class);
+
+	public static <T> boolean isEmpty(T[] array) {
+		if (array != null && array.length > 0) {
+			return false;
+		} else {
+			return true;
+		}
+
+	}
 
 	public static void sleep(long l) {
 

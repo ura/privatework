@@ -24,7 +24,7 @@ import javax.swing.JPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import util.Util;
+import util.StaticUtil;
 
 public class ImgFrame extends AbstractAction implements WindowListener {
 
@@ -144,7 +144,7 @@ public class ImgFrame extends AbstractAction implements WindowListener {
 	public void waitClose() {
 
 		while (this.nowView) {
-			Util.sleep(500l);
+			StaticUtil.sleep(500l);
 
 		}
 

@@ -10,13 +10,13 @@ import java.util.List;
 
  *
  */
-public class KeywordCollector implements FileHandler {
+public class KeywordFileCollector implements FileHandler {
 
 	private List<File> list = new ArrayList<File>();
 
 	private String[] keywords;
 
-	public KeywordCollector(String... key) {
+	public KeywordFileCollector(String... key) {
 		this.keywords = key;
 
 	}
@@ -26,13 +26,12 @@ public class KeywordCollector implements FileHandler {
 		return true;
 	}
 
-	public boolean handle(File f, FileHandler... handlers)
+	public boolean handle(File f)
 
 	{
 
 		if (f.isDirectory()) {
 
-			new FileWalker().walk(f, handlers);
 		} else {
 
 			for (String k : keywords) {
