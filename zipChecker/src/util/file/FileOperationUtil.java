@@ -19,6 +19,8 @@ import org.slf4j.LoggerFactory;
 
 import util.NameUtil;
 import util.StaticUtil;
+import util.file.filter.FileNameFilter;
+import util.file.filter.FileNameFilter.MODE;
 import dir.Dir;
 import dir.DirCollector;
 
@@ -30,9 +32,9 @@ import dir.DirCollector;
 
  *
  */
-public class FileMoveUtil {
+public class FileOperationUtil {
 
-	static Logger log = LoggerFactory.getLogger(FileMoveUtil.class);
+	static Logger log = LoggerFactory.getLogger(FileOperationUtil.class);
 
 	/**
 	 * ファイルをディレクトリに移動します。 ファイル名が重複している場合は、ファイル名をつけ直します。 ディレクトリがない場合はディレクトリを作ります。
@@ -45,7 +47,7 @@ public class FileMoveUtil {
 		boolean b = false;
 		if (dirPath != null) {
 			File dir = new File(dirPath);
-			b = FileMoveUtil.moveToDir(f, dir, rename);
+			b = FileOperationUtil.moveToDir(f, dir, rename);
 		}
 
 		return b;
@@ -55,31 +57,17 @@ public class FileMoveUtil {
 		return move(f, dirPath, false);
 	}
 
-	public static void deleteDir(File dir) {
-		for (int i = 0; i < 2; i++) {
-			deleteEmptyDirImpl(dir);
-			StaticUtil.sleep(500l);
-		}
-
-	}
-
 	/**
 	 * 空フォルダを再帰的に消す
 	 */
 	public static void deleteEmptyDir(File dir) {
-		/*
-		for (int i = 0; i < 2; i++) {
-			deleteEmptyDirImpl(dir);
-			StaticUtil.sleep(500l);
-		}
-		*/
 
 		DirCollector srcDir = new DirCollector();
 		new FileWalker().walk(dir, srcDir);
 		Collection<Dir> values = srcDir.dirSet.values();
 
 		for (Dir dir2 : values) {
-			log.info(dir2.toString() + "\t hasFolder:" + dir2.hasFolder());
+			log.debug(dir2.toString() + "\t hasFolder:" + dir2.hasFolder());
 
 			if (dir2.isEmpty()) {
 				log.info("削除対象:" + dir2.toString());
@@ -90,50 +78,35 @@ public class FileMoveUtil {
 	}
 
 	/**
-	 * 変なロジックに見えるが、遅延をしないと消したファイルが見えるとか、
-	 * 消せないとかそんなんだったはず。
-	 * @param dir
+	 * 空フォルダを再帰的に消す
 	 */
-	private static void deleteEmptyDirImpl(File dir) {
+	public static void deleteEmptyDir(File dir, String... ext) {
 
-		File[] listFiles = dir.listFiles();
+		DirCollector srcDir = new DirCollector();
+		new FileWalker().walk(dir, srcDir);
+		Collection<Dir> values = srcDir.dirSet.values();
 
-		if (listFiles == null || listFiles.length == 0) {
-			log.info(dir.toString());
-			log.info("{}", dir.delete());
-			return;
-		} else {
-			log.info(dir.toString() + " FileCount=" + listFiles.length);
-			for (File file : listFiles) {
-				if (file.isDirectory()) {
-					deleteEmptyDir(file);
-				}
+		for (Dir dir2 : values) {
+			log.debug(dir2.toString() + "\t hasFolder:" + dir2.hasFolder());
+
+			if (dir2.isEmpty(new FileNameFilter(MODE.EXT_INCLUDE, ext))) {
+				log.info("削除対象:" + dir2.toString());
+				dir2.delete();
 			}
 		}
 
-		File[] x = new File(dir.getAbsolutePath()).listFiles();
-		if (x == null || x.length == 0) {
-			log.info(dir.toString());
-			log.info("{}", dir.delete());
-			return;
-		} else {
+	}
 
-			log.info(dir.toString() + " FileCount=" + x.length);
-			if (x.length < 10) {
-				boolean b = false;
-				for (File file : x) {
-					b = b || file.exists();
+	/**
+	 * 強制的に再起で消す。
+	 */
+	public static void deleteForce(File dir) {
 
-				}
+		DirCollector srcDir = new DirCollector();
+		new FileWalker().walk(dir, srcDir);
 
-				if (!b) {
-					log.info(dir.toString());
-
-				} else {
-					log.info(dir.toString() + " NO FILE!!!" + dir.delete());
-				}
-
-			}
+		for (Dir dir2 : srcDir.dirSet.values()) {
+			dir2.deleteForce();
 
 		}
 

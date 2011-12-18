@@ -8,7 +8,7 @@ import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import util.file.FileMoveUtil;
+import util.file.FileOperationUtil;
 import conf.ConfConst;
 
 public class WinRARWrapper {
@@ -59,23 +59,24 @@ public class WinRARWrapper {
 		boolean b = decodeCore(src, dest);
 
 		if (!b) {
-			File work1 = new File(FileMoveUtil.createTempDir(WORK_DIR));
+			File work1 = new File(FileOperationUtil.createTempDir(WORK_DIR));
 			File temp = new File(work1.getAbsolutePath() + File.separator
 					+ "temp.rar");
 
 			Files.copy(src.toPath(), temp.toPath());
 
-			File workDest = new File(FileMoveUtil.createTempDir(WORK_DIR));
+			File workDest = new File(FileOperationUtil.createTempDir(WORK_DIR));
 
 			boolean workResult = decodeCore(temp, workDest);
-			FileMoveUtil.moveParent(workDest, "zip", "rar", "jpeg", "jpg",
+			FileOperationUtil.moveParent(workDest, "zip", "rar", "jpeg", "jpg",
 					"png");
 
 			temp.delete();
 			work1.delete();
 
 			FileUtils.copyDirectory(workDest, dest);
-			workDest.delete();
+
+			FileOperationUtil.deleteForce(workDest);
 
 			if (!workResult) {
 				throw new IllegalStateException();

@@ -19,7 +19,7 @@ import util.CollectionUtil;
 import util.CollectionUtil.Counter;
 import util.StaticUtil;
 import util.StringUtil;
-import util.file.FileMoveUtil;
+import util.file.FileOperationUtil;
 import util.file.filter.DirFilter;
 
 import com.google.inject.Inject;
@@ -100,7 +100,20 @@ public class Dir implements Comparable<Dir> {
 	}
 
 	public boolean delete() {
-		return FileMoveUtil.delete(dir);
+		return FileOperationUtil.delete(dir);
+	}
+
+	/**
+	 * フォルダの内容があっても消します。
+	 * でも、小フォルダにファイルが入っていると多分消えません。
+	 */
+	public void deleteForce() {
+
+		File[] files = dir.listFiles();
+		for (File file : files) {
+			FileOperationUtil.delete(file);
+		}
+		FileOperationUtil.delete(dir);
 
 	}
 
@@ -198,7 +211,7 @@ public class Dir implements Comparable<Dir> {
 
 		public void move() {
 			for (String file : srcFilePathSet) {
-				FileMoveUtil.move(new File(file), getNewDir());
+				FileOperationUtil.move(new File(file), getNewDir());
 			}
 
 		}

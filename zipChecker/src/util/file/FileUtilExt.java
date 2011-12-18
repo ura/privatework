@@ -69,19 +69,21 @@ public class FileUtilExt extends ObjectUtil {
 				break;
 			case ZIP_OPEN_ERROR:
 				log.info(Log.OP, "Delete PASSWORD file:{}", string);
-				FileMoveUtil.moveToDir(f, State.ZIP_OPEN_ERROR.getDir(moveDir));
+				FileOperationUtil.moveToDir(f,
+						State.ZIP_OPEN_ERROR.getDir(moveDir));
 				break;
 			case FEW_FILE:
 				log.info(Log.OP, "Delete PASSWORD file:{}", string);
-				FileMoveUtil.moveToDir(f, State.FEW_FILE.getDir(moveDir));
+				FileOperationUtil.moveToDir(f, State.FEW_FILE.getDir(moveDir));
 				break;
 			case UNZIP_ERROR:
 				log.info(Log.OP, "Delete PASSWORD file:{}", string);
-				FileMoveUtil.moveToDir(f, State.UNZIP_ERROR.getDir(moveDir));
+				FileOperationUtil.moveToDir(f,
+						State.UNZIP_ERROR.getDir(moveDir));
 				break;
 			case OTHER:
 				log.info(Log.OP, "Delete PASSWORD file:{}", string);
-				FileMoveUtil.moveToDir(f, State.OTHER.getDir(moveDir));
+				FileOperationUtil.moveToDir(f, State.OTHER.getDir(moveDir));
 
 				break;
 
@@ -110,7 +112,7 @@ public class FileUtilExt extends ObjectUtil {
 		File srcFile = new File(srcArcFile);
 
 		try {
-			String work = FileMoveUtil.createTempDir(WORK_DIR);
+			String work = FileOperationUtil.createTempDir(WORK_DIR);
 			WinRARWrapper.decode(srcArcFile, work);
 
 			//TODO フォルダのアップ戦略を検討する
@@ -119,8 +121,8 @@ public class FileUtilExt extends ObjectUtil {
 
 			// 解凍後のフォルダ内で、深いところにアーカイブがある場合、
 			// 直下に持ってきて、それのみをリストする
-			FileMoveUtil.moveParent(dir, "zip", "rar");
-			File[] list = FileMoveUtil.listFiles(dir, ".rar", ".zip");
+			FileOperationUtil.moveParent(dir, "zip", "rar");
+			File[] list = FileOperationUtil.listFiles(dir, ".rar", ".zip");
 
 			for (File zipFile : list) {
 
@@ -196,7 +198,7 @@ public class FileUtilExt extends ObjectUtil {
 			rebuildArc(name, newList);
 
 			for (File zipFile : files) {
-				FileMoveUtil.move(zipFile, "L:\\tmp");
+				FileOperationUtil.move(zipFile, "L:\\tmp");
 			}
 
 		} catch (IOException e) {
@@ -211,7 +213,7 @@ public class FileUtilExt extends ObjectUtil {
 
 	public static void rebuildArc(String name, Collection<File> newList)
 			throws IOException, InterruptedException {
-		String work = FileMoveUtil.createTempDir(WORK_DIR);
+		String work = FileOperationUtil.createTempDir(WORK_DIR);
 		File workF = new File(work);
 
 		for (File zipFile : newList) {
@@ -220,8 +222,8 @@ public class FileUtilExt extends ObjectUtil {
 
 		}
 
-		FileMoveUtil.moveFolderToParent(workF);
-		FileMoveUtil.deleteEmptyDir(workF);
+		FileOperationUtil.moveFolderToParent(workF);
+		FileOperationUtil.deleteEmptyDir(workF, "jpeg", "jpg");
 
 		File[] dirs = workF.listFiles(new DirFilter());
 
@@ -421,7 +423,7 @@ public class FileUtilExt extends ObjectUtil {
 
 		}
 		if (nearDir != null) {
-			FileMoveUtil.moveToDir(new File(filePath), nearDir.dir);
+			FileOperationUtil.moveToDir(new File(filePath), nearDir.dir);
 			return true;
 		} else {
 			return false;
