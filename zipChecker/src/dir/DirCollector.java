@@ -3,8 +3,12 @@ package dir;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.SortedMap;
 import java.util.TreeMap;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import util.file.FileHandler;
 import util.file.FileWalker;
@@ -18,7 +22,19 @@ import util.file.FileWalker;
  */
 public class DirCollector implements FileHandler {
 
-	public SortedMap<File, Dir> dirSet = new TreeMap<File, Dir>();
+	private static Logger log = LoggerFactory.getLogger(Dir.class);
+
+	public SortedMap<File, Dir> dirSet = new TreeMap<File, Dir>(
+			new Comparator<File>() {
+
+				@Override
+				public int compare(File o1, File o2) {
+
+					return (int) (o2.length() - o1.length());
+
+				}
+
+			});
 
 	public boolean isHamdleFile(File f) {
 
@@ -28,10 +44,13 @@ public class DirCollector implements FileHandler {
 	public boolean handle(File f, FileHandler... handlers)
 
 	{
+		log.info(f.getAbsolutePath());
 
 		if (f.isDirectory()) {
+
 			dirSet.put(f, new Dir(f));
 			new FileWalker().walk(f, handlers);
+
 		} else {
 			Dir d = dirSet.get(f.getParentFile());
 			if (d == null) {

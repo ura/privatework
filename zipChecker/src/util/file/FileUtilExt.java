@@ -222,7 +222,7 @@ public class FileUtilExt extends ObjectUtil {
 		}
 		Util.sleep(1000l);
 		FileMoveUtil.deleteEmptyDir(workF);
-		Util.sleep(1000l);
+		Util.sleep(10000l);
 
 		FileMoveUtil.moveFolderToParent(workF);
 		Util.sleep(1000l);

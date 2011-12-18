@@ -9,7 +9,7 @@
       <Pattern>%d{HH:mm:ss} [%thread] %-5level %logger{36}  %msg%n</Pattern>
             -->
 
-      <Pattern>%-5level %logger{36} - %msg%n</Pattern>
+      <Pattern>%-5level %logger{36}.%-20M - %msg%n</Pattern>
     </layout>
   </appender>
   <appender name="FILE"

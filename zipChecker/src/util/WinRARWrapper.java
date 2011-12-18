@@ -32,14 +32,15 @@ public class WinRARWrapper {
 			InterruptedException {
 		dest.mkdir();
 
-		String cmd = "\"" + RAR_EXE + "\" X  -o+  -IBCK \""
+		String cmd = "\"" + RAR_EXE + "\" X  -o+  -IBCK -inul \""
 				+ src.getAbsolutePath() + "\" * \"" + dest.getAbsolutePath()
 				+ "\"";
 
 		log.info(cmd);
 		log.info(src.exists() + "\t" + dest.exists());
 
-		Process exec = Runtime.getRuntime().exec(cmd);
+		final Process exec = Runtime.getRuntime().exec(cmd);
+
 		exec.waitFor();
 		int exitValue = exec.exitValue();
 

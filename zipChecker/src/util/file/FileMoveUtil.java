@@ -102,9 +102,11 @@ public class FileMoveUtil {
 
 				}
 
-				if (b) {
-					log.info(dir.toString() + " NO FILE!!!" + dir.delete());
+				if (!b) {
+					log.info(dir.toString());
 
+				} else {
+					log.info(dir.toString() + " NO FILE!!!" + dir.delete());
 				}
 
 			}
@@ -190,16 +192,17 @@ public class FileMoveUtil {
 		new FileWalker().walk(src, srcDir);
 		Collection<Dir> values = srcDir.dirSet.values();
 		for (Dir dir : values) {
+			log.info(dir.dir.getPath());
+
 			Path srcPath = Paths.get(dir.dir.getAbsolutePath());
 			Path destPath = Paths.get(src.getAbsolutePath()
 					+ File.separatorChar + dir.dir.getName());
 
-			log.info(srcPath.toFile().getAbsolutePath() + "\t"
-					+ srcPath.toFile().exists() + "\t"
+			log.info(dir.dir.getAbsolutePath() + "\t" + dir.dir.exists() + "\t"
 					+ destPath.toFile().getAbsolutePath() + "\t"
 					+ destPath.toFile().exists());
 
-			if (srcPath.toFile().exists() || destPath.toFile().exists()) {
+			if (srcPath.toFile().exists()) {
 				try {
 					Files.move(srcPath, destPath,
 							StandardCopyOption.ATOMIC_MOVE);
