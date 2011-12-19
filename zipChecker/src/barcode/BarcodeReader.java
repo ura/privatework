@@ -1,5 +1,7 @@
 package barcode;
 
+import image.SmillaEnlargerWrapper;
+
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
@@ -44,7 +46,7 @@ public class BarcodeReader {
 		List<File> asList = Arrays.asList(files);
 		Collections.sort(asList);
 
-		int param = 10;
+		int param = 8;
 
 		//最初と最後にしか、バーコードはついていないと推定する
 		for (int i = 0; i < asList.size(); i++) {
@@ -57,6 +59,29 @@ public class BarcodeReader {
 							+ "\t" + barcord);
 					return barcord;
 				}
+			}
+
+		}
+
+		//リトライをかける
+		//画像を変換して再チャレンジ
+		for (int i = 0; i < asList.size(); i++) {
+
+			try {
+				if (i < param || (asList.size() - param) < i) {
+					File file = asList.get(i);
+					File tempFile = SmillaEnlargerWrapper.convertTempFile(file,
+							200);
+					String barcord = autoRead(tempFile.getAbsolutePath(), 2);
+					tempFile.delete();
+					if (barcord != null) {
+						log.info("バーコード検出 IDX=" + i + "\t"
+								+ file.getAbsolutePath() + "\t" + barcord);
+						return barcord;
+					}
+				}
+			} catch (IOException e) {
+				log.warn("想定外の例外です。原因不明です。 ", e);
 			}
 
 		}

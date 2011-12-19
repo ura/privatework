@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import conf.ConfConst;
+import static util.file.FileNameUtil.getExt;
 
 public class SmillaEnlargerWrapper {
 
@@ -19,6 +20,15 @@ public class SmillaEnlargerWrapper {
 
 	public static boolean convert(String src, String dest, int per) {
 		return convert(new File(src), new File(dest), per);
+	}
+
+	public static File convertTempFile(File src, int per) throws IOException {
+
+		File tempFile = File.createTempFile("img", "." + getExt(src));
+
+		convert(src, tempFile, per);
+		return tempFile;
+
 	}
 
 	public static boolean convert(File src, File dest, int per) {
