@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -19,7 +20,7 @@ import util.file.FileHandler;
 
  *
  */
-public class DirCollector implements FileHandler {
+public class DirCollector implements FileHandler, Iterable<Dir> {
 
 	private static Logger log = LoggerFactory.getLogger(DirCollector.class);
 
@@ -39,6 +40,12 @@ public class DirCollector implements FileHandler {
 	public boolean isHamdleFile(File f) {
 
 		return true;
+	}
+
+	@Override
+	public Iterator<Dir> iterator() {
+
+		return dirSet.values().iterator();
 	}
 
 	public boolean handle(File f)

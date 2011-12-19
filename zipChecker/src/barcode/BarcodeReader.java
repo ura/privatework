@@ -1,5 +1,7 @@
 package barcode;
 
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -33,7 +35,7 @@ public class BarcodeReader {
 
 	private static Logger log = LoggerFactory.getLogger(BarcodeReader.class);
 
-	private static final int MAX_DIV = 5;
+	private static final int MAX_DIV = 6;
 
 	public static String autoReadDir(File dir) {
 
@@ -42,14 +44,14 @@ public class BarcodeReader {
 		List<File> asList = Arrays.asList(files);
 		Collections.sort(asList);
 
-		int param = 5;
+		int param = 10;
 
 		//最初と最後にしか、バーコードはついていないと推定する
 		for (int i = 0; i < asList.size(); i++) {
 
 			if (i < param || (asList.size() - param) < i) {
 				File file = asList.get(i);
-				String barcord = autoRead(file.getAbsolutePath(), 3);
+				String barcord = autoRead(file.getAbsolutePath(), 2);
 				if (barcord != null) {
 					log.info("バーコード検出 IDX=" + i + "\t" + file.getAbsolutePath()
 							+ "\t" + barcord);
@@ -58,6 +60,8 @@ public class BarcodeReader {
 			}
 
 		}
+		log.warn("バーコード非検出 " + "\t" + dir.getAbsolutePath());
+
 		return null;
 
 	}
@@ -76,6 +80,11 @@ public class BarcodeReader {
 		try {
 			// 画像を読み込んでビットマップデータを生成
 			BufferedImage image = ImageIO.read(new File(src));
+
+			//BufferedImage changSize = changSize(image, 2);
+
+			//System.out.println(image.getHeight());
+			//System.out.println(changSize.getHeight());
 
 			LuminanceSource source = new BufferedImageLuminanceSource(image);
 			BinaryBitmap bitmap = new BinaryBitmap(new HybridBinarizer(source));
@@ -97,6 +106,44 @@ public class BarcodeReader {
 		}
 
 		return null;
+	}
+
+	private static BufferedImage changSize(BufferedImage image, int scale) {
+		BufferedImage shrinkImage = new BufferedImage(image.getWidth() * scale,
+				image.getHeight() * scale, image.getType());
+
+		Graphics2D g2d = shrinkImage.createGraphics();
+
+		g2d.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION,
+				RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
+
+		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+				RenderingHints.VALUE_ANTIALIAS_OFF);
+
+		g2d.setRenderingHint(RenderingHints.KEY_COLOR_RENDERING,
+				RenderingHints.VALUE_COLOR_RENDER_QUALITY);
+
+		g2d.setRenderingHint(RenderingHints.KEY_DITHERING,
+				RenderingHints.VALUE_DITHER_DISABLE);
+
+		g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
+				RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+
+		g2d.setRenderingHint(RenderingHints.KEY_RENDERING,
+				RenderingHints.VALUE_RENDER_QUALITY);
+
+		g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
+				RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+
+		g2d.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS,
+				RenderingHints.VALUE_FRACTIONALMETRICS_ON);
+
+		g2d.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL,
+				RenderingHints.VALUE_STROKE_PURE);
+		g2d.drawImage(image, 0, 0, image.getWidth() * scale, image.getHeight()
+				* scale, null);
+
+		return shrinkImage;
 	}
 
 	/**
