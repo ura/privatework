@@ -2,6 +2,8 @@ package util;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.file.Files;
 
 import org.apache.commons.io.FileUtils;
@@ -41,15 +43,20 @@ public class WinRARWrapper {
 
 		final Process exec = Runtime.getRuntime().exec(cmd);
 
-		exec.waitFor();
-		int exitValue = exec.exitValue();
+		try (InputStream i = exec.getInputStream();
+				InputStream i2 = exec.getErrorStream();
+				OutputStream o = exec.getOutputStream();) {
 
-		if (exitValue != 0) {
-			log.error("ERROR:" + cmd);
+			exec.waitFor();
+			int exitValue = exec.exitValue();
 
-			return false;
-		} else {
-			return true;
+			if (exitValue != 0) {
+				log.error("ERROR:" + cmd);
+
+				return false;
+			} else {
+				return true;
+			}
 		}
 	}
 
