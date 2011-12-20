@@ -44,34 +44,42 @@ public class BarcodeReader {
 		List<File> asList = Arrays.asList(files);
 		Collections.sort(asList);
 
+		String bar = x(asList, false);
+		if (bar != null) {
+			return bar;
+		}
+		bar = x(asList, true);
+		if (bar != null) {
+			return bar;
+		}
+		//リトライをかける
+		//画像を変換して再チャレンジ
+
+		log.warn("バーコード非検出 " + "\t" + dir.getAbsolutePath());
+
+		return null;
+
+	}
+
+	private static String x(List<File> asList, boolean retry) {
 		int param = 8;
 
 		//最初と最後にしか、バーコードはついていないと推定する
 		for (int i = 0; i < asList.size(); i++) {
 
-			if (i < param || (asList.size() - param) < i) {
-				File file = asList.get(i);
-				String barcord = autoRead(file.getAbsolutePath(), 2);
-				if (barcord != null) {
-					log.info("バーコード検出 IDX=" + i + "\t" + file.getAbsolutePath()
-							+ "\t" + barcord);
-					return barcord;
-				}
-			}
-
-		}
-
-		//リトライをかける
-		//画像を変換して再チャレンジ
-		for (int i = 0; i < asList.size(); i++) {
-
 			try {
 				if (i < param || (asList.size() - param) < i) {
 					File file = asList.get(i);
-					File tempFile = SmillaEnlargerWrapper.convertTempFile(file,
-							200);
-					String barcord = autoRead(tempFile.getAbsolutePath(), 2);
-					tempFile.delete();
+					String barcord;
+					if (retry) {
+						File tempFile = SmillaEnlargerWrapper.convertTempFile(
+								file, 200);
+						barcord = autoRead(tempFile.getAbsolutePath(), 2);
+						tempFile.delete();
+					} else {
+						barcord = autoRead(file.getAbsolutePath(), 2);
+					}
+
 					if (barcord != null) {
 						log.info("バーコード検出 IDX=" + i + "\t"
 								+ file.getAbsolutePath() + "\t" + barcord);
@@ -79,14 +87,11 @@ public class BarcodeReader {
 					}
 				}
 			} catch (IOException e) {
-				log.warn("想定外の例外です。原因不明です。 ", e);
+				log.error("想定外のエラー", e);
 			}
 
 		}
-		log.warn("バーコード非検出 " + "\t" + dir.getAbsolutePath());
-
 		return null;
-
 	}
 
 	/**

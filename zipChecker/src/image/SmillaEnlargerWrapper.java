@@ -2,6 +2,8 @@ package image;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,22 +50,27 @@ public class SmillaEnlargerWrapper {
 
 			final Process exec = Runtime.getRuntime().exec(cmd);
 
-			//結果を読み捨てる必要あり
-			int i = exec.getInputStream().read();
-			while (i != -1) {
-				i = exec.getInputStream().read();
-			}
+			try (InputStream in = exec.getInputStream();
+					InputStream in2 = exec.getErrorStream();
+					OutputStream o = exec.getOutputStream();) {
 
-			exec.waitFor();
+				//結果を読み捨てる必要あり
+				int i = exec.getInputStream().read();
+				while (i != -1) {
+					i = exec.getInputStream().read();
+				}
 
-			int exitValue = exec.exitValue();
+				exec.waitFor();
 
-			if (exitValue != 0) {
-				log.error("ERROR:" + cmd);
+				int exitValue = exec.exitValue();
 
-				return false;
-			} else {
-				return true;
+				if (exitValue != 0) {
+					log.error("ERROR:" + cmd);
+
+					return false;
+				} else {
+					return true;
+				}
 			}
 		} catch (IOException | InterruptedException e) {
 			// TODO 自動生成された catch ブロック
