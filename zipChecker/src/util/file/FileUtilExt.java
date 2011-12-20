@@ -212,8 +212,12 @@ public class FileUtilExt {
 			}
 		}
 
-		WinRARWrapper.encode(work,
-				WORK_DIR + "/" + NameUtil.createCominName(name, newList));
+		File createPath = createPath(WORK_DIR,
+				NameUtil.createCominName(name, newList));
+		workF.renameTo(createPath);
+
+		WinRARWrapper
+				.encode(createPath.getPath(), createPath.getAbsolutePath());
 
 	}
 
