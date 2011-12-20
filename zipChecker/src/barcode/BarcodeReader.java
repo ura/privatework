@@ -2,8 +2,6 @@ package barcode;
 
 import image.SmillaEnlargerWrapper;
 
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -101,15 +99,10 @@ public class BarcodeReader {
 	 */
 	public static String autoRead(String src, final int div) {
 
-		log.info(src);
+		log.debug(src);
 		try {
 			// 画像を読み込んでビットマップデータを生成
 			BufferedImage image = ImageIO.read(new File(src));
-
-			//BufferedImage changSize = changSize(image, 2);
-
-			//System.out.println(image.getHeight());
-			//System.out.println(changSize.getHeight());
 
 			LuminanceSource source = new BufferedImageLuminanceSource(image);
 			BinaryBitmap bitmap = new BinaryBitmap(new HybridBinarizer(source));
@@ -118,7 +111,7 @@ public class BarcodeReader {
 
 			String decode = decode(bitmap, createRect);
 
-			log.info(src + "\t" + decode);
+			log.debug(src + "\t" + decode);
 
 			if (decode == null && div <= MAX_DIV) {
 				decode = autoRead(src, div + 1);
@@ -131,44 +124,6 @@ public class BarcodeReader {
 		}
 
 		return null;
-	}
-
-	private static BufferedImage changSize(BufferedImage image, int scale) {
-		BufferedImage shrinkImage = new BufferedImage(image.getWidth() * scale,
-				image.getHeight() * scale, image.getType());
-
-		Graphics2D g2d = shrinkImage.createGraphics();
-
-		g2d.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION,
-				RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
-
-		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-				RenderingHints.VALUE_ANTIALIAS_OFF);
-
-		g2d.setRenderingHint(RenderingHints.KEY_COLOR_RENDERING,
-				RenderingHints.VALUE_COLOR_RENDER_QUALITY);
-
-		g2d.setRenderingHint(RenderingHints.KEY_DITHERING,
-				RenderingHints.VALUE_DITHER_DISABLE);
-
-		g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
-				RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-
-		g2d.setRenderingHint(RenderingHints.KEY_RENDERING,
-				RenderingHints.VALUE_RENDER_QUALITY);
-
-		g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
-				RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-
-		g2d.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS,
-				RenderingHints.VALUE_FRACTIONALMETRICS_ON);
-
-		g2d.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL,
-				RenderingHints.VALUE_STROKE_PURE);
-		g2d.drawImage(image, 0, 0, image.getWidth() * scale, image.getHeight()
-				* scale, null);
-
-		return shrinkImage;
 	}
 
 	/**
@@ -190,8 +145,7 @@ public class BarcodeReader {
 	 */
 	private static List<Rect> createRect(BinaryBitmap bitmap, int div) {
 		List<Rect> set = new ArrayList<BarcodeReader.Rect>();
-		System.out.println("Base  " + bitmap.getWidth() + ":"
-				+ bitmap.getHeight());
+
 		for (int i = 0; i < div; i++) {
 			for (int j = 0; j < div; j++) {
 
@@ -252,9 +206,9 @@ public class BarcodeReader {
 
 				// 位置検出パターンおよびアラインメントパターンの座標を取得
 				ResultPoint[] points = result.getResultPoints();
-				log.info("位置検出パターン／アライメントパターンの座標: ");
+				log.debug("位置検出パターン／アライメントパターンの座標: ");
 				for (int i = 0; i < points.length; i++) {
-					log.info("    Point[" + i + "] = " + points[i]);
+					log.debug("    Point[" + i + "] = " + points[i]);
 				}
 
 				if (format.toString().equals("EAN_13")) {
