@@ -77,6 +77,7 @@ public class SmillaEnlargerWrapper {
 
 		*/
 
+		l.add(new SmillaEnlargerConf(200, 0, 0, 10, 19, 19, 0));
 		l.add(new SmillaEnlargerConf(200, 100, 0, 10, 19, 19, 0));
 		l.add(new SmillaEnlargerConf(200, 100, 0, 10, 100, 19, 0));
 
@@ -89,7 +90,6 @@ public class SmillaEnlargerWrapper {
 		l.add(new SmillaEnlargerConf(200, 100, 0, 10, 50, 19, 0));
 		l.add(new SmillaEnlargerConf(200, 100, 0, 10, 70, 19, 0));
 
-		l.add(new SmillaEnlargerConf(200, 0, 0, 10, 19, 19, 0));
 		l.add(new SmillaEnlargerConf(200, 40, 0, 10, 19, 19, 0));
 		l.add(new SmillaEnlargerConf(200, 80, 0, 10, 19, 19, 0));
 

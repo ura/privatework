@@ -10,6 +10,8 @@ import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import util.Normalizer;
+
 public class BookInfo implements Comparable<BookInfo> {
 
 	private static Logger log = LoggerFactory.getLogger(BookInfo.class);
@@ -18,7 +20,7 @@ public class BookInfo implements Comparable<BookInfo> {
 			.compile("(.*)[\\s　]+([0-9]+)$");
 
 	private static final Pattern titleReg1 = Pattern
-			.compile("(.*)[(\\（]([    ([0-9]+])[）\\)]$");
+			.compile("(.*)[\\(（]{1}([    ([0-9]]+)[）\\)]{1}$");
 
 	private static final List<Pattern> regList;
 	static {
@@ -31,12 +33,13 @@ public class BookInfo implements Comparable<BookInfo> {
 	}
 
 	public BookInfo(String publisherName, String seriesName, String author,
-			String title) {
+			String title, String isbn) {
 		super();
 		this.seriesName = seriesName;
 		this.publisherName = publisherName;
 		this.author = author;
 		this.rowTitle = title;
+		this.isbn = isbn;
 
 		init();
 	}
@@ -53,7 +56,8 @@ public class BookInfo implements Comparable<BookInfo> {
 			log.info(no + "\t" + reg.pattern() + "\t" + result);
 
 			if (result) {
-				this.titleStr = matcher.group(1);
+
+				this.titleStr = Normalizer.normalizer(matcher.group(1));
 				this.no = no_XX(matcher.group(2));
 
 				break;
@@ -81,6 +85,7 @@ public class BookInfo implements Comparable<BookInfo> {
 	private String publisherName;
 	private String author;
 	private String rowTitle;
+	private String isbn;
 
 	/**
 	 * タイトル部分と思わしき部分を切り出します。
@@ -99,8 +104,9 @@ public class BookInfo implements Comparable<BookInfo> {
 					+ seriesName + "]" + "[" + titleStr
 					+ (haveNo() ? " 第" + no + "巻" : "") + "]";
 		} else {
-			return "[" + author + "]" + "[" + publisherName + "]" + "[" + "["
-					+ titleStr + (haveNo() ? " 第" + no + "巻" : "") + "]";
+			return "[" + author + "]" + "[" + publisherName + "]" + "["
+					+ titleStr + (haveNo() ? " 第" + no + "巻" : "") + "]"
+					+ "[ISBN" + isbn + "]";
 
 		}
 	}

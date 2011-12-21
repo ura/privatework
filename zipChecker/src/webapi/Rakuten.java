@@ -146,6 +146,7 @@ public class Rakuten {
 				XPathExpression expr3 = xpath.compile("author/text()");
 				XPathExpression expr4 = xpath.compile("publisherName/text()");
 				XPathExpression expr5 = xpath.compile("title/text()");
+				XPathExpression expr6 = xpath.compile("isbn/text()");
 
 				Object results = expr.evaluate(doc, XPathConstants.NODESET);
 				NodeList nodes = (NodeList) results;
@@ -161,8 +162,11 @@ public class Rakuten {
 							XPathConstants.STRING);
 					String t = (String) expr5.evaluate(item,
 							XPathConstants.STRING);
+					String isbn = (String) expr6.evaluate(item,
+							XPathConstants.STRING);
 
-					set.add(new BookInfo(publisherName, seriesName, author, t));
+					set.add(new BookInfo(publisherName, seriesName, author, t,
+							isbn));
 
 				}
 			}
