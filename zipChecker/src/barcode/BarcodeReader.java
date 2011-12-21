@@ -1,6 +1,7 @@
 package barcode;
 
 import image.SmillaEnlargerWrapper;
+import image.SmillaEnlargerWrapper.SmillaEnlargerConf;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -44,11 +45,11 @@ public class BarcodeReader {
 		List<File> asList = Arrays.asList(files);
 		Collections.sort(asList);
 
-		String bar = x(asList, false);
+		String bar = read(asList, false);
 		if (bar != null) {
 			return bar;
 		}
-		bar = x(asList, true);
+		bar = read(asList, true);
 		if (bar != null) {
 			return bar;
 		}
@@ -61,7 +62,7 @@ public class BarcodeReader {
 
 	}
 
-	private static String x(List<File> asList, boolean retry) {
+	private static String read(List<File> asList, boolean retry) {
 		int param = 8;
 
 		//最初と最後にしか、バーコードはついていないと推定する
@@ -80,9 +81,47 @@ public class BarcodeReader {
 						barcord = autoRead(file.getAbsolutePath(), 2);
 					}
 
+					//書籍には、二段のバーコードがあり、上のバーコードがほしい
 					if (barcord != null) {
 						log.info("バーコード検出 IDX=" + i + "\t"
 								+ file.getAbsolutePath() + "\t" + barcord);
+						if (barcord.startsWith("192")) {
+							log.info("求めているバーコードではないため、スキップします。 IDX=" + i
+									+ "\t" + file.getAbsolutePath() + "\t"
+									+ barcord);
+							continue;
+						} else if (!barcord.startsWith("978")) {
+							log.info("バーコードの読取エラーと想定されます。スキップします。 IDX=" + i
+									+ "\t" + file.getAbsolutePath() + "\t"
+									+ barcord);
+
+							List<SmillaEnlargerConf> list = SmillaEnlargerWrapper
+									.convertConfList(file, 200);
+							for (SmillaEnlargerConf smillaEnlargerConf : list) {
+								File tempFile = SmillaEnlargerWrapper
+										.convertTempFile(file,
+												smillaEnlargerConf);
+								barcord = autoRead(tempFile.getAbsolutePath(),
+										2);
+								tempFile.delete();
+
+								if (barcord != null
+										&& barcord.startsWith("978")) {
+									log.info("バーコード検出 IDX=" + i + "\t"
+											+ file.getAbsolutePath() + "\t"
+											+ barcord);
+									return barcord;
+								} else {
+									log.info("不正なバーコードです IDX=" + i + "\t"
+											+ file.getAbsolutePath() + "\t"
+											+ barcord);
+								}
+
+							}
+
+							continue;
+						}
+
 						return barcord;
 					}
 				}
@@ -152,7 +191,8 @@ public class BarcodeReader {
 		List<Rect> set = new ArrayList<BarcodeReader.Rect>();
 
 		for (int i = 0; i < div; i++) {
-			for (int j = 0; j < div; j++) {
+			//暫定対策：縦の方の分解率を上げ、二段バーコードの上を取りやすくする。
+			for (int j = 0; j < div * 2; j++) {
 
 				/*
 				 * System.out.println(bitmap.getWidth() * i / div + ":" +
@@ -161,8 +201,8 @@ public class BarcodeReader {
 				 */
 
 				set.add(new Rect(bitmap.getWidth() * i / div, bitmap
-						.getHeight() * j / div, bitmap.getWidth() / div, bitmap
-						.getHeight() / div));
+						.getHeight() * j / div / 2, bitmap.getWidth() / div,
+						bitmap.getHeight() / div / 2));
 			}
 
 		}

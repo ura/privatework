@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 
 import webapi.BookInfo;
 import webapi.Rakuten;
+import barcode.BarcodeReader;
 
 public class NameUtil {
 
@@ -111,6 +112,19 @@ public class NameUtil {
 			}
 
 		}
+
+	}
+
+	/**
+	 * バーコードスキャンをして、書籍情報を取得します。
+	 * @param dir
+	 * @return
+	 */
+	public static String bookInfoFromBarcode(File dir) {
+
+		String barcode = BarcodeReader.autoReadDir(dir);
+		BookInfo info = Rakuten.getInfo(barcode);
+		return info.getInfo();
 
 	}
 

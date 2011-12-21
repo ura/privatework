@@ -295,6 +295,10 @@ public class FileOperationUtil {
 		return moveToDir(f, dir, false);
 	}
 
+	/**
+	 * 指定されたフォルダを再帰して、チェックしファイル名を単純化（アルファベット、数値のみ）します。
+	 * @param dir
+	 */
 	public static void renameFiles(File dir) {
 
 		DirCollector srcDir = new DirCollector();

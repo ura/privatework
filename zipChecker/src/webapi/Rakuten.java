@@ -124,8 +124,8 @@ public class Rakuten {
 		return Rakuten.getInfo(new Rakuten.TitleQuery(title));
 	}
 
-	public static SortedSet<BookInfo> getInfo(String isbn) {
-		return Rakuten.getInfo(new Rakuten.IsbnQuery(isbn));
+	public static BookInfo getInfo(String isbn) {
+		return Rakuten.getInfo(new Rakuten.IsbnQuery(isbn)).first();
 	}
 
 	public static SortedSet<BookInfo> getInfo(Query q) {

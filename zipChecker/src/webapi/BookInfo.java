@@ -21,9 +21,10 @@ public class BookInfo implements Comparable<BookInfo> {
 		if (seriesName.equals("")) {
 
 			return "[" + publisherName + "]" + "[" + seriesName + "]" + "["
-					+ author + "]";
+					+ title + "]" + "[" + author + "]";
 		} else {
-			return "[" + publisherName + "]" + "[" + author + "]";
+			return "[" + publisherName + "]" + "[" + author + "]" + "[" + title
+					+ "]";
 
 		}
 	}

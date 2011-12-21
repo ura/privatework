@@ -199,8 +199,9 @@ public class FileUtilExt {
 		File[] dirs = workF.listFiles(new DirFilter());
 
 		for (File dir : dirs) {
-			String no = NameUtil.bookNo(dir.getName());
-			File newDir = createPath(dir.getParent(), no);
+			//String no = NameUtil.bookNo(dir.getName());
+			String bookNo = NameUtil.bookInfoFromBarcode(dir).replace('/', '_');
+			File newDir = createPath(dir.getParent(), bookNo);
 
 			boolean b = false;
 			if (!newDir.exists()) {
@@ -208,12 +209,13 @@ public class FileUtilExt {
 			}
 
 			if (!b) {
-				log.warn("フォルダのリネームに失敗しました:" + no);
+				log.warn("フォルダのリネームに失敗しました:" + bookNo);
 			}
 		}
 
 		File createPath = createPath(WORK_DIR,
 				NameUtil.createCominName(name, newList));
+		createPath.delete();
 		workF.renameTo(createPath);
 
 		WinRARWrapper
