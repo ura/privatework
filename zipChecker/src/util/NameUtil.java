@@ -1,8 +1,6 @@
 package util;
 
 import java.io.File;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -135,17 +133,6 @@ public class NameUtil {
 
 			boolean result = matcher.find();
 			log.info(no + "\t" + reg.pattern() + "\t" + result);
-
-			try {
-				String encode = URLEncoder.encode(no, "UTF-8");
-				log.info(encode);
-				String encode2 = URLEncoder.encode("ALL_ROUNDER_MEGURU Vol 01",
-						"UTF-8");
-				log.info(encode2);
-			} catch (UnsupportedEncodingException e) {
-				// TODO 自動生成された catch ブロック
-				e.printStackTrace();
-			}
 
 			if (result) {
 				String group = matcher.group(1);

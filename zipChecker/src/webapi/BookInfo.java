@@ -1,6 +1,34 @@
 package webapi;
 
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class BookInfo implements Comparable<BookInfo> {
+
+	private static Logger log = LoggerFactory.getLogger(BookInfo.class);
+
+	private static final Pattern titleSReg = Pattern
+			.compile("(.*)[\\s　]+([0-9]+)$");
+
+	private static final Pattern titleReg1 = Pattern
+			.compile("(.*)[(\\（]([    ([0-9]+])[）\\)]$");
+
+	private static final List<Pattern> regList;
+	static {
+		ArrayList<Pattern> list = new ArrayList<Pattern>();
+		list.add(titleSReg);
+		list.add(titleReg1);
+
+		regList = Collections.unmodifiableList(list);
+
+	}
 
 	public BookInfo(String publisherName, String seriesName, String author,
 			String title) {
@@ -8,25 +36,77 @@ public class BookInfo implements Comparable<BookInfo> {
 		this.seriesName = seriesName;
 		this.publisherName = publisherName;
 		this.author = author;
-		this.title = title;
+		this.rowTitle = title;
+
+		init();
+	}
+
+	private void init() {
+
+		this.titleStr = this.rowTitle;
+		this.no = "";
+
+		for (Pattern reg : regList) {
+			Matcher matcher = reg.matcher(this.rowTitle);
+
+			boolean result = matcher.find();
+			log.info(no + "\t" + reg.pattern() + "\t" + result);
+
+			if (result) {
+				this.titleStr = matcher.group(1);
+				this.no = no_XX(matcher.group(2));
+
+				break;
+
+			}
+
+		}
+
+	}
+
+	private static String no_XX(String xx) {
+
+		return no_XX(Integer.parseInt(xx));
+
+	}
+
+	private static String no_XX(int x) {
+		DecimalFormat nf = new DecimalFormat("##");
+		nf.setMinimumIntegerDigits(2);
+		return nf.format(x);
+
 	}
 
 	private String seriesName;
 	private String publisherName;
 	private String author;
-	private String title;
+	private String rowTitle;
+
+	/**
+	 * タイトル部分と思わしき部分を切り出します。
+	 */
+	private String titleStr;
+	/**
+	 * 巻数を切り出します。ない場合は空文字です。
+	 */
+	private String no;
 
 	public String getInfo() {
 
 		if (seriesName.equals("")) {
 
-			return "[" + publisherName + "]" + "[" + seriesName + "]" + "["
-					+ title + "]" + "[" + author + "]";
+			return "[" + author + "]" + "[" + publisherName + "]" + "["
+					+ seriesName + "]" + "[" + titleStr
+					+ (haveNo() ? " 第" + no + "巻" : "") + "]";
 		} else {
-			return "[" + publisherName + "]" + "[" + author + "]" + "[" + title
-					+ "]";
+			return "[" + author + "]" + "[" + publisherName + "]" + "[" + "["
+					+ titleStr + (haveNo() ? " 第" + no + "巻" : "") + "]";
 
 		}
+	}
+
+	public boolean haveNo() {
+		return !no.equals("");
 	}
 
 	@Override
@@ -105,11 +185,11 @@ public class BookInfo implements Comparable<BookInfo> {
 	}
 
 	public String getTitle() {
-		return title;
+		return rowTitle;
 	}
 
 	public void setTitle(String title) {
-		this.title = title;
+		this.rowTitle = title;
 	}
 
 }
