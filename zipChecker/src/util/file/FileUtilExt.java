@@ -201,29 +201,33 @@ public class FileUtilExt {
 
 		File[] dirs = workF.listFiles(new DirFilter());
 
-		List<BookInfo> infoList = new ArrayList<BookInfo>();
 		SortedMap<BookInfo, File> s = new TreeMap<BookInfo, File>();
 		for (File dir : dirs) {
 			//
 			BookInfo bookNo = BookNameUtil.bookInfoFromBarcode(dir);
 			File newDir = createPath(dir.getParent(), bookNo.getInfo());
 
+			//TODO BOOKINFOがかぶった場合の考慮
+			log.debug(newDir.getName() + "  " + dir.getName());
 			s.put(bookNo, newDir);
-
-			infoList.add(bookNo);
+			log.debug(newDir.getName() + "  " + s.size());
 
 			boolean b = false;
 			//TODO フォルダがかぶった場合の処理を入れる サイズを見て判断するか、末尾に数字を付けて臨時対応
 			if (!newDir.exists()) {
 				b = dir.renameTo(newDir);
+				if (!b) {
+					log.warn("フォルダのリネームに失敗しました:" + bookNo);
+				}
 			} else {
-				log.warn("フォルダが重複存在します。未実装機能です:" + bookNo);
-				throw new IllegalStateException();
+
+				if (!newDir.equals(dir)) {
+					log.warn("フォルダが重複存在します。未実装機能です:" + bookNo);
+					throw new IllegalStateException();
+				}
+
 			}
 
-			if (!b) {
-				log.warn("フォルダのリネームに失敗しました:" + bookNo);
-			}
 		}
 
 		BookNameUtil.createCominName(new File(WORK_DIR), s);

@@ -39,7 +39,7 @@ public class BarcodeReader {
 	private static final int MAX_DIV = 6;
 
 	public static String autoReadDir(File dir) {
-
+		log.info("バーコード抽出処理を開始します。{} ", dir.getAbsolutePath());
 		File[] files = dir.listFiles(new FileNameFilter(MODE.EXT_INCLUDE,
 				"jpg", "jpeg"));
 		List<File> asList = Arrays.asList(files);
@@ -62,17 +62,32 @@ public class BarcodeReader {
 
 	}
 
-	private static String read(List<File> asList, boolean retry) {
+	private static boolean isReadFile(int idx, List<File> asList) {
 		int param = 8;
 
+		File file = asList.get(idx);
+
+		if (file.getName().matches("[0-9]+[a-zA-Z]{1}\\.[a-zA-Z]+")) {
+			log.info("XX " + file.getName());
+
+			return true;
+		}
+
+		return idx < param || (asList.size() - param) < idx;
+	}
+
+	private static String read(List<File> asList, boolean retry) {
+
 		//最初と最後にしか、バーコードはついていないと推定する
+		//TODO ファイルのソート順に問題あり。
 		for (int i = 0; i < asList.size(); i++) {
 
 			try {
-				if (i < param || (asList.size() - param) < i) {
+				if (isReadFile(i, asList)) {
 					File file = asList.get(i);
 					String barcord;
 					if (retry) {
+						log.info("高精細化を目論みます。{}", file.getName());
 						File tempFile = SmillaEnlargerWrapper.convertTempFile(
 								file, 200);
 						barcord = autoRead(tempFile.getAbsolutePath(), 2);

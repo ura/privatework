@@ -327,7 +327,8 @@ public class FileOperationUtil {
 								+ " >>" + dest.getPath());
 					}
 				} else {
-					throw new IllegalStateException("他のファイル名と重複:" + file);
+					throw new IllegalStateException("他のファイル名と重複:" + file + ">>"
+							+ dest.getName());
 				}
 
 			}

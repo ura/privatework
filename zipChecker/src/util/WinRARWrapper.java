@@ -93,8 +93,6 @@ public class WinRARWrapper {
 			File workDest = new File(FileOperationUtil.createTempDir(WORK_DIR));
 
 			boolean workResult = decodeCore(temp, workDest);
-			FileOperationUtil.moveParent(workDest, "zip", "rar", "jpeg", "jpg",
-					"png");
 
 			temp.delete();
 			work1.delete();

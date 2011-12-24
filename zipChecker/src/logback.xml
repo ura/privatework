@@ -63,6 +63,12 @@
   <logger name="socre.calculator">
     <level value="ERROR" />
   </logger>
+  <logger name="util.file.FileWalker">
+    <level value="WARM" />
+  </logger>
+
+
+
 <!--
   <logger name="image.Histogram">
     <level value="DEBUG" />

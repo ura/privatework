@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -60,7 +59,7 @@ public class BookNameUtil {
 			.compile("[^\\[0-9]([0-9]{1,2})[-]+([0-9]{2})[^\\]]+");
 
 	private static Pattern fileName = Pattern
-			.compile("([A-Za-zＡ-Ｚａ-ｚ_\\.0-9#-_\\s]+\\.[A-Za-z0-9]+)");
+			.compile("([A-Za-zＡ-Ｚａ-ｚ_\\.0-9#-_\\s]+)[^A-Za-zＡ-Ｚａ-ｚ_\\.0-9#-_\\s]*(\\.[A-Za-z0-9]+)");
 
 	/**
 	 * アルファベット、数値のみのシンプルな名前に置換した名称を返します。
@@ -70,7 +69,7 @@ public class BookNameUtil {
 		Matcher matcher = fileName.matcher(f.getName());
 
 		if (matcher.find()) {
-			String group = matcher.group(1);
+			String group = matcher.group(1) + matcher.group(2);
 			return group;
 		}
 
@@ -81,25 +80,6 @@ public class BookNameUtil {
 	public static String kan(File f) {
 
 		return kan(f.getName());
-
-	}
-
-	/**
-	 * @deprecated
-	 * @param f
-	 * @return
-	 */
-	public static boolean isMultiFile(File f) {
-
-		String name = f.getName();
-
-		if (partermBetween.matcher(name).find()) {
-			return true;
-		} else if (partermAll.matcher(name).find()) {
-			return true;
-		} else {
-			return false;
-		}
 
 	}
 
@@ -133,8 +113,15 @@ public class BookNameUtil {
 	public static BookInfo bookInfoFromBarcode(File dir) {
 
 		String barcode = BarcodeReader.autoReadDir(dir);
-		BookInfo info = Rakuten.getInfo(barcode);
-		return info;
+		if (barcode != null) {
+			BookInfo info = Rakuten.getInfo(barcode);
+			return info;
+		} else {
+
+			log.warn("バーコード情報が取得出来なかったので、フォルダ名を返します。{}", dir);
+
+			return new BookInfo(dir.getName());
+		}
 
 	}
 
@@ -225,6 +212,7 @@ public class BookNameUtil {
 
 		for (BookInfo bookInfo : map.keySet()) {
 			String baseInfo = bookInfo.getBaseInfo();
+			log.info("分類しています。{} >>  {}", baseInfo, bookInfo.getInfo());
 			m.get(baseInfo).put(bookInfo, map.get(bookInfo));
 		}
 
@@ -233,7 +221,7 @@ public class BookNameUtil {
 			Set<BookInfo> keySet = value.keySet();
 			List<BookInfo> list = new ArrayList<BookInfo>(keySet);
 
-			log.info("{} : {}", e.getKey(), list.size());
+			log.info("基礎名の分類結果です。{} : data数 {}", e.getKey(), keySet.size());
 			int size = list.size();
 			for (int i = 0; i < 10; i++) {
 
@@ -270,18 +258,23 @@ public class BookNameUtil {
 
 	}
 
+	/**
+	 * 前提条件　baseInfoが揃っているものを入れること
+	 * @param list
+	 * @return
+	 */
 	public static String createCominName(List<BookInfo> list) {
 
 		Collections.sort(list);
-		String baseInfo = "";
-		for (BookInfo bookInfo : list) {
-			baseInfo = bookInfo.getBaseInfo();
-			//TODO ☆名前の正当性ロジックを検討　全部一緒だったらOKなど
+		BookInfo sampleinfo = list.get(0);
+		log.info("{} 関連の巻数抽出をします", sampleinfo.getBaseInfo());
 
+		if (list.get(0).isRowdateOnly()) {
+			return "[一般コミック]" + sampleinfo.getRowTitle();
+		} else {
+			String baseInfo = sampleinfo.getBaseInfo();
+			return "[一般コミック]" + baseInfo + " " + createComicNoStr(list);
 		}
-		//TODO NO持ってない場合の判定入れる
-
-		return "[一般コミック]" + baseInfo + " " + createComicNoStr(list);
 
 	}
 
@@ -321,46 +314,6 @@ public class BookNameUtil {
 
 	}
 
-	/**
-	 * @deprecated
-	 *
-	 * @param name
-	 * @param list
-	 * @return
-	 */
-	public static String createCominName(String name, Collection<File> list) {
-
-		SortedSet<BookInfo> author = Rakuten.getInfo(new Rakuten.TitleQuery(
-				name));
-		int size = author.size();
-		String authorText;
-
-		if (size == 1) {
-
-			authorText = author.first().getInfo();
-		} else {
-
-			log.warn("複数の著者候補がありました。");
-			log.warn("無視する場合は、ENTERを押してください");
-
-			BookInfo selectOne = UserInput.selectOne(author);
-			if (selectOne != null) {
-				convertpPublisherName(selectOne);
-				authorText = selectOne.getInfo();
-				authorText = authorText.replace("/", "_");
-			} else {
-				authorText = " ";
-			}
-
-		}
-
-		String s = "[一般コミック]" + authorText + name + " "
-				+ BookNameUtil.kan(list);
-
-		return s.replace("/", "_");
-
-	}
-
 	private static Map<String, String> map = new HashMap<String, String>();
 	static {
 		map.put("ジャンプ・コミックス", "Wジャンプ");
@@ -379,46 +332,6 @@ public class BookNameUtil {
 		if (s != null) {
 			info.setPublisherName(s);
 		}
-
-	}
-
-	/**
-	 * @deprecated
-	 * @param list
-	 * @return
-	 */
-	public static String kan(Collection<File> list) {
-		SortedSet<String> set = new TreeSet<String>();
-
-		for (File f : list) {
-
-			try {
-				if (isMultiFile(f)) {
-					set.addAll(booksNo(f.getName()));
-				} else {
-					set.add(bookNo(f.getName()));
-				}
-			} catch (IllegalArgumentException e) {
-				log.warn(e.getMessage());
-				log.warn("巻数の取得できないファイルが存在しました。");
-				log.warn("どのように対応しますか？無視する場合は、ENTERを押してください");
-				log.warn("入力を行った場合は、それがファイルの接尾子になります。（01-15巻＋画集）");
-
-				if (UserInput.isInput()) {
-
-					return UserInput.getUserInput();
-
-				} else {
-
-				}
-			}
-
-		}
-
-		String first = set.first();
-		String last = set.last();
-
-		return "第" + first + "-" + last + "巻";
 
 	}
 

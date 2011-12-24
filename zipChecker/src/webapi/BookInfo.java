@@ -32,6 +32,19 @@ public class BookInfo implements Comparable<BookInfo> {
 
 	}
 
+	public BookInfo(String title) {
+		super();
+		this.seriesName = "";
+		this.publisherName = "";
+		this.author = "";
+		this.rowTitle = title;
+		this.isbn = "";
+		this.no = "";
+		this.titleStr = "";
+		this.rowdateOnly = true;
+
+	}
+
 	public BookInfo(String publisherName, String seriesName, String author,
 			String title, String isbn) {
 		super();
@@ -86,6 +99,7 @@ public class BookInfo implements Comparable<BookInfo> {
 	private String author;
 	private String rowTitle;
 	private String isbn;
+	private boolean rowdateOnly = false;
 
 	/**
 	 * タイトル部分と思わしき部分を切り出します。
@@ -97,6 +111,9 @@ public class BookInfo implements Comparable<BookInfo> {
 	private String no;
 
 	public String getInfo() {
+		if (rowdateOnly) {
+			return rowTitle;
+		}
 
 		if (seriesName.equals("")) {
 
@@ -112,6 +129,9 @@ public class BookInfo implements Comparable<BookInfo> {
 	}
 
 	public String getBaseInfo() {
+		if (rowdateOnly) {
+			return rowTitle;
+		}
 
 		if (seriesName.equals("")) {
 
@@ -139,10 +159,17 @@ public class BookInfo implements Comparable<BookInfo> {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((author == null) ? 0 : author.hashCode());
+		result = prime * result + ((isbn == null) ? 0 : isbn.hashCode());
+		result = prime * result + ((no == null) ? 0 : no.hashCode());
 		result = prime * result
 				+ ((publisherName == null) ? 0 : publisherName.hashCode());
 		result = prime * result
+				+ ((rowTitle == null) ? 0 : rowTitle.hashCode());
+		result = prime * result + (rowdateOnly ? 1231 : 1237);
+		result = prime * result
 				+ ((seriesName == null) ? 0 : seriesName.hashCode());
+		result = prime * result
+				+ ((titleStr == null) ? 0 : titleStr.hashCode());
 		return result;
 	}
 
@@ -160,15 +187,37 @@ public class BookInfo implements Comparable<BookInfo> {
 				return false;
 		} else if (!author.equals(other.author))
 			return false;
+		if (isbn == null) {
+			if (other.isbn != null)
+				return false;
+		} else if (!isbn.equals(other.isbn))
+			return false;
+		if (no == null) {
+			if (other.no != null)
+				return false;
+		} else if (!no.equals(other.no))
+			return false;
 		if (publisherName == null) {
 			if (other.publisherName != null)
 				return false;
 		} else if (!publisherName.equals(other.publisherName))
 			return false;
+		if (rowTitle == null) {
+			if (other.rowTitle != null)
+				return false;
+		} else if (!rowTitle.equals(other.rowTitle))
+			return false;
+		if (rowdateOnly != other.rowdateOnly)
+			return false;
 		if (seriesName == null) {
 			if (other.seriesName != null)
 				return false;
 		} else if (!seriesName.equals(other.seriesName))
+			return false;
+		if (titleStr == null) {
+			if (other.titleStr != null)
+				return false;
+		} else if (!titleStr.equals(other.titleStr))
 			return false;
 		return true;
 	}
@@ -176,11 +225,8 @@ public class BookInfo implements Comparable<BookInfo> {
 	@Override
 	public int compareTo(BookInfo o) {
 
-		if (this.no.compareTo(o.no) != 0) {
-			return this.no.compareTo(o.no);
-		} else {
-			return this.rowTitle.compareTo(o.rowTitle);
-		}
+		return getInfo().compareTo(o.getInfo());
+
 	}
 
 	public String getSeriesName() {
@@ -217,6 +263,14 @@ public class BookInfo implements Comparable<BookInfo> {
 
 	public String getNo() {
 		return no;
+	}
+
+	public boolean isRowdateOnly() {
+		return rowdateOnly;
+	}
+
+	public String getRowTitle() {
+		return rowTitle;
 	}
 
 }
