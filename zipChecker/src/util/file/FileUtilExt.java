@@ -8,6 +8,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.SortedMap;
+import java.util.TreeMap;
 import java.util.regex.Pattern;
 
 import log.Log;
@@ -18,12 +20,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import socre.ScoreUtil;
+import util.BookNameUtil;
 import util.CollectionUtil;
 import util.MapList;
-import util.NameUtil;
 import util.UserInput;
 import util.WinRARWrapper;
 import util.file.filter.DirFilter;
+import webapi.BookInfo;
 import zip.State;
 import zip.ZipChecker;
 import conf.ConfConst;
@@ -198,14 +201,24 @@ public class FileUtilExt {
 
 		File[] dirs = workF.listFiles(new DirFilter());
 
+		List<BookInfo> infoList = new ArrayList<BookInfo>();
+		SortedMap<BookInfo, File> s = new TreeMap<BookInfo, File>();
 		for (File dir : dirs) {
-			//String no = NameUtil.bookNo(dir.getName());
-			String bookNo = NameUtil.bookInfoFromBarcode(dir).replace('/', '_');
-			File newDir = createPath(dir.getParent(), bookNo);
+			//
+			BookInfo bookNo = BookNameUtil.bookInfoFromBarcode(dir);
+			File newDir = createPath(dir.getParent(), bookNo.getInfo());
+
+			s.put(bookNo, newDir);
+
+			infoList.add(bookNo);
 
 			boolean b = false;
+			//TODO フォルダがかぶった場合の処理を入れる サイズを見て判断するか、末尾に数字を付けて臨時対応
 			if (!newDir.exists()) {
 				b = dir.renameTo(newDir);
+			} else {
+				log.warn("フォルダが重複存在します。未実装機能です:" + bookNo);
+				throw new IllegalStateException();
 			}
 
 			if (!b) {
@@ -213,13 +226,17 @@ public class FileUtilExt {
 			}
 		}
 
-		File createPath = createPath(WORK_DIR,
-				NameUtil.createCominName(name, newList));
-		createPath.delete();
-		workF.renameTo(createPath);
+		BookNameUtil.createCominName(new File(WORK_DIR), s);
 
-		WinRARWrapper
-				.encode(createPath.getPath(), createPath.getAbsolutePath());
+		//		File createPath = createPath(WORK_DIR,
+		//				BookNameUtil.createCominName(infoList));
+		//		createPath.delete();
+		//		workF.renameTo(createPath);
+		//
+		//		//TODO ファイルサイズの分割を検討する
+		//
+		//		WinRARWrapper
+		//				.encode(createPath.getPath(), createPath.getAbsolutePath());
 
 	}
 

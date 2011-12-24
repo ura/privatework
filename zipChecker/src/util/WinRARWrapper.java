@@ -39,7 +39,7 @@ public class WinRARWrapper {
 				+ "\"";
 
 		log.info(cmd);
-		log.info(src.exists() + "\t" + dest.exists());
+		log.debug(src.exists() + "\t" + dest.exists());
 
 		final Process exec = Runtime.getRuntime().exec(cmd);
 
@@ -128,4 +128,9 @@ public class WinRARWrapper {
 		}
 	}
 
+	public static void encode(File src, File dest) throws IOException,
+			InterruptedException {
+		encode(src.getAbsolutePath(), dest.getAbsolutePath());
+
+	}
 }

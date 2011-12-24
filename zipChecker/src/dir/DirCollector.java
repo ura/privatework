@@ -53,13 +53,13 @@ public class DirCollector implements FileHandler, Iterable<Dir> {
 	{
 
 		if (f.isDirectory()) {
-			log.info(f.getAbsolutePath() + "\t MAPSIZE:" + dirSet.size() + "\t"
-					+ dirSet.containsKey(f));
+			log.debug(f.getAbsolutePath() + "\t MAPSIZE:" + dirSet.size()
+					+ "\t" + dirSet.containsKey(f));
 
 			dirSet.put(f, new Dir(f));
-			log.info(f.getAbsolutePath() + "\t MAPSIZE:" + dirSet.size() + "\t"
-					+ dirSet.containsKey(f));
-			log.info(dirSet.get(f).dir.getAbsolutePath());
+			log.debug(f.getAbsolutePath() + "\t MAPSIZE:" + dirSet.size()
+					+ "\t" + dirSet.containsKey(f));
+			log.debug(dirSet.get(f).dir.getAbsolutePath());
 
 		} else {
 			log.debug(f.getAbsolutePath());

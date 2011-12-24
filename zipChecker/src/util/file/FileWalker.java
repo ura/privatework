@@ -25,7 +25,7 @@ public class FileWalker {
 
 		if (root.isDirectory()) {
 
-			log.info(root.getPath());
+			log.info("処理対象フォルダ:{}", root.getPath());
 
 			File[] files = root.listFiles(new FileFilter() {
 

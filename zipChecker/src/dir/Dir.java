@@ -32,7 +32,7 @@ public class Dir implements Comparable<Dir> {
 	public Dir(File dir) {
 		super();
 		this.dir = dir;
-		log.info(dir.getAbsolutePath());
+		log.debug(dir.getAbsolutePath());
 
 		String path = dir.getPath();
 

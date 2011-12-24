@@ -1,13 +1,19 @@
 package util;
 
 import java.io.File;
+import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.SortedMap;
 import java.util.SortedSet;
+import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -18,10 +24,11 @@ import org.slf4j.LoggerFactory;
 import webapi.BookInfo;
 import webapi.Rakuten;
 import barcode.BarcodeReader;
+import static util.file.FileNameUtil.createPath;
 
-public class NameUtil {
+public class BookNameUtil {
 
-	private static Logger log = LoggerFactory.getLogger(NameUtil.class);
+	private static Logger log = LoggerFactory.getLogger(BookNameUtil.class);
 
 	private static Pattern parterm = Pattern.compile("第([0-9]+)巻");
 	private static Pattern partermEng = Pattern.compile("v([0-9]+)\\.");
@@ -77,6 +84,11 @@ public class NameUtil {
 
 	}
 
+	/**
+	 * @deprecated
+	 * @param f
+	 * @return
+	 */
 	public static boolean isMultiFile(File f) {
 
 		String name = f.getName();
@@ -118,11 +130,11 @@ public class NameUtil {
 	 * @param dir
 	 * @return
 	 */
-	public static String bookInfoFromBarcode(File dir) {
+	public static BookInfo bookInfoFromBarcode(File dir) {
 
 		String barcode = BarcodeReader.autoReadDir(dir);
 		BookInfo info = Rakuten.getInfo(barcode);
-		return info.getInfo();
+		return info;
 
 	}
 
@@ -194,6 +206,128 @@ public class NameUtil {
 		return l;
 	}
 
+	public static void createCominName(File baseDir,
+			SortedMap<BookInfo, File> map) throws IOException,
+			InterruptedException {
+
+		//コミックの名称（巻を除く）ごとに分別
+		SortedMap<String, SortedMap<BookInfo, File>> m = new TreeMap<String, SortedMap<BookInfo, File>>() {
+			@Override
+			public SortedMap<BookInfo, File> get(Object key) {
+				if (!this.containsKey(key)) {
+					TreeMap<BookInfo, File> treeMap = new TreeMap<BookInfo, File>();
+					this.put((String) key, treeMap);
+				}
+				return super.get(key);
+			}
+
+		};
+
+		for (BookInfo bookInfo : map.keySet()) {
+			String baseInfo = bookInfo.getBaseInfo();
+			m.get(baseInfo).put(bookInfo, map.get(bookInfo));
+		}
+
+		for (Entry<String, SortedMap<BookInfo, File>> e : m.entrySet()) {
+			SortedMap<BookInfo, File> value = e.getValue();
+			Set<BookInfo> keySet = value.keySet();
+			List<BookInfo> list = new ArrayList<BookInfo>(keySet);
+
+			log.info("{} : {}", e.getKey(), list.size());
+			int size = list.size();
+			for (int i = 0; i < 10; i++) {
+
+				if ((i + 1) * 10 < size) {
+					List<BookInfo> subList = list.subList(i * 10, (i + 1) * 10);
+					String folderName = createCominName(subList);
+					File path = createPath(baseDir, folderName);
+					path.delete();
+					path.mkdir();
+					for (BookInfo bookInfo : subList) {
+						File file = value.get(bookInfo);
+						file.renameTo(createPath(path, file));
+
+					}
+					WinRARWrapper.encode(path, path);
+				} else {
+					List<BookInfo> subList = list.subList(i * 10, size);
+					String folderName = createCominName(subList);
+					File path = createPath(baseDir, folderName);
+					path.delete();
+					path.mkdir();
+					for (BookInfo bookInfo : subList) {
+						File file = value.get(bookInfo);
+						file.renameTo(createPath(path, file));
+
+					}
+					WinRARWrapper.encode(path, path);
+					break;
+
+				}
+			}
+
+		}
+
+	}
+
+	public static String createCominName(List<BookInfo> list) {
+
+		Collections.sort(list);
+		String baseInfo = "";
+		for (BookInfo bookInfo : list) {
+			baseInfo = bookInfo.getBaseInfo();
+			//TODO ☆名前の正当性ロジックを検討　全部一緒だったらOKなど
+
+		}
+		//TODO NO持ってない場合の判定入れる
+
+		return "[一般コミック]" + baseInfo + " " + createComicNoStr(list);
+
+	}
+
+	private static String createComicNoStr(List<BookInfo> list) {
+
+		int size = list.size();
+		SortedSet<String> set = new TreeSet<String>();
+		SortedSet<String> setNG = new TreeSet<String>();
+		int noCount = Integer.parseInt(list.get(0).getNo());
+		for (int i = 0; i < size; i++) {
+			String noStr = list.get(i).getNo();
+			int no = Integer.parseInt(noStr);
+			for (int increment = 0; increment < 3; increment++) {
+				if (no == noCount) {
+					set.add(no_XX(noCount));
+					noCount++;
+					break;
+				} else {
+					setNG.add(no_XX(noCount));
+					noCount++;
+				}
+			}
+		}
+
+		String first = set.first();
+		String last = set.last();
+
+		StringBuilder sb = new StringBuilder();
+		sb.append("第").append(first).append("-").append(last).append("巻");
+
+		for (String string : setNG) {
+			sb.append(" ").append(string).append("抜け");
+
+		}
+
+		return sb.toString();
+
+	}
+
+	/**
+	 * @deprecated
+	 *
+	 * @param name
+	 * @param list
+	 * @return
+	 */
 	public static String createCominName(String name, Collection<File> list) {
 
 		SortedSet<BookInfo> author = Rakuten.getInfo(new Rakuten.TitleQuery(
@@ -220,7 +354,8 @@ public class NameUtil {
 
 		}
 
-		String s = "[一般コミック]" + authorText + name + " " + NameUtil.kan(list);
+		String s = "[一般コミック]" + authorText + name + " "
+				+ BookNameUtil.kan(list);
 
 		return s.replace("/", "_");
 
@@ -247,6 +382,11 @@ public class NameUtil {
 
 	}
 
+	/**
+	 * @deprecated
+	 * @param list
+	 * @return
+	 */
 	public static String kan(Collection<File> list) {
 		SortedSet<String> set = new TreeSet<String>();
 

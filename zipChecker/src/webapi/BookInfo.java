@@ -35,9 +35,9 @@ public class BookInfo implements Comparable<BookInfo> {
 	public BookInfo(String publisherName, String seriesName, String author,
 			String title, String isbn) {
 		super();
-		this.seriesName = seriesName;
-		this.publisherName = publisherName;
-		this.author = author;
+		this.seriesName = Normalizer.normalizer(seriesName);
+		this.publisherName = Normalizer.normalizer(publisherName);
+		this.author = Normalizer.normalizer(author);
 		this.rowTitle = title;
 		this.isbn = isbn;
 
@@ -53,7 +53,7 @@ public class BookInfo implements Comparable<BookInfo> {
 			Matcher matcher = reg.matcher(this.rowTitle);
 
 			boolean result = matcher.find();
-			log.info(no + "\t" + reg.pattern() + "\t" + result);
+			log.debug(no + "\t" + reg.pattern() + "\t" + result);
 
 			if (result) {
 
@@ -111,6 +111,19 @@ public class BookInfo implements Comparable<BookInfo> {
 		}
 	}
 
+	public String getBaseInfo() {
+
+		if (seriesName.equals("")) {
+
+			return "[" + author + "]" + "[" + publisherName + "]" + "["
+					+ seriesName + "]" + "[" + titleStr + "]";
+		} else {
+			return "[" + author + "]" + "[" + publisherName + "]" + "["
+					+ titleStr + "]";
+
+		}
+	}
+
 	public boolean haveNo() {
 		return !no.equals("");
 	}
@@ -163,7 +176,11 @@ public class BookInfo implements Comparable<BookInfo> {
 	@Override
 	public int compareTo(BookInfo o) {
 
-		return this.publisherName.compareTo(o.publisherName);
+		if (this.no.compareTo(o.no) != 0) {
+			return this.no.compareTo(o.no);
+		} else {
+			return this.rowTitle.compareTo(o.rowTitle);
+		}
 	}
 
 	public String getSeriesName() {
@@ -196,6 +213,10 @@ public class BookInfo implements Comparable<BookInfo> {
 
 	public void setTitle(String title) {
 		this.rowTitle = title;
+	}
+
+	public String getNo() {
+		return no;
 	}
 
 }

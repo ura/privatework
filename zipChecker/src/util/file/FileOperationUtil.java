@@ -16,7 +16,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import util.NameUtil;
+import util.BookNameUtil;
 import util.StaticUtil;
 import util.file.filter.FileNameFilter;
 import util.file.filter.FileNameFilter.MODE;
@@ -79,7 +79,9 @@ public class FileOperationUtil {
 	}
 
 	/**
-	 * 空フォルダを再帰的に消す
+	 * 空フォルダを再帰的に消す。
+	 * 拡張子が指定されている場合、それ以外のファイルは必要ないものとみなし
+	 * 指定されたファイルが入ってないフォルダは削除対象になる。
 	 */
 	public static void deleteEmptyDir(File dir, String... ext) {
 
@@ -310,7 +312,8 @@ public class FileOperationUtil {
 			for (String file : fileNameSet) {
 				File f = new File(file);
 
-				File dest = createPath(dir2.dir, NameUtil.createSimpleName(f));
+				File dest = createPath(dir2.dir,
+						BookNameUtil.createSimpleName(f));
 
 				if (f.equals(dest)) {
 					//ファイル名に変更がなければ無視
@@ -345,7 +348,7 @@ public class FileOperationUtil {
 		boolean b = false;
 
 		if (rename) {
-			String name = NameUtil.createSimpleName(f);
+			String name = BookNameUtil.createSimpleName(f);
 			if (!f.getName().equals(name)) {
 				log.info(Log.OP, "RENAME {} >> {}", new Object[] { f.getName(),
 						name });

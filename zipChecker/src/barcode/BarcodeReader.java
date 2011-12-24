@@ -260,20 +260,12 @@ public class BarcodeReader {
 					return text;
 				}
 
-			} catch (NotFoundException e) {
-				// TODO 自動生成された catch ブロック
-				// e.printStackTrace();
-			} catch (ChecksumException e) {
-				// TODO 自動生成された catch ブロック
-				// e.printStackTrace();
-			} catch (FormatException e) {
-				// TODO 自動生成された catch ブロック
-				// e.printStackTrace();
+			} catch (NotFoundException | ChecksumException | FormatException e) {
+				//見つからないことは普通にある。そのために探しまくっている
+
 			}
 
 		}
-
-		// TODO
 		return null;
 	}
 
