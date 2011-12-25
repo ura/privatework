@@ -244,7 +244,7 @@ public class FileOperationUtil {
 	/**
 	 * マルチスレッド時でもフォルダ名が被らないようなフォルダを作成する。
 	 */
-	public static String createTempDir(String base) throws IOException {
+	public static File createTempDir(String base) throws IOException {
 
 		long millis = System.currentTimeMillis();
 		long id = Thread.currentThread().getId();
@@ -252,7 +252,7 @@ public class FileOperationUtil {
 		String r = base + "/" + id + "_" + millis;
 		new File(r).mkdir();
 
-		return r;
+		return new File(r);
 
 	}
 

@@ -27,6 +27,30 @@
 			</Pattern>
 		</layout>
 	</appender>
+
+	  <appender name="FILEWARM"
+		class="ch.qos.logback.core.rolling.RollingFileAppender"
+
+		>
+
+	 <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+      <level>warn</level>
+    </filter>
+
+		<file>logWarm.log</file>
+		<append>true</append>
+		<rollingPolicy
+			class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<FileNamePattern>log.%d{yyyy-MM-dd}.log</FileNamePattern>
+		</rollingPolicy>
+		<encoding>UTF-8</encoding>
+		<layout class="ch.qos.logback.classic.PatternLayout">
+			<Pattern>
+				%date [%thread] %-5level %logger{35} - %msg%n%ex{full}
+			</Pattern>
+		</layout>
+	</appender>
+
   <appender name="FILEX"
 		class="ch.qos.logback.core.rolling.RollingFileAppender">
 <!--
@@ -66,6 +90,10 @@
   <logger name="util.file.FileWalker">
     <level value="ERROR" />
   </logger>
+  <logger name="util.ThreadPoolExecutorSync">
+    <level value="ERROR" />
+  </logger>
+
 
   <logger name="barcode.BarcodeReader">
     <level value="INFO" />
@@ -73,6 +101,8 @@
   <logger name="webapi.Amazon">
     <level value="INFO" />
   </logger>
+
+
 
 
 
@@ -90,5 +120,7 @@
     <appender-ref ref="STDOUT" />
     <appender-ref ref="FILE" />
     <appender-ref ref="FILEX" />
+    <appender-ref ref="FILEWARM" />
+
   </root>
 </configuration>

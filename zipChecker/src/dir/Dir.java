@@ -115,6 +115,21 @@ public class Dir implements Comparable<Dir> {
 
 	}
 
+	public long getChildrenfileSize() {
+
+		refreshFileInfo();
+
+		long l = 0;
+		for (String str : this.fileNameSet) {
+			File file = new File(str);
+			l = +file.length();
+
+		}
+
+		return l;
+
+	}
+
 	public boolean delete() {
 		return FileOperationUtil.delete(dir);
 	}

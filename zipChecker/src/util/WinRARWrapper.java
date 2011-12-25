@@ -74,7 +74,7 @@ public class WinRARWrapper {
 		boolean b = decodeCore(src, dest);
 
 		if (!b) {
-			File work1 = new File(FileOperationUtil.createTempDir(WORK_DIR));
+			File work1 = FileOperationUtil.createTempDir(WORK_DIR);
 
 			String ext = "";
 			if (src.getName().endsWith(".rar")) {
@@ -90,7 +90,7 @@ public class WinRARWrapper {
 
 			Files.copy(src.toPath(), temp.toPath());
 
-			File workDest = new File(FileOperationUtil.createTempDir(WORK_DIR));
+			File workDest = FileOperationUtil.createTempDir(WORK_DIR);
 
 			boolean workResult = decodeCore(temp, workDest);
 

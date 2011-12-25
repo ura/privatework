@@ -26,6 +26,8 @@ import util.MapList;
 import util.UserInput;
 import util.WinRARWrapper;
 import util.file.filter.DirFilter;
+import util.file.filter.FileNameFilter;
+import util.file.filter.FileNameFilter.MODE;
 import webapi.BookInfo;
 import zip.State;
 import zip.ZipChecker;
@@ -186,8 +188,8 @@ public class FileUtilExt {
 
 	public static void rebuildArc(String name, Collection<File> newList)
 			throws IOException, InterruptedException {
-		String work = FileOperationUtil.createTempDir(WORK_DIR);
-		File workF = new File(work);
+
+		File workF = FileOperationUtil.createTempDir(WORK_DIR);
 
 		for (File zipFile : newList) {
 
@@ -207,8 +209,6 @@ public class FileUtilExt {
 		FileOperationUtil.removeFile(workF, new String[] { "^.*\\.html$",
 				"^.*\\.url$", "^.*\\.txt$", "^Thumbs\\.db", "^[^.]*$" });
 
-		//TODO
-
 		File[] dirs = workF.listFiles(new DirFilter());
 
 		SortedMap<BookInfo, File> s = new TreeMap<BookInfo, File>();
@@ -217,41 +217,92 @@ public class FileUtilExt {
 			BookInfo bookNo = BookNameUtil.bookInfoFromBarcode(dir);
 			File newDir = createPath(dir.getParent(), bookNo.getInfo());
 
-			//TODO BOOKINFOがかぶった場合の考慮
 			log.debug(newDir.getName() + "  " + dir.getName());
 			s.put(bookNo, newDir);
 			log.debug(newDir.getName() + "  " + s.size());
 
-			boolean b = false;
-			//TODO フォルダがかぶった場合の処理を入れる サイズを見て判断するか、末尾に数字を付けて臨時対応
-			if (!newDir.exists()) {
-				b = dir.renameTo(newDir);
-				if (!b) {
-					log.warn("フォルダのリネームに失敗しました:" + bookNo);
-				}
-			} else {
-
-				if (!newDir.equals(dir)) {
-					log.warn("フォルダが重複存在します。未実装機能です:" + bookNo);
-					throw new IllegalStateException();
-				}
-
-			}
+			moveDir(dir, newDir, bookNo);
 
 		}
 
 		BookNameUtil.createCominName(new File(WORK_DIR), s);
 
-		//		File createPath = createPath(WORK_DIR,
-		//				BookNameUtil.createCominName(infoList));
-		//		createPath.delete();
-		//		workF.renameTo(createPath);
-		//
-		//		//TODO ファイルサイズの分割を検討する
-		//
-		//		WinRARWrapper
-		//				.encode(createPath.getPath(), createPath.getAbsolutePath());
+	}
 
+	private static void moveDir(File src, File dest, BookInfo bookNo)
+			throws IOException {
+		boolean b = false;
+		//TODO フォルダがかぶった場合の処理を入れる サイズを見て判断するか、末尾に数字を付けて臨時対応
+		if (!dest.exists()) {
+			b = src.renameTo(dest);
+			if (!b) {
+				log.warn("フォルダのリネームに失敗しました:" + bookNo);
+			}
+		} else {
+
+			if (!isSame(src, dest)) {
+
+				long srcSize = dirSize(src);
+				long destSize = dirSize(dest);
+
+				if (srcSize < destSize) {
+					File tempDir = FileOperationUtil.createTempDir(WORK_DIR);
+					File path = createPath(tempDir, bookNo.getInfo());
+					src.renameTo(path);
+
+					log.warn("サイズの小さいフォルダをテンポラリに移しました:{}  :{}  {}",
+							new Object[] { path, srcSize, destSize });
+				} else {
+					File tempDir = FileOperationUtil.createTempDir(WORK_DIR);
+					File path = createPath(tempDir, bookNo.getInfo());
+					dest.renameTo(path);
+
+					log.warn("サイズの小さいフォルダをテンポラリに移しました:{}  :{}  {}",
+							new Object[] { path, "" + srcSize, destSize });
+
+				}
+
+				//throw new IllegalStateException();
+			}
+
+		}
+	}
+
+	/**
+	 * フォルダ内のファイルサイズが同一だった場合、同じフォルダとみなします。
+	 * （上書きの判断などに使用）
+	 * @param src
+	 * @param dest
+	 * @return
+	 */
+	private static boolean isSame(File src, File dest) {
+
+		if (src.equals(dest)) {
+			return true;
+		} else {
+			long srcSize = dirSize(src);
+			long destSize = dirSize(dest);
+
+			if (srcSize == destSize) {
+
+				log.warn("フォルダのサイズが一致しました。同じフォルダとみなします。{} : {} ", src, dest);
+				return true;
+			} else {
+				log.info("フォルダのサイズが一致しましませんでした。{} : {} ", src, dest);
+				return false;
+			}
+		}
+
+	}
+
+	private static long dirSize(File dir) {
+		File[] filse = dir.listFiles(new FileNameFilter(MODE.EXT_EXCLUDE, "z"));
+		long l = 0;
+		for (File file : filse) {
+			l = +file.length();
+		}
+
+		return l;
 	}
 
 	/**

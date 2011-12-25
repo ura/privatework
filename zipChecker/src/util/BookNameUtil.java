@@ -282,17 +282,17 @@ public class BookNameUtil {
 		Collections.sort(list);
 		BookInfo sampleinfo = list.get(0);
 		log.info("{} 関連の巻数抽出をします", sampleinfo.getBaseInfo());
-		if (list.size() == 1) {
-			log.info("{} 1ファイルしかないので、巻数抽出は不要でした。", sampleinfo.getBaseInfo());
-			return "";
-
-		}
 
 		if (list.get(0).isRowdateOnly()) {
 			return "[一般コミック]" + sampleinfo.getRowTitle();
 		} else {
 			String baseInfo = sampleinfo.getBaseInfo();
-			return "[一般コミック]" + baseInfo + " " + createComicNoStr(list);
+			if (list.size() == 1) {
+				log.info("{} 1ファイルしかないので、巻数抽出は不要でした。", sampleinfo.getBaseInfo());
+				return "[一般コミック]" + baseInfo;
+			} else {
+				return "[一般コミック]" + baseInfo + " " + createComicNoStr(list);
+			}
 		}
 
 	}
