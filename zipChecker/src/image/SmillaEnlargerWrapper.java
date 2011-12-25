@@ -183,10 +183,14 @@ public class SmillaEnlargerWrapper {
 					return true;
 				}
 			}
-		} catch (IOException | InterruptedException e) {
-			// TODO 自動生成された catch ブロック
-			e.printStackTrace();
+		} catch (IOException e) {
+
+			log.warn("例外が発生しました。{}", e.getMessage());
+		} catch (InterruptedException e) {
+
+			log.warn("例外が発生しました。タスクの強制中断と思われます。：{}", e.getMessage());
 		}
+
 		return false;
 
 	}

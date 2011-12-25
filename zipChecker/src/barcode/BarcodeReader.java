@@ -10,6 +10,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import javax.imageio.ImageIO;
 
@@ -24,13 +29,15 @@ import com.google.zxing.BinaryBitmap;
 import com.google.zxing.ChecksumException;
 import com.google.zxing.FormatException;
 import com.google.zxing.LuminanceSource;
-import com.google.zxing.MultiFormatReader;
 import com.google.zxing.NotFoundException;
 import com.google.zxing.Reader;
 import com.google.zxing.Result;
 import com.google.zxing.ResultPoint;
 import com.google.zxing.client.j2se.BufferedImageLuminanceSource;
 import com.google.zxing.common.HybridBinarizer;
+import com.google.zxing.oned.EAN13Reader;
+
+import static util.StaticUtil.sleep;
 
 public class BarcodeReader {
 
@@ -80,76 +87,144 @@ public class BarcodeReader {
 		return idx < param || (asList.size() - param) < idx;
 	}
 
-	private static String read(List<File> asList, boolean retry) {
+	private static class Task implements Callable<String> {
 
-		//最初と最後にしか、バーコードはついていないと推定する
-		//TODO ファイルのソート順に問題あり。
-		for (int i = 0; i < asList.size(); i++) {
+		public Task(int i, boolean retry, File file) {
+			super();
+			this.retry = retry;
+			this.file = file;
+			this.i = i;
+		}
 
+		private boolean retry;
+		private File file;
+		int i;
+
+		@Override
+		public String call() throws Exception {
+			String barcord = null;
 			try {
-				if (isReadFile(i, asList)) {
-					File file = asList.get(i);
-					String barcord;
-					if (retry) {
-						log.info("高精細化を目論みます。{}", file.getAbsolutePath());
-						File tempFile = SmillaEnlargerWrapper.convertTempFile(
-								file, 200);
-						barcord = autoRead(tempFile.getAbsolutePath(), 2);
-						tempFile.delete();
-					} else {
-						barcord = autoRead(file.getAbsolutePath(), 2);
-					}
+				if (retry) {
+					log.info("高精細化を目論みます。{}", file.getAbsolutePath());
+					//File tempFile = SmillaEnlargerWrapper.convertTempFile(file,
+					//		200);
+					//barcord = autoRead(tempFile.getAbsolutePath(), 2);
+					barcord = autoRead(file.getAbsolutePath(), 2);
+					//tempFile.delete();
+				} else {
+					barcord = autoRead(file.getAbsolutePath(), 2);
+				}
 
-					//書籍には、二段のバーコードがあり、上のバーコードがほしい
-					if (barcord != null) {
-						log.info("バーコード検出 IDX=" + i + "\t"
+				//書籍には、二段のバーコードがあり、上のバーコードがほしい
+				if (barcord != null) {
+					log.info("バーコード検出 IDX=" + i + "\t" + file.getAbsolutePath()
+							+ "\t" + barcord);
+					if (barcord.startsWith("192")) {
+						log.info("求めているバーコードではないため、スキップします。 IDX=" + i + "\t"
 								+ file.getAbsolutePath() + "\t" + barcord);
-						if (barcord.startsWith("192")) {
-							log.info("求めているバーコードではないため、スキップします。 IDX=" + i
-									+ "\t" + file.getAbsolutePath() + "\t"
-									+ barcord);
-							continue;
-						} else if (!barcord.startsWith("978")) {
-							log.info("バーコードの読取エラーと想定されます。スキップします。 IDX=" + i
-									+ "\t" + file.getAbsolutePath() + "\t"
-									+ barcord);
 
-							List<SmillaEnlargerConf> list = SmillaEnlargerWrapper
-									.convertConfList(file, 200);
-							for (SmillaEnlargerConf smillaEnlargerConf : list) {
-								File tempFile = SmillaEnlargerWrapper
-										.convertTempFile(file,
-												smillaEnlargerConf);
-								barcord = autoRead(tempFile.getAbsolutePath(),
-										2);
-								tempFile.delete();
+					} else if (!barcord.startsWith("978")) {
+						log.info("バーコードの読取エラーと想定されます。スキップします。 IDX=" + i + "\t"
+								+ file.getAbsolutePath() + "\t" + barcord);
 
-								if (barcord != null
-										&& barcord.startsWith("978")) {
-									log.info("バーコード検出 IDX=" + i + "\t"
-											+ file.getAbsolutePath() + "\t"
-											+ barcord);
-									return barcord;
-								} else {
-									log.info("不正なバーコードです IDX=" + i + "\t"
-											+ file.getAbsolutePath() + "\t"
-											+ barcord);
-								}
+						List<SmillaEnlargerConf> list = SmillaEnlargerWrapper
+								.convertConfList(file, 200);
+						for (SmillaEnlargerConf smillaEnlargerConf : list) {
+							File tempFile = SmillaEnlargerWrapper
+									.convertTempFile(file, smillaEnlargerConf);
+							barcord = autoRead(tempFile.getAbsolutePath(), 2);
+							tempFile.delete();
 
+							if (barcord != null && barcord.startsWith("978")) {
+								log.info("バーコード検出 IDX=" + i + "\t"
+										+ file.getAbsolutePath() + "\t"
+										+ barcord);
+								return barcord;
+							} else {
+								log.info("不正なバーコードです IDX=" + i + "\t"
+										+ file.getAbsolutePath() + "\t"
+										+ barcord);
 							}
 
-							continue;
 						}
 
-						return barcord;
 					}
+
 				}
-			} catch (IOException e) {
-				log.error("想定外のエラー", e);
+			} catch (Exception e) {
+				log.warn("バーコード読み取り時にエラー:{}", file.getAbsoluteFile(), e);
+			}
+			return barcord;
+		}
+	}
+
+	private static ExecutorService ex = Executors.newFixedThreadPool(5);
+
+	private static String read(List<File> asList, boolean retry) {
+
+		try {
+			//最初と最後にしか、バーコードはついていないと推定する
+
+			List<Future<String>> list = new ArrayList<>();
+
+			for (int i = 0; i < asList.size(); i++) {
+				if (isReadFile(i, asList)) {
+
+					File file = asList.get(i);
+					Future<String> submit = ex.submit(new Task(i, retry, file));
+					list.add(submit);
+
+				}
+			}
+			ex.shutdown();
+			try {
+				String barcode;
+				while (!ex.isTerminated()) {
+
+					barcode = getTaskResult(list);
+					if (barcode != null) {
+						return barcode;
+					}
+
+					sleep(500l);
+				}
+				barcode = getTaskResult(list);
+				if (barcode != null) {
+					return barcode;
+				}
+			} finally {
+				ex.shutdownNow();
+
+			}
+
+		} catch (InterruptedException e) {
+			log.info("シャットダウンの中止と思われるInterruptedExceptionが発生。{}",
+					e.getMessage());
+
+		} catch (ExecutionException e) {
+			log.error("想定外のエラー", e);
+		}
+		log.info("バーコードが取得できませんでした。親フォルダサンプル：{}  MODE:{}", asList.get(0)
+				.getParent(), retry);
+		return null;
+
+	}
+
+	private static String getTaskResult(List<Future<String>> list)
+			throws InterruptedException, ExecutionException {
+		String barcode = null;
+		for (Future<String> future : list) {
+			if (future.isDone()) {
+				barcode = future.get();
+
+				if (barcode != null) {
+					log.info("バーコードを戻します:{}", barcode);
+					return barcode;
+				}
 			}
 
 		}
-		return null;
+		return barcode;
 	}
 
 	/**
@@ -252,7 +327,12 @@ public class BarcodeReader {
 	}
 
 	private static String decode(BinaryBitmap basemap, List<Rect> set) {
-		Reader reader = new MultiFormatReader();
+
+		//Reader reader = new MultiFormatReader();
+
+		//高速化のために内容変更
+		Reader reader = new EAN13Reader();
+
 		for (Rect rect : set) {
 			BinaryBitmap bitmap = crop(basemap, rect);
 
@@ -270,6 +350,7 @@ public class BarcodeReader {
 
 				// 位置検出パターンおよびアラインメントパターンの座標を取得
 				ResultPoint[] points = result.getResultPoints();
+
 				log.debug("位置検出パターン／アライメントパターンの座標: ");
 				for (int i = 0; i < points.length; i++) {
 					log.debug("    Point[" + i + "] = " + points[i]);
@@ -288,5 +369,4 @@ public class BarcodeReader {
 		}
 		return null;
 	}
-
 }
