@@ -12,8 +12,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import javax.imageio.ImageIO;
@@ -21,6 +19,7 @@ import javax.imageio.ImageIO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import util.ThreadPoolExecutorSync;
 import util.file.filter.FileNameFilter;
 import util.file.filter.FileNameFilter.MODE;
 
@@ -36,8 +35,6 @@ import com.google.zxing.ResultPoint;
 import com.google.zxing.client.j2se.BufferedImageLuminanceSource;
 import com.google.zxing.common.HybridBinarizer;
 import com.google.zxing.oned.EAN13Reader;
-
-import static util.StaticUtil.sleep;
 
 public class BarcodeReader {
 
@@ -87,7 +84,7 @@ public class BarcodeReader {
 		return idx < param || (asList.size() - param) < idx;
 	}
 
-	private static class Task implements Callable<String> {
+	private static class Task<Strings> implements Callable<String> {
 
 		public Task(int i, boolean retry, File file) {
 			super();
@@ -101,16 +98,23 @@ public class BarcodeReader {
 		int i;
 
 		@Override
+		public String toString() {
+			return "バーコード読み取りTask [retry=" + retry + ", file="
+					+ file.getAbsolutePath() + "]";
+		}
+
+		@Override
 		public String call() throws Exception {
 			String barcord = null;
 			try {
 				if (retry) {
 					log.info("高精細化を目論みます。{}", file.getAbsolutePath());
-					//File tempFile = SmillaEnlargerWrapper.convertTempFile(file,
-					//		200);
-					//barcord = autoRead(tempFile.getAbsolutePath(), 2);
-					barcord = autoRead(file.getAbsolutePath(), 2);
-					//tempFile.delete();
+					File tempFile = SmillaEnlargerWrapper.convertTempFile(file,
+							200);
+					barcord = autoRead(tempFile.getAbsolutePath(), 2);
+					//barcord = autoRead(file.getAbsolutePath(), 2);
+					tempFile.delete();
+
 				} else {
 					barcord = autoRead(file.getAbsolutePath(), 2);
 				}
@@ -158,56 +162,45 @@ public class BarcodeReader {
 		}
 	}
 
-	private static ExecutorService ex = Executors.newFixedThreadPool(5);
+	private static ThreadPoolExecutorSync ex = new ThreadPoolExecutorSync();
 
 	private static String read(List<File> asList, boolean retry) {
 
-		try {
-			//最初と最後にしか、バーコードはついていないと推定する
+		//最初と最後にしか、バーコードはついていないと推定する
 
-			List<Future<String>> list = new ArrayList<>();
+		List<Callable<String>> list = new ArrayList<>();
 
-			for (int i = 0; i < asList.size(); i++) {
-				if (isReadFile(i, asList)) {
+		for (int i = 0; i < asList.size(); i++) {
+			if (isReadFile(i, asList)) {
 
-					File file = asList.get(i);
-					Future<String> submit = ex.submit(new Task(i, retry, file));
-					list.add(submit);
-
-				}
-			}
-			ex.shutdown();
-			try {
-				String barcode;
-				while (!ex.isTerminated()) {
-
-					barcode = getTaskResult(list);
-					if (barcode != null) {
-						return barcode;
-					}
-
-					sleep(500l);
-				}
-				barcode = getTaskResult(list);
-				if (barcode != null) {
-					return barcode;
-				}
-			} finally {
-				ex.shutdownNow();
-
+				File file = asList.get(i);
+				Task task = new Task(i, retry, file);
+				list.add(task);
 			}
 
-		} catch (InterruptedException e) {
-			log.info("シャットダウンの中止と思われるInterruptedExceptionが発生。{}",
-					e.getMessage());
-
-		} catch (ExecutionException e) {
-			log.error("想定外のエラー", e);
 		}
-		log.info("バーコードが取得できませんでした。親フォルダサンプル：{}  MODE:{}", asList.get(0)
-				.getParent(), retry);
-		return null;
 
+		String string = ex.invokeAll(list);
+		if (string != null) {
+			return string;
+		} else {
+			log.info("バーコードが取得できませんでした。親フォルダサンプル：{}  MODE:{}", asList.get(0)
+					.getParent(), retry);
+			return null;
+		}
+
+	}
+
+	private static boolean isRemainTask(List<Future<String>> list)
+			throws InterruptedException, ExecutionException {
+
+		for (Future<String> future : list) {
+			if (!future.isDone()) {
+				return true;
+			}
+
+		}
+		return false;
 	}
 
 	private static String getTaskResult(List<Future<String>> list)
