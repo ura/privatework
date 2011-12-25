@@ -22,11 +22,15 @@ public class BookInfo implements Comparable<BookInfo> {
 	private static final Pattern titleReg1 = Pattern
 			.compile("(.*)[\\(（]{1}([    ([0-9]]+)[）\\)]{1}$");
 
+	private static final Pattern titleReg2 = Pattern
+			.compile("(.*[^0-9])([0-9]+) [\\(\\(（].*[\\)）\\)]$");
+
 	private static final List<Pattern> regList;
 	static {
 		ArrayList<Pattern> list = new ArrayList<Pattern>();
 		list.add(titleSReg);
 		list.add(titleReg1);
+		list.add(titleReg2);
 
 		regList = Collections.unmodifiableList(list);
 
@@ -115,11 +119,12 @@ public class BookInfo implements Comparable<BookInfo> {
 			return rowTitle;
 		}
 
-		if (seriesName.equals("")) {
+		if (!seriesName.equals("")) {
 
 			return "[" + author + "]" + "[" + publisherName + "]" + "["
 					+ seriesName + "]" + "[" + titleStr
-					+ (haveNo() ? " 第" + no + "巻" : "") + "]";
+					+ (haveNo() ? " 第" + no + "巻" : "") + "]" + "[ISBN" + isbn
+					+ "]";
 		} else {
 			return "[" + author + "]" + "[" + publisherName + "]" + "["
 					+ titleStr + (haveNo() ? " 第" + no + "巻" : "") + "]"
@@ -133,7 +138,7 @@ public class BookInfo implements Comparable<BookInfo> {
 			return rowTitle;
 		}
 
-		if (seriesName.equals("")) {
+		if (!seriesName.equals("")) {
 
 			return "[" + author + "]" + "[" + publisherName + "]" + "["
 					+ seriesName + "]" + "[" + titleStr + "]";
@@ -271,6 +276,14 @@ public class BookInfo implements Comparable<BookInfo> {
 
 	public String getRowTitle() {
 		return rowTitle;
+	}
+
+	public String getIsbn() {
+		return isbn;
+	}
+
+	public void setIsbn(String isbn) {
+		this.isbn = isbn;
 	}
 
 }

@@ -43,6 +43,10 @@ public class BarcodeReader {
 		File[] files = dir.listFiles(new FileNameFilter(MODE.EXT_INCLUDE,
 				"jpg", "jpeg"));
 		List<File> asList = Arrays.asList(files);
+		for (File f : asList) {
+			log.debug("バーコード抽出一次対象：{}", f);
+		}
+
 		Collections.sort(asList);
 
 		String bar = read(asList, false);
@@ -87,7 +91,7 @@ public class BarcodeReader {
 					File file = asList.get(i);
 					String barcord;
 					if (retry) {
-						log.info("高精細化を目論みます。{}", file.getName());
+						log.info("高精細化を目論みます。{}", file.getAbsolutePath());
 						File tempFile = SmillaEnlargerWrapper.convertTempFile(
 								file, 200);
 						barcord = autoRead(tempFile.getAbsolutePath(), 2);
@@ -207,13 +211,13 @@ public class BarcodeReader {
 
 		for (int i = 0; i < div; i++) {
 			//暫定対策：縦の方の分解率を上げ、二段バーコードの上を取りやすくする。
-			for (int j = 0; j < div * 2; j++) {
+			for (int j = 0; j < div * 3; j++) {
 
-				/*
-				 * System.out.println(bitmap.getWidth() * i / div + ":" +
-				 * bitmap.getHeight() * j / div + ":" + bitmap.getWidth() * (i +
-				 * 1) / div + ":" + bitmap.getHeight() * (j + 1) / div);
-				 */
+				set.add(new Rect(bitmap.getWidth() * i / div, bitmap
+						.getHeight() * j / div / 3, bitmap.getWidth() / div,
+						bitmap.getHeight() / div / 3));
+			}
+			for (int j = 0; j < div * 2; j++) {
 
 				set.add(new Rect(bitmap.getWidth() * i / div, bitmap
 						.getHeight() * j / div / 2, bitmap.getWidth() / div,
@@ -275,7 +279,8 @@ public class BarcodeReader {
 					return text;
 				}
 
-			} catch (NotFoundException | ChecksumException | FormatException e) {
+			} catch (NotFoundException | ChecksumException | FormatException
+					| ArrayIndexOutOfBoundsException e) {
 				//見つからないことは普通にある。そのために探しまくっている
 
 			}

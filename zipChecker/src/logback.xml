@@ -64,8 +64,18 @@
     <level value="ERROR" />
   </logger>
   <logger name="util.file.FileWalker">
-    <level value="WARM" />
+    <level value="ERROR" />
   </logger>
+
+  <logger name="barcode.BarcodeReader">
+    <level value="INFO" />
+  </logger>
+  <logger name="webapi.Amazon">
+    <level value="INFO" />
+  </logger>
+
+
+
 
 
 

@@ -31,7 +31,9 @@ public class FileNameFilter implements FileFilter {
 			public boolean accept(String[] n, File f) {
 				boolean b = false;
 				for (String string : n) {
-					b = b || f.getName().endsWith(string);
+					b = b
+							|| f.getName().toLowerCase()
+									.endsWith(string.toLowerCase());
 
 				}
 				return b;
@@ -61,7 +63,9 @@ public class FileNameFilter implements FileFilter {
 			public boolean accept(String[] n, File f) {
 				boolean b = true;
 				for (String string : n) {
-					b = b && !f.getName().endsWith(string);
+					b = b
+							&& !f.getName().toLowerCase()
+									.endsWith(string.toLowerCase());
 
 				}
 				return b;

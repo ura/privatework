@@ -20,6 +20,7 @@ import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import webapi.Amazon;
 import webapi.BookInfo;
 import webapi.Rakuten;
 import barcode.BarcodeReader;
@@ -115,7 +116,20 @@ public class BookNameUtil {
 		String barcode = BarcodeReader.autoReadDir(dir);
 		if (barcode != null) {
 			BookInfo info = Rakuten.getInfo(barcode);
-			return info;
+			if (info != null) {
+				return info;
+			} else {
+
+				info = Amazon.getInfo(barcode);
+				if (info != null) {
+					return info;
+				}
+
+				log.warn("ISBNより書籍情報が取得出来なかったので、フォルダ名を返します。{}", dir);
+
+				return new BookInfo(dir.getName());
+			}
+
 		} else {
 
 			log.warn("バーコード情報が取得出来なかったので、フォルダ名を返します。{}", dir);

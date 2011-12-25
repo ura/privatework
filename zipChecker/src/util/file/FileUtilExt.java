@@ -191,13 +191,23 @@ public class FileUtilExt {
 
 		for (File zipFile : newList) {
 
-			decodeAll(workF, zipFile);
+			if (zipFile.isFile()) {
+
+				decodeAll(workF, zipFile);
+			} else {
+				log.warn("アーカイブのみを渡してください {}", zipFile.getName());
+
+			}
 
 		}
 
 		FileOperationUtil.moveFolderToParent(workF);
 		FileOperationUtil.deleteEmptyDir(workF, "jpeg", "jpg");
 		FileOperationUtil.renameFiles(workF);
+		FileOperationUtil.removeFile(workF, new String[] { "^.*\\.html$",
+				"^.*\\.url$", "^.*\\.txt$", "^Thumbs\\.db", "^[^.]*$" });
+
+		//TODO
 
 		File[] dirs = workF.listFiles(new DirFilter());
 

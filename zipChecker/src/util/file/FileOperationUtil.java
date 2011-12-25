@@ -5,9 +5,12 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.SortedSet;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import log.Log;
 
@@ -295,6 +298,45 @@ public class FileOperationUtil {
 	public static boolean moveToDir(File f, File dir) {
 
 		return moveToDir(f, dir, false);
+	}
+
+	/**
+	 * 正規表現に一致したファイル名のファイルを削除します。
+	 * @param dir
+	 */
+	public static void removeFile(File dir, String[] list) {
+		List<Pattern> r = new ArrayList<Pattern>();
+		for (String string : list) {
+			Pattern compile = Pattern.compile(string);
+			r.add(compile);
+		}
+		removeFile(dir, r.toArray(new Pattern[0]));
+
+	}
+
+	/**
+	 * 正規表現に一致したファイル名のファイルを削除します。
+	 * @param dir
+	 */
+	public static void removeFile(File dir, Pattern[] list) {
+
+		DirCollector srcDir = new DirCollector();
+		new FileWalker().walk(dir, srcDir);
+		Collection<Dir> values = srcDir.dirSet.values();
+
+		for (Dir dir2 : values) {
+			SortedSet<String> fileNameSet = dir2.fileNameSet;
+			for (String file : fileNameSet) {
+				File f = new File(file);
+
+				for (Pattern p : list) {
+					if (p.matcher(f.getName()).find()) {
+						log.warn("不要なファイルを削除します。　{}", f.getName());
+						f.delete();
+					}
+				}
+			}
+		}
 	}
 
 	/**

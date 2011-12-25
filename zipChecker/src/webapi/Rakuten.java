@@ -25,24 +25,14 @@ import org.xml.sax.SAXException;
 import com.web2driver.abaron.client.AbaronRESTClient;
 import com.web2driver.abaron.client.AbaronResultNode;
 
+import conf.ConfConst;
+
 public class Rakuten {
 
 	private static Logger log = LoggerFactory.getLogger(Rakuten.class);
 
-	private static final String KEY = "572475de8b4c52837e32a6777584c734";
-
-	private static String createName(Query q) {
-
-		SortedSet<BookInfo> info = getInfo(q);
-		for (BookInfo bookInfo : info) {
-
-			return "[" + bookInfo.getPublisherName() + "]["
-					+ bookInfo.getSeriesName() + "][" + bookInfo.getAuthor()
-					+ "][" + bookInfo.getAuthor() + "]";
-		}
-		return null;
-
-	}
+	private static final String KEY = ConfConst.MAIN_CONF
+			.getVal(ConfConst.RAKUTEN_KEY);
 
 	static abstract class Query {
 		public abstract void setCustomQuery(AbaronRESTClient stub);
@@ -124,8 +114,21 @@ public class Rakuten {
 		return Rakuten.getInfo(new Rakuten.TitleQuery(title));
 	}
 
+	/**
+	 * 結果が取れなかった場合、NULLを返します。
+	 * 結果を取れない原因としては、限定版だとか、古い書籍だとか、
+	 * ネットワーク的なエラー等が考えられます。
+	 * @param isbn
+	 * @return
+	 */
 	public static BookInfo getInfo(String isbn) {
-		return Rakuten.getInfo(new Rakuten.IsbnQuery(isbn)).first();
+		SortedSet<BookInfo> set = Rakuten.getInfo(new Rakuten.IsbnQuery(isbn));
+
+		if (set.size() == 1) {
+			return set.first();
+		} else {
+			return null;
+		}
 	}
 
 	public static SortedSet<BookInfo> getInfo(Query q) {
