@@ -8,14 +8,22 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class HSV {
+
+	private static Logger log = LoggerFactory.getLogger(HSV.class);
 
 	public static boolean isColar(File filename) {
 
 		double hsvStd = hsvAvgS(filename);
 
 		if (0.02d > hsvStd) {
+
+			log.info("カラーと判定しました。{}:{}", filename.getAbsolutePath(), hsvStd);
 			return false;
+
 		} else {
 			return true;
 		}
@@ -60,8 +68,11 @@ public class HSV {
 
 			Color.RGBtoHSB(red, green, blue, hsbvals);
 
+			//色相
 			hue[i] = (double) hsbvals[0];
+			//彩度
 			sat[i] = (double) hsbvals[1];
+			//明度
 			//val[i] = (double) hsbvals[2];
 		}
 

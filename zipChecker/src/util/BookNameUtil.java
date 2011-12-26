@@ -70,7 +70,7 @@ public class BookNameUtil {
 			.compile("[^\\[0-9]([0-9]{1,2})[-]+([0-9]{2})[^\\]]+");
 
 	private static Pattern fileName = Pattern
-			.compile("([A-Za-zＡ-Ｚａ-ｚ_\\.0-9#-_\\s]+)[^A-Za-zＡ-Ｚａ-ｚ_\\.0-9#-_\\s]*(\\.[A-Za-z0-9]+)");
+			.compile("([!A-Za-zＡ-Ｚａ-ｚ_\\.0-9#-_\\s]+)[^A-Za-zＡ-Ｚａ-ｚ_\\.0-9#-_\\s]*(\\.[A-Za-z0-9]+)");
 
 	/**
 	 * アルファベット、数値のみのシンプルな名前に置換した名称を返します。
@@ -204,38 +204,40 @@ public class BookNameUtil {
 
 	private static BookInfo marge(BookInfo b1, BookInfo b2) {
 
+		if (b1 == null) {
+			return b2;
+		}
+		if (b2 == null) {
+			return b1;
+		}
+
 		if (b1.getInfo().equals(b2.getInfo())) {
 			return b1;
 		} else {
-			log.warn("書籍情報に差異があります。AWS ", b1.getInfo());
-			log.warn("書籍情報に差異があります。楽天", b2.getInfo());
+			log.warn("書籍情報に差異があります。AWS   {}", b1.getInfo());
+			log.warn("書籍情報に差異があります。楽天  {}", b2.getInfo());
 
-			BookInfo r;
-			if (b1.isRowdateOnly()) {
-				r = b2;
-			} else {
-				r = b1;
-			}
+			BookInfo r = b1;
 
 			if (b1.getTitle().length() > b2.getTitle().length()) {
-				r.setTitle(b2.getTitle());
+				r.setTitleStr(b2.getTitleStr());
 			} else {
-				r.setTitle(b1.getTitle());
+				r.setTitleStr(b1.getTitleStr());
 			}
 
 			if (b1.getAuthor().length() > b2.getAuthor().length()) {
-				r.setTitle(b2.getAuthor());
+				r.setAuthor(b2.getAuthor());
 			} else {
-				r.setTitle(b1.getAuthor());
+				r.setAuthor(b1.getAuthor());
 			}
 
 			if (b1.getPublisherName().length() > b2.getPublisherName().length()) {
-				r.setTitle(b2.getPublisherName());
+				r.setPublisherName(b2.getPublisherName());
 			} else {
-				r.setTitle(b1.getPublisherName());
+				r.setPublisherName(b1.getPublisherName());
 			}
 
-			log.warn("書籍情報を更新しました。　　　", r.getInfo());
+			log.warn("書籍情報を更新しました。　　　  {}", r.getInfo());
 
 			return r;
 

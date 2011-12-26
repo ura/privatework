@@ -9,8 +9,10 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.concurrent.Callable;
 
 import javax.imageio.ImageIO;
@@ -21,6 +23,7 @@ import org.slf4j.LoggerFactory;
 import util.ThreadPoolExecutorSync;
 import util.file.filter.FileNameFilter;
 import util.file.filter.FileNameFilter.MODE;
+import collection.MapList;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.BinaryBitmap;
@@ -35,6 +38,13 @@ import com.google.zxing.client.j2se.BufferedImageLuminanceSource;
 import com.google.zxing.common.HybridBinarizer;
 import com.google.zxing.oned.EAN13Reader;
 
+/**
+ * 縦になっているバーコードがあるので、回転を検討する。
+ *
+ *
+ * @author name
+ *
+ */
 public class BarcodeReader {
 
 	private static Logger log = LoggerFactory.getLogger(BarcodeReader.class);
@@ -69,38 +79,81 @@ public class BarcodeReader {
 
 	}
 
+	/**
+	 * ファイル名でもっとも、多い長さを返す。
+	 * @param asList
+	 * @return
+	 */
+	private static int mid(List<File> asList) {
+
+		MapList<Integer, File> map = new MapList<>();
+		for (File file : asList) {
+			int length = file.getName().length();
+			map.put(length, file);
+		}
+		int maxCount = 0;
+		int result = 0;
+		for (Entry<Integer, Collection<File>> e : map.entrySet()) {
+			Integer key = e.getKey();
+			int count = e.getValue().size();
+
+			if (count > maxCount) {
+				maxCount = count;
+				result = key.intValue();
+			}
+
+		}
+
+		return result;
+
+	}
+
+	/**
+	 * TODO 優先度に応じて多重配列化する
+	 * @param asList
+	 * @return
+	 */
 	private static List<File> readFileList(List<File> asList) {
 		int param = 8;
 
 		List<File> l = new ArrayList<>();
-		int min = 100;
+		List<File> l2 = new ArrayList<>();
+		int mid = mid(asList);
+
 		for (File file : asList) {
-			//文字列が長い奴は表紙かも
-			int length = file.getName().length();
-			if (min > length) {
-				min = length;
-			} else if (length > min) {
+			//ファイル名の長さが最頻値と違う場合
+			if (file.getName().length() != mid && !l.contains(file)
+					&& !l2.add(file)) {
 				if (HSV.isColar(file)) {
 					l.add(file);
+				} else {
+					l2.add(file);
 				}
 			}
 			//ルールが変なものも表紙かも
 			if (file.getName().matches("[0-9]+[a-zA-Z]{1}\\.[a-zA-Z]+")
-					&& !l.contains(file)) {
+					&& !l.contains(file) && !l2.add(file)) {
 				if (HSV.isColar(file)) {
 					l.add(file);
+				} else {
+					l2.add(file);
 				}
 			}
 		}
 
 		for (int i = 0; i < asList.size(); i++) {
 			File file = asList.get(i);
-			if ((i < param || (asList.size() - param) < i) && !l.contains(file)) {
+			if ((i < param || (asList.size() - param) < i) && !l.contains(file)
+					&& !l2.add(file)) {
 				if (HSV.isColar(file)) {
 					l.add(file);
+				} else {
+					l2.add(file);
 				}
 			}
 		}
+
+		l.addAll(l2);
 
 		log.info("バーコード処理候補です。候補数　{}", l.size());
 		for (File file : l) {

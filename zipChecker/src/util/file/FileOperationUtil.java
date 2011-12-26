@@ -393,7 +393,7 @@ public class FileOperationUtil {
 
 					String ext = getExt(dest);
 					String content = getFileName(dest);
-					File dest2 = createPath(dir2.dir, content + "-1." + ext);
+					File dest2 = createPath(dir2.dir, "z" + content + "." + ext);
 					log.warn("リネーム名変更:" + file + ">>" + dest2.getName());
 					boolean b = f.renameTo(dest2);
 					if (!b) {
