@@ -23,13 +23,15 @@ public class BookInfo implements Comparable<BookInfo> {
 			.compile("(.*)[\\(（]{1}([    ([0-9]]+)[）\\)]{1}$");
 
 	private static final Pattern titleReg2 = Pattern
-			.compile("(.*[^0-9])([0-9]+) [\\(\\(（].*[\\)）\\)]$");
+			.compile("(.*[^0-9(（])[(（]*([0-9]+)(.*[^0-9]) [\\(\\(（].*[\\)）\\)]$");
 	private static final Pattern titleReg3 = Pattern
 			.compile("(.*[^0-9()])([0-9]+)(.*[^0-9]) [\\(\\(（].*[\\)）\\)]$");
 	private static final Pattern titleReg4 = Pattern
 			.compile("(.*[^0-9])[(（]第([0-9]*)巻[）)]$");
 	private static final Pattern titleReg5 = Pattern
 			.compile("(.*)[\\(（]{1}([    ([0-9]]+)[）\\)]{1}");
+	private static final Pattern titleReg6 = Pattern
+			.compile("(.*[^0-9(（])[(（ ]*([0-9]+)[^0-9]*$");
 
 	private static final List<Pattern> regList;
 	static {
@@ -40,6 +42,7 @@ public class BookInfo implements Comparable<BookInfo> {
 		list.add(titleReg3);
 		list.add(titleReg4);
 		list.add(titleReg5);
+		list.add(titleReg6);
 
 		regList = Collections.unmodifiableList(list);
 
@@ -74,6 +77,7 @@ public class BookInfo implements Comparable<BookInfo> {
 
 		this.titleStr = this.rowTitle;
 		this.no = "";
+		log.info("base:{}", rowTitle);
 
 		for (Pattern reg : regList) {
 			Matcher matcher = reg.matcher(this.rowTitle);
@@ -92,6 +96,9 @@ public class BookInfo implements Comparable<BookInfo> {
 
 			}
 
+		}
+		if (no.equals("")) {
+			log.warn("パース用正規表現が見つかりませんでした。{}", rowTitle);
 		}
 
 	}

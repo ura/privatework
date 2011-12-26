@@ -30,9 +30,6 @@ import util.CollectionUtil;
 import util.MapList;
 import util.UserInput;
 import util.WinRARWrapper;
-import util.file.filter.DirFilter;
-import util.file.filter.FileNameFilter;
-import util.file.filter.FileNameFilter.MODE;
 import webapi.BookInfo;
 import zip.State;
 import zip.ZipChecker;
@@ -251,24 +248,20 @@ public class FileUtilExt {
 		FileOperationUtil.removeFile(workF, new String[] { "^.*\\.html$",
 				"^.*\\.url$", "^.*\\.txt$", "^Thumbs\\.db", "^[^.]*$" });
 
-		File[] dirs = workF.listFiles(new DirFilter());
+		Map<File, BookInfo> allbookInfo = BookNameUtil
+				.getAllbookInfoFromBarcode(workF);
 
 		SortedMap<BookInfo, File> s = new TreeMap<BookInfo, File>();
-		List<Object[]> temp = new ArrayList<>();
-		for (File dir : dirs) {
-			//
-			BookInfo bookNo = BookNameUtil.bookInfoFromBarcode(dir);
-			File newDir = createPath(dir.getParent(), bookNo.getInfo());
 
-			log.debug(newDir.getName() + "  " + dir.getName());
+		for (Entry<File, BookInfo> e : allbookInfo.entrySet()) {
+			File src = e.getKey();
+			BookInfo bookNo = e.getValue();
+
+			File newDir = createPath(workF, bookNo.getInfo());
+
 			s.put(bookNo, newDir);
-			log.debug(newDir.getName() + "  " + s.size());
 
-			temp.add(new Object[] { dir, newDir, bookNo });
-
-		}
-		for (Object[] objects : temp) {
-			moveDir((File) objects[0], (File) objects[1], (BookInfo) objects[2]);
+			moveDir(src, newDir, bookNo);
 		}
 
 		BookNameUtil.createCominName(new File(WORK_DIR), s);
@@ -278,7 +271,7 @@ public class FileUtilExt {
 	private static void moveDir(File src, File dest, BookInfo bookNo)
 			throws IOException {
 		boolean b = false;
-		//TODO フォルダがかぶった場合の処理を入れる サイズを見て判断するか、末尾に数字を付けて臨時対応
+
 		if (!dest.exists()) {
 			b = FileOperationUtil.renameTo(src, dest);
 			if (!b) {
@@ -292,23 +285,27 @@ public class FileUtilExt {
 				long destSize = dirSize(dest);
 
 				if (srcSize < destSize) {
-					File tempDir = FileOperationUtil.createTempDir(WORK_DIR);
+					File tempDir = FileOperationUtil.createTempDir(WORK_DIR,
+							"重複");
 					File path = createPath(tempDir, bookNo.getInfo());
 					FileOperationUtil.renameTo(src, path);
 
-					log.warn("サイズの小さいフォルダをテンポラリに移しました:{}  :{}  {}",
-							new Object[] { path, srcSize, destSize });
+					log.warn("サイズの小さいフォルダをテンポラリに移しました:{}  :{}K  {}K",
+							new Object[] { path, srcSize / 1024,
+									destSize / 1024 });
 				} else {
-					File tempDir = FileOperationUtil.createTempDir(WORK_DIR);
+					File tempDir = FileOperationUtil.createTempDir(WORK_DIR,
+							"重複");
 					File path = createPath(tempDir, bookNo.getInfo());
 					FileOperationUtil.renameTo(dest, path);
+					FileOperationUtil.renameTo(src, dest);
 
-					log.warn("サイズの小さいフォルダをテンポラリに移しました:{}  :{}  {}",
-							new Object[] { path, "" + srcSize, destSize });
+					log.warn("サイズの小さいフォルダをテンポラリに移しました:{}  :{}K  {}K",
+							new Object[] { path, srcSize / 1024,
+									destSize / 1024 });
 
 				}
 
-				//throw new IllegalStateException();
 			}
 
 		}
@@ -342,13 +339,7 @@ public class FileUtilExt {
 	}
 
 	private static long dirSize(File dir) {
-		File[] filse = dir.listFiles(new FileNameFilter(MODE.EXT_EXCLUDE, "z"));
-		long l = 0;
-		for (File file : filse) {
-			l = +file.length();
-		}
-
-		return l;
+		return FileUtils.sizeOfDirectory(dir);
 	}
 
 	/**

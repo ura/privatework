@@ -188,7 +188,8 @@ public class BarcodeReader {
 		}
 	}
 
-	private static ThreadPoolExecutorSync ex = new ThreadPoolExecutorSync();
+	private static ThreadPoolExecutorSync ex = new ThreadPoolExecutorSync(10,
+			200);
 
 	private static String read(List<File> asList, boolean retry) {
 

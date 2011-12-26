@@ -3,6 +3,9 @@
   <appender name="STDOUT"
     class="ch.qos.logback.core.ConsoleAppender">
    <Target>System.out</Target>
+   	<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+      <level>warn</level>
+    </filter>
     <layout class="ch.qos.logback.classic.PatternLayout">
 
     <!--

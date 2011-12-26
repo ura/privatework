@@ -26,9 +26,11 @@ import static util.StaticUtil.sleep;
  */
 public class ThreadPoolExecutorSync {
 
-	public ThreadPoolExecutorSync(int poolsize) {
+	public ThreadPoolExecutorSync(int poolsize, int waitms) {
 		super();
 		threadCount = poolsize;
+		this.waitms = waitms;
+
 		ex = new ThreadPoolExecutor(threadCount, threadCount, 0L,
 				TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
 	}
@@ -43,7 +45,8 @@ public class ThreadPoolExecutorSync {
 	private static Logger log = LoggerFactory
 			.getLogger(ThreadPoolExecutorSync.class);
 
-	private int threadCount = 5;
+	private int threadCount = 10;
+	private int waitms = 50;
 	private ThreadPoolExecutor ex = null;
 
 	/**
@@ -57,11 +60,13 @@ public class ThreadPoolExecutorSync {
 				log.info("TASK投入。{}", task);
 				Future<V> submit = ex.submit(task);
 
+				sleep(waitms);
 				return submit;
 
 			} else {
 				log.debug("TASK投入まち。{}", task);
-				sleep(100);
+				sleep(waitms);
+
 			}
 		}
 
@@ -76,9 +81,9 @@ public class ThreadPoolExecutorSync {
 
 			for (int i = 0; i < asList.size(); i++) {
 
-				if (i % threadCount == threadCount - 1) {
+				if (i % (threadCount / 2) == (threadCount / 2) - 1) {
 					//なんかタスクが入りすぎるので、、、
-					sleep(20l);
+					sleep(500l);
 				}
 				Callable<V> c = asList.get(i);
 

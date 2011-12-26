@@ -1,17 +1,11 @@
 package opencv;
 
-import static com.googlecode.javacv.jna.cxcore.*;
-import static com.googlecode.javacv.jna.cv.*;
-import static com.googlecode.javacv.jna.highgui.*;
-import static com.googlecode.javacv.jna.cvaux.*;
-
 import com.googlecode.javacv.CanvasFrame;
-import com.googlecode.javacv.jna.cxcore.CvMat;
-import com.googlecode.javacv.jna.cxcore.CvPoint2D32f;
-import com.googlecode.javacv.jna.cxcore.CvRect;
-import com.googlecode.javacv.jna.cxcore.IplImage;
-import com.googlecode.javacv.jna.cxcore.CvSize.ByValue;
-import com.sun.jna.ptr.DoubleByReference;
+import com.googlecode.javacv.cpp.opencv_core.CvPoint;
+import com.googlecode.javacv.cpp.opencv_core.CvPoint2D32f;
+import com.googlecode.javacv.cpp.opencv_core.CvScalar;
+import com.googlecode.javacv.cpp.opencv_core.IplImage;
+import com.googlecode.javacv.cpp.opencv_imgproc.CvHistogram;
 
 public class OpenCVUtil {
 
@@ -31,7 +25,7 @@ public class OpenCVUtil {
 
 	public static void showImg(IplImage img, int time, String name) {
 		CanvasFrame canvas = new CanvasFrame(name);
-		canvas.showImage(img);
+		//canvas.showImage(img);
 
 		if (time > 0) {
 			sleep((long) time);
@@ -189,6 +183,9 @@ public class OpenCVUtil {
 
 	public static void main(String[] args) {
 		try {
+			if (true) {
+				m(args);
+			}
 
 			// main1();
 			/*
@@ -274,6 +271,30 @@ public class OpenCVUtil {
 
 		IplImage rectImg = matchTemplateAndRectangle(img, smallImg);
 		showImg(rectImg);
+	}
+
+	public static void m(String[] arg) {
+
+		String[] a = { "0001.jpg", "siki 01_0009.jpg", "siki 01_0003.jpg", "" };
+
+		for (String string : a) {
+			IplImage image = loadImage("E:\\workcomic\\JPG\\1_1324222468245\\01\\"
+					+ string);
+			IplImage src_hsv = cvCreateImage(cvGetSize(image), IPL_DEPTH_8U, 3);
+			cvCvtColor(image, src_hsv, CV_BGR2HSV);
+
+			CvScalar mean = new CvScalar();
+			CvScalar std_dev = new CvScalar();
+
+			cvAvgSdv(image, mean, std_dev, src_hsv);
+
+			System.out.println(string);
+			System.out.println(std_dev.val[0]);
+			System.out.println(std_dev.val[1]);
+			System.out.println(std_dev.val[2]);
+
+		}
+
 	}
 
 	private static void sleep(long l) {

@@ -50,4 +50,8 @@ public class Config {
 		return prop.getProperty(key);
 	}
 
+	public int getInt(String key) {
+		return Integer.parseInt(prop.getProperty(key));
+	}
+
 }

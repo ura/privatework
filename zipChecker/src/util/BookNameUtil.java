@@ -14,21 +14,31 @@ import java.util.SortedMap;
 import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import util.file.filter.DirFilter;
 import webapi.Amazon;
 import webapi.BookInfo;
 import webapi.Rakuten;
 import barcode.BarcodeReader;
+import conf.ConfConst;
 import static util.file.FileNameUtil.createPath;
 
 public class BookNameUtil {
 
 	private static Logger log = LoggerFactory.getLogger(BookNameUtil.class);
+
+	private static final int THREAD_GET_BOOKINFO = ConfConst.MAIN_CONF
+			.getInt(ConfConst.THREAD_GET_BOOKINFO);
 
 	private static Pattern parterm = Pattern.compile("第([0-9]+)巻");
 	private static Pattern partermEng = Pattern.compile("v([0-9]+)\\.");
@@ -102,6 +112,61 @@ public class BookNameUtil {
 				throw e;
 			}
 
+		}
+
+	}
+
+	public static Map<File, BookInfo> getAllbookInfoFromBarcode(File root) {
+		File[] dirs = root.listFiles(new DirFilter());
+
+		Map<File, BookInfo> m = new HashMap<>();
+
+		try {
+			ExecutorService ex = Executors
+					.newFixedThreadPool(THREAD_GET_BOOKINFO);
+			List<Callable<Map<File, BookInfo>>> l = new ArrayList<>();
+			for (File dir : dirs) {
+
+				l.add(new BookInfoFromBarcodeTask(dir));
+
+			}
+			List<Future<Map<File, BookInfo>>> invokeAll = ex.invokeAll(l);
+			for (Future<Map<File, BookInfo>> future : invokeAll) {
+
+				m.putAll(future.get());
+			}
+
+		} catch (InterruptedException e) {
+			log.error("例外が発生しました。", e);
+			throw new IllegalStateException(e);
+		} catch (ExecutionException e) {
+			log.error("例外が発生しました。", e);
+			throw new IllegalStateException(e);
+		}
+
+		return m;
+
+	}
+
+	static class BookInfoFromBarcodeTask implements
+			Callable<Map<File, BookInfo>> {
+
+		public BookInfoFromBarcodeTask(File dir) {
+			super();
+
+			this.dir = dir;
+		}
+
+		private File dir;
+
+		@Override
+		public Map<File, BookInfo> call() throws Exception {
+
+			BookInfo bookNo = BookNameUtil.bookInfoFromBarcode(dir);
+
+			HashMap<File, BookInfo> hashMap = new HashMap<File, BookInfo>();
+			hashMap.put(dir, bookNo);
+			return hashMap;
 		}
 
 	}

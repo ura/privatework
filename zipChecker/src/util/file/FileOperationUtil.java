@@ -249,10 +249,20 @@ public class FileOperationUtil {
 	 */
 	public static File createTempDir(String base) throws IOException {
 
+		return createTempDir(base, "");
+
+	}
+
+	/**
+	 * マルチスレッド時でもフォルダ名が被らないようなフォルダを作成する。
+	 */
+	public static File createTempDir(String base, String head)
+			throws IOException {
+
 		long millis = System.currentTimeMillis();
 		long id = Thread.currentThread().getId();
 
-		String r = base + "/" + id + "_" + millis;
+		String r = base + "/" + head + "_" + id + "_" + millis;
 		new File(r).mkdir();
 
 		return new File(r);
@@ -373,6 +383,14 @@ public class FileOperationUtil {
 					}
 				} else {
 					log.warn("他のファイル名と重複:" + file + ">>" + dest.getName());
+
+					if (f.length() == dest.length()) {
+						log.warn("変換前と変換後の名称、ファイルサイズが同じため、同じファイルとみなし削除します。:"
+								+ file + ">>" + dest.getName());
+						f.delete();
+						continue;
+					}
+
 					String ext = getExt(dest);
 					String content = getFileName(dest);
 					File dest2 = createPath(dir2.dir, content + "-1." + ext);
@@ -398,7 +416,8 @@ public class FileOperationUtil {
 
 			if (i > 200) {
 				log.warn("ファイルのリネームに失敗しました。 {} >> {}", src, dest);
-				return false;
+				throw new IllegalStateException("ファイルのリネームに失敗しました。 " + src
+						+ " >> " + dest);
 			}
 		}
 

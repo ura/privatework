@@ -10,6 +10,8 @@ public class ConfConst {
 	public static final String AWS_SECRET_KEY = "AWS_SECRET_KEY";
 	public static final String RAKUTEN_KEY = "RAKUTEN_KEY";
 
+	public static final String THREAD_GET_BOOKINFO = "THREAD_GET_BOOKINFO";
+
 	public static final String MAIN_CONF_FILE = "/main.properties";
 
 	public static Config MAIN_CONF = Config.loadConfig(MAIN_CONF_FILE,
