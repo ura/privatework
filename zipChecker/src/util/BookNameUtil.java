@@ -115,12 +115,12 @@ public class BookNameUtil {
 
 		String barcode = BarcodeReader.autoReadDir(dir);
 		if (barcode != null) {
-			BookInfo info = Rakuten.getInfo(barcode);
+			BookInfo info = Amazon.getInfo(barcode);
 			if (info != null) {
 				return info;
 			} else {
 
-				info = Amazon.getInfo(barcode);
+				info = Rakuten.getInfo(barcode);
 				if (info != null) {
 					return info;
 				}
@@ -306,7 +306,7 @@ public class BookNameUtil {
 		for (int i = 0; i < size; i++) {
 			String noStr = list.get(i).getNo();
 			int no = Integer.parseInt(noStr);
-			for (int increment = 0; increment < 3; increment++) {
+			for (int increment = 0; increment < 5; increment++) {
 				if (no == noCount) {
 					set.add(no_XX(noCount));
 					noCount++;

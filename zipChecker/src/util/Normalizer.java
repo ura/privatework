@@ -169,6 +169,9 @@ public class Normalizer {
 		//面倒なので、フォルダ、ファイル名に使えない文字も省く
 		hmCharTbl.put("/", "_");
 		hmCharTbl.put("\\\\", "_");
+		hmCharTbl.put("！", "!");
+		hmCharTbl.put(" ", "");
+		hmCharTbl.put("　", "");
 
 	}
 

@@ -25,7 +25,10 @@ import util.file.filter.FileNameFilter;
 import util.file.filter.FileNameFilter.MODE;
 import dir.Dir;
 import dir.DirCollector;
+import static util.StaticUtil.sleep;
 import static util.file.FileNameUtil.createPath;
+import static util.file.FileNameUtil.getExt;
+import static util.file.FileNameUtil.getFileName;
 
 /**
  * ファイルの移動、削除、ディレクトリ作成、リネームなどなどのUtil。
@@ -369,14 +372,37 @@ public class FileOperationUtil {
 								+ " >>" + dest.getPath());
 					}
 				} else {
-					throw new IllegalStateException("他のファイル名と重複:" + file + ">>"
-							+ dest.getName());
+					log.warn("他のファイル名と重複:" + file + ">>" + dest.getName());
+					String ext = getExt(dest);
+					String content = getFileName(dest);
+					File dest2 = createPath(dir2.dir, content + "-1." + ext);
+					log.warn("リネーム名変更:" + file + ">>" + dest2.getName());
+					boolean b = f.renameTo(dest2);
+					if (!b) {
+						throw new IllegalStateException("他のファイル名と重複:\n" + file
+								+ ">>" + dest.getName());
+					}
 				}
 
 			}
 
 		}
 
+	}
+
+	public static boolean renameTo(File src, File dest) {
+		int i = 0;
+		while (!src.renameTo(dest)) {
+			sleep(100);
+			i++;
+
+			if (i > 200) {
+				log.warn("ファイルのリネームに失敗しました。 {} >> {}", src, dest);
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	/**

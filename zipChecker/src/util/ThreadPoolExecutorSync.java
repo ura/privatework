@@ -56,12 +56,12 @@ public class ThreadPoolExecutorSync {
 			if (ex.getActiveCount() < threadCount) {
 				log.info("TASK投入。{}", task);
 				Future<V> submit = ex.submit(task);
-				sleep(50);
+
 				return submit;
 
 			} else {
 				log.debug("TASK投入まち。{}", task);
-				sleep(500);
+				sleep(100);
 			}
 		}
 
@@ -69,12 +69,17 @@ public class ThreadPoolExecutorSync {
 
 	public <V> V invokeAll(List<Callable<V>> asList) {
 
+		V result;
 		try {
 
 			List<Future<V>> list = new ArrayList<>();
 
 			for (int i = 0; i < asList.size(); i++) {
 
+				if (i % threadCount == threadCount - 1) {
+					//なんかタスクが入りすぎるので、、、
+					sleep(20l);
+				}
 				Callable<V> c = asList.get(i);
 
 				Future<V> submit = submit(c);
@@ -82,18 +87,24 @@ public class ThreadPoolExecutorSync {
 
 				V barcode = getTaskResult(list);
 				if (barcode != null) {
+					//while (!isRemainTask(list)) {
+					//	sleep(50l);
+					//}
 					return barcode;
 				}
 
 			}
 			while (isRemainTask(list)) {
-				V barcode = getTaskResult(list);
-				if (barcode != null) {
-					return barcode;
+				result = getTaskResult(list);
+				if (result != null) {
+					return result;
 				}
-				Thread.sleep(50);
+				Thread.sleep(1000);
 			}
-
+			result = getTaskResult(list);
+			if (result != null) {
+				return result;
+			}
 		} catch (InterruptedException e) {
 			log.info("シャットダウンの中止と思われるInterruptedExceptionが発生。{}",
 					e.getMessage());

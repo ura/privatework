@@ -10,6 +10,11 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.regex.Pattern;
 
 import log.Log;
@@ -186,23 +191,60 @@ public class FileUtilExt {
 
 	}
 
+	public static void decodeAll(File workDir, Collection<File> newList)
+			throws IOException {
+
+		try {
+			ExecutorService ex = Executors.newFixedThreadPool(5);
+			List<Callable<Void>> l = new ArrayList<>();
+			for (File zipFile : newList) {
+				if (zipFile.isFile()) {
+					l.add(new DecodeTask<Void>(workDir, zipFile));
+				} else {
+					log.warn("アーカイブのみを渡してください {}", zipFile.getName());
+				}
+			}
+			List<Future<Void>> invokeAll = ex.invokeAll(l);
+			for (Future<Void> future : invokeAll) {
+				future.get();
+			}
+		} catch (InterruptedException e) {
+			log.error("解凍時に例外が発生しました。", e);
+			throw new IllegalStateException(e);
+		} catch (ExecutionException e) {
+			log.error("解凍時に例外が発生しました。", e);
+			throw new IllegalStateException(e);
+		}
+
+	}
+
+	static class DecodeTask<Void> implements Callable<Void> {
+
+		public DecodeTask(File work, File arc) {
+			super();
+			this.work = work;
+			this.arc = arc;
+		}
+
+		private File work;
+		private File arc;
+
+		@Override
+		public Void call() throws Exception {
+
+			decodeAll(work, arc);
+
+			return null;
+		}
+
+	}
+
 	public static void rebuildArc(String name, Collection<File> newList)
 			throws IOException, InterruptedException {
 
 		File workF = FileOperationUtil.createTempDir(WORK_DIR);
 
-		for (File zipFile : newList) {
-
-			if (zipFile.isFile()) {
-
-				decodeAll(workF, zipFile);
-			} else {
-				log.warn("アーカイブのみを渡してください {}", zipFile.getName());
-
-			}
-
-		}
-
+		decodeAll(workF, newList);
 		FileOperationUtil.moveFolderToParent(workF);
 		FileOperationUtil.deleteEmptyDir(workF, "jpeg", "jpg");
 		FileOperationUtil.renameFiles(workF);
@@ -212,6 +254,7 @@ public class FileUtilExt {
 		File[] dirs = workF.listFiles(new DirFilter());
 
 		SortedMap<BookInfo, File> s = new TreeMap<BookInfo, File>();
+		List<Object[]> temp = new ArrayList<>();
 		for (File dir : dirs) {
 			//
 			BookInfo bookNo = BookNameUtil.bookInfoFromBarcode(dir);
@@ -221,8 +264,11 @@ public class FileUtilExt {
 			s.put(bookNo, newDir);
 			log.debug(newDir.getName() + "  " + s.size());
 
-			moveDir(dir, newDir, bookNo);
+			temp.add(new Object[] { dir, newDir, bookNo });
 
+		}
+		for (Object[] objects : temp) {
+			moveDir((File) objects[0], (File) objects[1], (BookInfo) objects[2]);
 		}
 
 		BookNameUtil.createCominName(new File(WORK_DIR), s);
@@ -234,7 +280,7 @@ public class FileUtilExt {
 		boolean b = false;
 		//TODO フォルダがかぶった場合の処理を入れる サイズを見て判断するか、末尾に数字を付けて臨時対応
 		if (!dest.exists()) {
-			b = src.renameTo(dest);
+			b = FileOperationUtil.renameTo(src, dest);
 			if (!b) {
 				log.warn("フォルダのリネームに失敗しました:" + bookNo);
 			}
@@ -248,14 +294,14 @@ public class FileUtilExt {
 				if (srcSize < destSize) {
 					File tempDir = FileOperationUtil.createTempDir(WORK_DIR);
 					File path = createPath(tempDir, bookNo.getInfo());
-					src.renameTo(path);
+					FileOperationUtil.renameTo(src, path);
 
 					log.warn("サイズの小さいフォルダをテンポラリに移しました:{}  :{}  {}",
 							new Object[] { path, srcSize, destSize });
 				} else {
 					File tempDir = FileOperationUtil.createTempDir(WORK_DIR);
 					File path = createPath(tempDir, bookNo.getInfo());
-					dest.renameTo(path);
+					FileOperationUtil.renameTo(dest, path);
 
 					log.warn("サイズの小さいフォルダをテンポラリに移しました:{}  :{}  {}",
 							new Object[] { path, "" + srcSize, destSize });

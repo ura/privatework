@@ -91,7 +91,7 @@
     <level value="ERROR" />
   </logger>
   <logger name="util.ThreadPoolExecutorSync">
-    <level value="ERROR" />
+    <level value="INFO" />
   </logger>
 
 

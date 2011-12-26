@@ -24,6 +24,12 @@ public class BookInfo implements Comparable<BookInfo> {
 
 	private static final Pattern titleReg2 = Pattern
 			.compile("(.*[^0-9])([0-9]+) [\\(\\(（].*[\\)）\\)]$");
+	private static final Pattern titleReg3 = Pattern
+			.compile("(.*[^0-9()])([0-9]+)(.*[^0-9]) [\\(\\(（].*[\\)）\\)]$");
+	private static final Pattern titleReg4 = Pattern
+			.compile("(.*[^0-9])[(（]第([0-9]*)巻[）)]$");
+	private static final Pattern titleReg5 = Pattern
+			.compile("(.*)[\\(（]{1}([    ([0-9]]+)[）\\)]{1}");
 
 	private static final List<Pattern> regList;
 	static {
@@ -31,6 +37,9 @@ public class BookInfo implements Comparable<BookInfo> {
 		list.add(titleSReg);
 		list.add(titleReg1);
 		list.add(titleReg2);
+		list.add(titleReg3);
+		list.add(titleReg4);
+		list.add(titleReg5);
 
 		regList = Collections.unmodifiableList(list);
 
@@ -70,12 +79,14 @@ public class BookInfo implements Comparable<BookInfo> {
 			Matcher matcher = reg.matcher(this.rowTitle);
 
 			boolean result = matcher.find();
-			log.debug(no + "\t" + reg.pattern() + "\t" + result);
 
 			if (result) {
 
 				this.titleStr = Normalizer.normalizer(matcher.group(1));
 				this.no = no_XX(matcher.group(2));
+
+				log.info("base:{}  title:{}  NO:{}  REG:{}", new String[] {
+						this.rowTitle, this.titleStr, this.no, reg.pattern() });
 
 				break;
 
@@ -122,9 +133,8 @@ public class BookInfo implements Comparable<BookInfo> {
 		if (!seriesName.equals("")) {
 
 			return "[" + author + "]" + "[" + publisherName + "]" + "["
-					+ seriesName + "]" + "[" + titleStr
-					+ (haveNo() ? " 第" + no + "巻" : "") + "]" + "[ISBN" + isbn
-					+ "]";
+					+ titleStr + (haveNo() ? " 第" + no + "巻" : "") + "]"
+					+ "[ISBN" + isbn + "]";
 		} else {
 			return "[" + author + "]" + "[" + publisherName + "]" + "["
 					+ titleStr + (haveNo() ? " 第" + no + "巻" : "") + "]"
@@ -141,7 +151,7 @@ public class BookInfo implements Comparable<BookInfo> {
 		if (!seriesName.equals("")) {
 
 			return "[" + author + "]" + "[" + publisherName + "]" + "["
-					+ seriesName + "]" + "[" + titleStr + "]";
+					+ titleStr + "]";
 		} else {
 			return "[" + author + "]" + "[" + publisherName + "]" + "["
 					+ titleStr + "]";

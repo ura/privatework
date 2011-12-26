@@ -102,7 +102,9 @@ public class WinRARWrapper {
 			FileOperationUtil.deleteForce(workDest);
 
 			if (!workResult) {
-				throw new IllegalStateException();
+				log.error("致命的な解凍エラーが発生しました。{}", src.getAbsolutePath());
+				throw new IllegalStateException("致命的な解凍エラーが発生しました。"
+						+ src.getAbsolutePath());
 			}
 
 		}

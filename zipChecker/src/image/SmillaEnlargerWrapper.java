@@ -156,7 +156,7 @@ public class SmillaEnlargerWrapper {
 					+ conf.per;
 
 			log.info(cmd);
-			log.info(src.exists() + "\t" + dest.exists());
+			log.debug(src.exists() + "\t" + dest.exists());
 
 			final Process exec = Runtime.getRuntime().exec(cmd);
 
