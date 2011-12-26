@@ -1,5 +1,6 @@
 package barcode;
 
+import image.HSV;
 import image.SmillaEnlargerWrapper;
 import image.SmillaEnlargerWrapper.SmillaEnlargerConf;
 
@@ -79,21 +80,25 @@ public class BarcodeReader {
 			if (min > length) {
 				min = length;
 			} else if (length > min) {
-				l.add(file);
+				if (HSV.isColar(file)) {
+					l.add(file);
+				}
 			}
 			//ルールが変なものも表紙かも
 			if (file.getName().matches("[0-9]+[a-zA-Z]{1}\\.[a-zA-Z]+")
 					&& !l.contains(file)) {
-
-				l.add(file);
+				if (HSV.isColar(file)) {
+					l.add(file);
+				}
 			}
 		}
 
 		for (int i = 0; i < asList.size(); i++) {
 			File file = asList.get(i);
 			if ((i < param || (asList.size() - param) < i) && !l.contains(file)) {
-
-				l.add(file);
+				if (HSV.isColar(file)) {
+					l.add(file);
+				}
 			}
 		}
 

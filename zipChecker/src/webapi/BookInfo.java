@@ -303,4 +303,24 @@ public class BookInfo implements Comparable<BookInfo> {
 		this.isbn = isbn;
 	}
 
+	public String getTitleStr() {
+		return titleStr;
+	}
+
+	public void setTitleStr(String titleStr) {
+		this.titleStr = titleStr;
+	}
+
+	public void setRowTitle(String rowTitle) {
+		this.rowTitle = rowTitle;
+	}
+
+	public void setRowdateOnly(boolean rowdateOnly) {
+		this.rowdateOnly = rowdateOnly;
+	}
+
+	public void setNo(String no) {
+		this.no = no;
+	}
+
 }

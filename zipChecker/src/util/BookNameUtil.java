@@ -148,7 +148,7 @@ public class BookNameUtil {
 
 	}
 
-	static class BookInfoFromBarcodeTask implements
+	private static class BookInfoFromBarcodeTask implements
 			Callable<Map<File, BookInfo>> {
 
 		public BookInfoFromBarcodeTask(File dir) {
@@ -180,15 +180,13 @@ public class BookNameUtil {
 
 		String barcode = BarcodeReader.autoReadDir(dir);
 		if (barcode != null) {
-			BookInfo info = Amazon.getInfo(barcode);
+			BookInfo info1 = Amazon.getInfo(barcode);
+			BookInfo info2 = Rakuten.getInfo(barcode);
+
+			BookInfo info = marge(info1, info2);
 			if (info != null) {
 				return info;
 			} else {
-
-				info = Rakuten.getInfo(barcode);
-				if (info != null) {
-					return info;
-				}
 
 				log.warn("ISBNより書籍情報が取得出来なかったので、フォルダ名を返します。{}", dir);
 
@@ -200,6 +198,47 @@ public class BookNameUtil {
 			log.warn("バーコード情報が取得出来なかったので、フォルダ名を返します。{}", dir);
 
 			return new BookInfo(dir.getName());
+		}
+
+	}
+
+	private static BookInfo marge(BookInfo b1, BookInfo b2) {
+
+		if (b1.getInfo().equals(b2.getInfo())) {
+			return b1;
+		} else {
+			log.warn("書籍情報に差異があります。AWS ", b1.getInfo());
+			log.warn("書籍情報に差異があります。楽天", b2.getInfo());
+
+			BookInfo r;
+			if (b1.isRowdateOnly()) {
+				r = b2;
+			} else {
+				r = b1;
+			}
+
+			if (b1.getTitle().length() > b2.getTitle().length()) {
+				r.setTitle(b2.getTitle());
+			} else {
+				r.setTitle(b1.getTitle());
+			}
+
+			if (b1.getAuthor().length() > b2.getAuthor().length()) {
+				r.setTitle(b2.getAuthor());
+			} else {
+				r.setTitle(b1.getAuthor());
+			}
+
+			if (b1.getPublisherName().length() > b2.getPublisherName().length()) {
+				r.setTitle(b2.getPublisherName());
+			} else {
+				r.setTitle(b1.getPublisherName());
+			}
+
+			log.warn("書籍情報を更新しました。　　　", r.getInfo());
+
+			return r;
+
 		}
 
 	}

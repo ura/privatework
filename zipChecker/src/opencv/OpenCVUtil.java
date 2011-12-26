@@ -1,11 +1,40 @@
 package opencv;
 
 import com.googlecode.javacv.CanvasFrame;
-import com.googlecode.javacv.cpp.opencv_core.CvPoint;
-import com.googlecode.javacv.cpp.opencv_core.CvPoint2D32f;
-import com.googlecode.javacv.cpp.opencv_core.CvScalar;
-import com.googlecode.javacv.cpp.opencv_core.IplImage;
-import com.googlecode.javacv.cpp.opencv_imgproc.CvHistogram;
+import com.googlecode.javacv.jna.cv.CvHistogram;
+import com.googlecode.javacv.jna.cv.FloatPointerByReference;
+import com.googlecode.javacv.jna.cxcore.CvPoint;
+import com.googlecode.javacv.jna.cxcore.CvPoint2D32f;
+import com.googlecode.javacv.jna.cxcore.CvScalar;
+import com.googlecode.javacv.jna.cxcore.CvSize.ByValue;
+import com.googlecode.javacv.jna.cxcore.IplImage;
+import com.sun.jna.ptr.DoubleByReference;
+
+import static com.googlecode.javacv.jna.cv.CV_BGR2HSV;
+import static com.googlecode.javacv.jna.cv.CV_COMP_CORREL;
+import static com.googlecode.javacv.jna.cv.CV_HIST_ARRAY;
+import static com.googlecode.javacv.jna.cv.CV_TM_CCORR_NORMED;
+import static com.googlecode.javacv.jna.cv.cvCalcBackProjectPatch;
+import static com.googlecode.javacv.jna.cv.cvCalcHist;
+import static com.googlecode.javacv.jna.cv.cvCreateHist;
+import static com.googlecode.javacv.jna.cv.cvCvtColor;
+import static com.googlecode.javacv.jna.cv.cvGetRectSubPix;
+import static com.googlecode.javacv.jna.cv.cvMatchTemplate;
+import static com.googlecode.javacv.jna.cv.cvResize;
+import static com.googlecode.javacv.jna.cxcore.CV_RGB;
+import static com.googlecode.javacv.jna.cxcore.IPL_DEPTH_32F;
+import static com.googlecode.javacv.jna.cxcore.IPL_DEPTH_8U;
+import static com.googlecode.javacv.jna.cxcore.cvAvgSdv;
+import static com.googlecode.javacv.jna.cxcore.cvCreateImage;
+import static com.googlecode.javacv.jna.cxcore.cvGetSize;
+import static com.googlecode.javacv.jna.cxcore.cvMinMaxLoc;
+import static com.googlecode.javacv.jna.cxcore.cvPoint;
+import static com.googlecode.javacv.jna.cxcore.cvRectangle;
+import static com.googlecode.javacv.jna.cxcore.cvSize;
+import static com.googlecode.javacv.jna.cxcore.cvSplit;
+import static com.googlecode.javacv.jna.highgui.CV_LOAD_IMAGE_COLOR;
+import static com.googlecode.javacv.jna.highgui.cvLoadImage;
+import static com.googlecode.javacv.jna.highgui.cvWaitKey;
 
 public class OpenCVUtil {
 
