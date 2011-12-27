@@ -8,7 +8,6 @@ import image.Histogram.HistogramBlock;
 import java.util.Set;
 import java.util.Map.Entry;
 
-import util.Avg;
 
 public class SimpleHistogramComparator implements ImgComparator {
 

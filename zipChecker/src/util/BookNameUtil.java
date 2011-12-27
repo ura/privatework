@@ -80,7 +80,7 @@ public class BookNameUtil {
 
 	private static Pattern fileName = Pattern
 	//.compile("([!A-Za-zＡ-Ｚａ-ｚ_\\.0-9#-_\\s]+)[^A-Za-zＡ-Ｚａ-ｚ_\\.0-9#-_\\s]*(\\.[A-Za-z0-9]+)");
-			.compile("[\\u4E00-\\u9FBF\\u0020-\\u007Ea-zA-Z0-9０-９　 \\u3040-\\u309F\\u30A0-\\u30FF\\u30A0-\\u30FF\\u30A0-\\u30FF]+\\.[a-zA-Z]+");
+			.compile("([\\u4E00-\\u9FBF\\u0020-\\u007Ea-zA-Z0-9０-９　 \\u3040-\\u309F\\u30A0-\\u30FF\\u30A0-\\u30FF\\u30A0-\\u30FF]+\\.[a-zA-Z]+)");
 
 	/**
 	 * 日本語のみの名称に変換します。
