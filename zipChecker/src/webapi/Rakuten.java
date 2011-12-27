@@ -52,6 +52,12 @@ public class Rakuten {
 
 			stub.setParameter("title", title);
 		}
+
+		@Override
+		public String toString() {
+
+			return "タイトル検索:" + title;
+		}
 	}
 
 	public static class IsbnQuery extends Query {
@@ -66,6 +72,12 @@ public class Rakuten {
 		public void setCustomQuery(AbaronRESTClient stub) {
 
 			stub.setParameter("isbn", isbn);
+		}
+
+		@Override
+		public String toString() {
+
+			return "ISBN検索:" + isbn;
 		}
 	}
 
@@ -177,8 +189,8 @@ public class Rakuten {
 		} catch (XPathExpressionException | ParserConfigurationException
 				| SAXException | IOException | RuntimeException e) {
 
-			log.error("想定外のエラー", e);
-			result.print(false);
+			log.error("検索結果に該当するものがなかったと思われます。{}", q);
+			log.info("エラーが発生したXMLを示します。\n{}", result.getXmlString());
 		}
 		return set;
 	}

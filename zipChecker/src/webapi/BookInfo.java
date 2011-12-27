@@ -41,7 +41,7 @@ public class BookInfo implements Comparable<BookInfo> {
 	 * 巻数取得あり
 	 */
 	private static final Pattern bookInfoReg1 = Pattern
-			.compile("\\[(.*)\\]\\[(.*)\\]\\[(.*)第([0-9]+)巻\\]\\[ISBN([0-9A-Za-z ]*)\\]");
+			.compile("\\[(.*)\\]\\[(.*)\\]\\[(.*) 第([0-9]+)巻\\]\\[ISBN([0-9A-Za-z ]*)\\]");
 	/**
 	 * 巻数なし
 	 */
@@ -207,6 +207,10 @@ public class BookInfo implements Comparable<BookInfo> {
 					+ "[ISBN" + isbn + "]";
 
 		}
+	}
+
+	public boolean isTrueISBN() {
+		return this.isbn.startsWith("978");
 	}
 
 	public String getBaseInfo() {

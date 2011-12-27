@@ -125,18 +125,26 @@ public class FileUtilExt {
 
 		File newWorkDir = createPath(workDir, getFileName(arcFile));
 
-		WinRARWrapper.decode(arcFile, newWorkDir);
-		if (del) {
-			arcFile.delete();
-		}
+		try {
+			WinRARWrapper.decode(arcFile, newWorkDir);
+			if (del) {
+				arcFile.delete();
+			}
 
-		KeywordFileCollector coll = new KeywordFileCollector(".rar", ".zip");
-		new FileWalker().walk(newWorkDir, coll);
+			KeywordFileCollector coll = new KeywordFileCollector(".rar", ".zip");
+			new FileWalker().walk(newWorkDir, coll);
 
-		List<File> list = coll.getFiles();
+			List<File> list = coll.getFiles();
 
-		for (File file : list) {
-			decodeAll(newWorkDir, file, true);
+			for (File file : list) {
+				decodeAll(newWorkDir, file, true);
+			}
+		} catch (IOException e) {
+
+			log.error("解凍に失敗したファイルが存在します。対処を検討指定ください。{}",
+					arcFile.getAbsolutePath());
+			FileOperationUtil.deleteForce(newWorkDir);
+
 		}
 
 	}

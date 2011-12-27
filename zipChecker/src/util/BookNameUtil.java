@@ -32,6 +32,7 @@ import webapi.Rakuten;
 import barcode.BarcodeReader;
 import conf.ConfConst;
 import static util.file.FileNameUtil.createPath;
+import static util.file.FileNameUtil.getExt;
 
 public class BookNameUtil {
 
@@ -78,10 +79,12 @@ public class BookNameUtil {
 			.compile("[^\\[0-9]([0-9]{1,2})[-]+([0-9]{2})[^\\]]+");
 
 	private static Pattern fileName = Pattern
-			.compile("([!A-Za-zＡ-Ｚａ-ｚ_\\.0-9#-_\\s]+)[^A-Za-zＡ-Ｚａ-ｚ_\\.0-9#-_\\s]*(\\.[A-Za-z0-9]+)");
+	//.compile("([!A-Za-zＡ-Ｚａ-ｚ_\\.0-9#-_\\s]+)[^A-Za-zＡ-Ｚａ-ｚ_\\.0-9#-_\\s]*(\\.[A-Za-z0-9]+)");
+			.compile("[\\u4E00-\\u9FBF\\u0020-\\u007Ea-zA-Z0-9０-９　 \\u3040-\\u309F\\u30A0-\\u30FF\\u30A0-\\u30FF\\u30A0-\\u30FF]+\\.[a-zA-Z]+");
 
 	/**
-	 * アルファベット、数値のみのシンプルな名前に置換した名称を返します。
+	 * 日本語のみの名称に変換します。
+	 * シンプルな名前に置換した名称を返します。
 	 */
 	public static String createSimpleName(File f) {
 
@@ -92,7 +95,9 @@ public class BookNameUtil {
 			return group;
 		}
 
-		throw new IllegalArgumentException(f.getName());
+		log.warn("短縮化できないので、ダミーの値を返します。:{} {}", f.getAbsolutePath(), "0."
+				+ getExt(f));
+		return "0." + getExt(f);
 
 	}
 
