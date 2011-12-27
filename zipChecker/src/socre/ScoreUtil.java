@@ -16,7 +16,7 @@ import socre.calculator.ScoreCalculatorByDirFile;
 import socre.calculator.ScoreCalculatorByDirName;
 import socre.name.FileNameParseImpl;
 import util.DebugUtil;
-import dir.Dir;
+import util.file.Dir;
 
 /**
  * 距離判別

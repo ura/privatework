@@ -1,4 +1,4 @@
-package util;
+package book;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,11 +25,12 @@ import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import util.UserInput;
+import util.WinRARWrapper;
 import util.file.filter.DirFilter;
-import webapi.Amazon;
-import webapi.BookInfo;
-import webapi.Rakuten;
-import barcode.BarcodeReader;
+import book.webapi.Amazon;
+import book.webapi.BookInfo;
+import book.webapi.Rakuten;
 import conf.ConfConst;
 import static util.file.FileNameUtil.createPath;
 import static util.file.FileNameUtil.getExt;

@@ -1,4 +1,4 @@
-package util.file;
+package book;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,7 +15,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.regex.Pattern;
 
 import log.Log;
 
@@ -25,17 +24,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import socre.ScoreUtil;
-import util.BookNameUtil;
 import util.CollectionUtil;
 import util.MapList;
 import util.UserInput;
 import util.WinRARWrapper;
-import webapi.BookInfo;
+import util.file.Checker;
+import util.file.Dir;
+import util.file.DirCollector;
+import util.file.FileOperationUtil;
+import util.file.FileWalker;
+import util.file.KeywordFileCollector;
 import zip.State;
 import zip.ZipChecker;
+import book.webapi.BookInfo;
 import conf.ConfConst;
-import dir.Dir;
-import dir.DirCollector;
 import static util.file.FileNameUtil.createPath;
 import static util.file.FileNameUtil.getFileName;
 
@@ -44,9 +46,9 @@ import static util.file.FileNameUtil.getFileName;
  * 圧縮ファイルの整理、フォルダの整理などを集約
  *
  */
-public class FileUtilExt {
-	static Pattern fileNoPattern = Pattern.compile("(.*)_(\\d*)");
-	private static Logger log = LoggerFactory.getLogger(FileUtilExt.class);
+public class BookFileUtil {
+
+	private static Logger log = LoggerFactory.getLogger(BookFileUtil.class);
 
 	private static final String WORK_DIR = ConfConst.MAIN_CONF
 			.getVal(ConfConst.ARC_WORK_DIR);
@@ -482,7 +484,7 @@ public class FileUtilExt {
 		DirCollector destDir = new DirCollector();
 		new FileWalker().walk(new File(dest), destDir);
 
-		FileUtilExt.classifyAll(destDir.dirSet.values(), allFileFullPath);
+		BookFileUtil.classifyAll(destDir.dirSet.values(), allFileFullPath);
 
 	}
 

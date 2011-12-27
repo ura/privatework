@@ -1,6 +1,6 @@
 package socre.calculator;
 
-import dir.Dir;
+import util.file.Dir;
 
 /**
  * スコアの算出。

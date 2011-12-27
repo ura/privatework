@@ -1,4 +1,4 @@
-package dir;
+package util.file;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -11,7 +11,6 @@ import java.util.TreeMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import util.file.FileHandler;
 
 /**
  * ディレクトリ、ファイルを収集して、溜め込む。

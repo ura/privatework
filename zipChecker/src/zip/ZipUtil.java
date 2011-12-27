@@ -18,11 +18,12 @@ import org.apache.tools.zip.ZipFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import util.file.FileUtilExt;
+import book.BookFileUtil;
+
 
 public class ZipUtil {
 
-	private static Logger log = LoggerFactory.getLogger(FileUtilExt.class);
+	private static Logger log = LoggerFactory.getLogger(BookFileUtil.class);
 
 	/**
 	 * ある程度OKだったらスルーする。 Zipの中に複数ZIPが入っていても、1つ解凍できれば、後ものは

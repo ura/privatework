@@ -4,6 +4,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import book.BookFileUtil;
+
 /**
  * ディレクトリ、ファイルを収集して、溜め込む。
  *
@@ -52,7 +54,7 @@ public class KeywordFileCollector implements FileHandler {
 	 */
 	public List<File> getFiles() {
 
-		FileUtilExt.deleteSameFile(list);
+		BookFileUtil.deleteSameFile(list);
 		return list;
 
 	}

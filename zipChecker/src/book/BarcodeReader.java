@@ -1,4 +1,4 @@
-package barcode;
+package book;
 
 import image.HSV;
 import image.SmillaEnlargerWrapper;

@@ -21,10 +21,10 @@ import org.apache.tools.zip.ZipFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import util.file.DirCollector;
 import util.file.FileWalker;
 import zip.State;
 import zip.ZipCheckException;
-import dir.DirCollector;
 
 public class ImageDataZipTree extends ImageDataTree {
 

@@ -1,4 +1,4 @@
-package dir;
+package util.file;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -19,7 +19,6 @@ import util.CollectionUtil;
 import util.CollectionUtil.Counter;
 import util.StaticUtil;
 import util.StringUtil;
-import util.file.FileOperationUtil;
 import util.file.filter.DirFilter;
 
 import com.google.inject.Inject;

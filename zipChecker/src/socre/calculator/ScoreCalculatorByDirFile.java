@@ -10,11 +10,11 @@ import org.slf4j.LoggerFactory;
 import socre.name.FileNameParser;
 import util.CollectionUtil;
 import util.StringUtil;
+import util.file.Dir;
 
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
-import dir.Dir;
 
 /**
  * そのフォルダに入っているファイルの特徴をみて、スコアを登録する。

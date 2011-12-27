@@ -5,7 +5,8 @@ import java.util.Collection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import util.file.FileUtilExt;
+import book.BookFileUtil;
+
 import conf.Config;
 import conf.ListConfig;
 
@@ -28,7 +29,7 @@ public class ClassifyAll {
 		} else if (cmd.equals("checkZip")) {
 			checkZip(args);
 		} else if (cmd.equals("rebuildArc")) {
-			FileUtilExt.rebuildArcWithUI(args[1], args[2], args[3]);
+			BookFileUtil.rebuildArcWithUI(args[1], args[2], args[3]);
 		}
 
 	}
@@ -36,18 +37,18 @@ public class ClassifyAll {
 	private static void checkZip(String args[]) {
 
 		if (args.length == 1) {
-			FileUtilExt.movePassZipAll(".");
+			BookFileUtil.movePassZipAll(".");
 		} else {
-			FileUtilExt.movePassZipAll(args[1]);
+			BookFileUtil.movePassZipAll(args[1]);
 		}
 	}
 
 	private static void createDir(String args[]) {
 
 		if (args.length == 1) {
-			FileUtilExt.createDir(".");
+			BookFileUtil.createDir(".");
 		} else {
-			FileUtilExt.createDir(args[1]);
+			BookFileUtil.createDir(args[1]);
 		}
 	}
 
@@ -65,12 +66,12 @@ public class ClassifyAll {
 			log.info("{},{},{}", new Object[] { strings[0], strings[2],
 					strings[1] });
 
-			FileUtilExt.classifyAll(strings[0], new String[] { strings[2] },
+			BookFileUtil.classifyAll(strings[0], new String[] { strings[2] },
 					strings[1]);
 
 			//FileUtil.deletePassZipAll(strings[1]);
 
-			FileUtilExt.deleteSameFile(strings[1]);
+			BookFileUtil.deleteSameFile(strings[1]);
 		}
 	}
 

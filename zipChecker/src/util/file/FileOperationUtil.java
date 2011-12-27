@@ -19,12 +19,10 @@ import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import util.BookNameUtil;
 import util.StaticUtil;
 import util.file.filter.FileNameFilter;
 import util.file.filter.FileNameFilter.MODE;
-import dir.Dir;
-import dir.DirCollector;
+import book.BookNameUtil;
 import static util.StaticUtil.sleep;
 import static util.file.FileNameUtil.createPath;
 import static util.file.FileNameUtil.getExt;
@@ -39,7 +37,7 @@ import static util.file.FileNameUtil.getFileName;
  *
  */
 public class FileOperationUtil {
-
+	static Pattern fileNoPattern = Pattern.compile("(.*)_(\\d*)");
 	private static Logger log = LoggerFactory
 			.getLogger(FileOperationUtil.class);
 
@@ -284,7 +282,7 @@ public class FileOperationUtil {
 			String base = FilenameUtils.getBaseName(filename);
 			String ext = FilenameUtils.getExtension(filename);
 
-			Matcher m = FileUtilExt.fileNoPattern.matcher(base);
+			Matcher m = fileNoPattern.matcher(base);
 			if (m.matches()) {
 				String s = m.group(2);
 				int i;
