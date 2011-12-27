@@ -11,6 +11,7 @@ public class ConfConst {
 	public static final String RAKUTEN_KEY = "RAKUTEN_KEY";
 
 	public static final String THREAD_GET_BOOKINFO = "THREAD_GET_BOOKINFO";
+	public static final String THREAD_DECODE = "THREAD_DECODE";
 
 	public static final String MAIN_CONF_FILE = "/main.properties";
 

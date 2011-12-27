@@ -61,6 +61,14 @@ public class BookNameUtil {
 
 	}
 
+	private static Pattern folderNameIsbn = Pattern
+			.compile("\\[ISBN([0-9A-Za-z ]*)\\]");
+	private static List<Pattern> regIsbnList = new ArrayList<Pattern>();
+	static {
+		regIsbnList.add(folderNameIsbn);
+
+	}
+
 	private static Pattern partermAll = Pattern.compile("全.*([0-9]+)");
 
 	/**
@@ -172,13 +180,44 @@ public class BookNameUtil {
 	}
 
 	/**
+	 * フォルダ名からISBNを抜き取ります。
+	 * @param dir
+	 * @return
+	 */
+	public static String bookInfoFromFolderName(File dir) {
+		String name = dir.getName();
+		for (Pattern reg : regIsbnList) {
+			Matcher matcher = reg.matcher(name);
+
+			boolean result = matcher.find();
+
+			if (result) {
+				String group = matcher.group(1);
+
+				return group;
+			}
+
+		}
+		return null;
+	}
+
+	/**
 	 * バーコードスキャンをして、書籍情報を取得します。
 	 * @param dir
 	 * @return
 	 */
 	public static BookInfo bookInfoFromBarcode(File dir) {
 
-		String barcode = BarcodeReader.autoReadDir(dir);
+		if (BookInfo.isBookInfoName(dir)) {
+			log.warn("フォルダ名より、処理済みのフォルダと認識したため、そのまま情報を使用します。{}",
+					dir.getAbsolutePath());
+			return BookInfo.createBookInfo(dir);
+		}
+
+		String barcode = bookInfoFromFolderName(dir);
+		if (barcode == null) {
+			barcode = BarcodeReader.autoReadDir(dir);
+		}
 		if (barcode != null) {
 			BookInfo info1 = Amazon.getInfo(barcode);
 			BookInfo info2 = Rakuten.getInfo(barcode);
@@ -341,7 +380,7 @@ public class BookNameUtil {
 			Set<BookInfo> keySet = value.keySet();
 			List<BookInfo> list = new ArrayList<BookInfo>(keySet);
 
-			log.info("基礎名の分類結果です。{} : data数 {}", e.getKey(), keySet.size());
+			log.warn("基礎名の分類結果です。{} : data数 {}", e.getKey(), keySet.size());
 			int size = list.size();
 			for (int i = 0; i < 10; i++) {
 

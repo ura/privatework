@@ -50,6 +50,8 @@ public class FileUtilExt {
 
 	private static final String WORK_DIR = ConfConst.MAIN_CONF
 			.getVal(ConfConst.ARC_WORK_DIR);
+	private static final int THREAD_DECODE = ConfConst.MAIN_CONF
+			.getInt(ConfConst.THREAD_DECODE);
 
 	/**
 	 * パスワードつきのファイルを削除します。
@@ -192,7 +194,7 @@ public class FileUtilExt {
 			throws IOException {
 
 		try {
-			ExecutorService ex = Executors.newFixedThreadPool(5);
+			ExecutorService ex = Executors.newFixedThreadPool(THREAD_DECODE);
 			List<Callable<Void>> l = new ArrayList<>();
 			for (File zipFile : newList) {
 				if (zipFile.isFile()) {

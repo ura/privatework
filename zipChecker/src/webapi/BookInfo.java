@@ -1,5 +1,6 @@
 package webapi;
 
+import java.io.File;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -24,6 +25,9 @@ public class BookInfo implements Comparable<BookInfo> {
 
 	private static final Pattern titleReg2 = Pattern
 			.compile("(.*[^0-9(（])[(（]*([0-9]+)(.*[^0-9]) [\\(\\(（].*[\\)）\\)]$");
+	private static final Pattern titleReg7 = Pattern
+			.compile("([^()（）]*)[()（）]([0-9０-９]+)[()（）]");
+
 	private static final Pattern titleReg3 = Pattern
 			.compile("(.*[^0-9()])([0-9]+)(.*[^0-9]) [\\(\\(（].*[\\)）\\)]$");
 	private static final Pattern titleReg4 = Pattern
@@ -33,12 +37,62 @@ public class BookInfo implements Comparable<BookInfo> {
 	private static final Pattern titleReg6 = Pattern
 			.compile("(.*[^0-9(（])[(（ ]*([0-9]+)[^0-9]*$");
 
+	/**
+	 * 巻数取得あり
+	 */
+	private static final Pattern bookInfoReg1 = Pattern
+			.compile("\\[(.*)\\]\\[(.*)\\]\\[(.*)第([0-9]+)巻\\]\\[ISBN([0-9A-Za-z ]*)\\]");
+	/**
+	 * 巻数なし
+	 */
+	private static final Pattern bookInfoReg2 = Pattern
+			.compile("\\[(.*)\\]\\[(.*)\\]\\[(.*)\\]\\[ISBN([0-9A-Za-z ]*)\\]");
+
 	private static final List<Pattern> regList;
+
+	public static boolean isBookInfoName(File dir) {
+
+		String name = dir.getName();
+		Matcher matcher = bookInfoReg1.matcher(name);
+		Matcher matcher2 = bookInfoReg2.matcher(name);
+		return matcher.find() || matcher2.find();
+
+	}
+
+	public static BookInfo createBookInfo(File dir) {
+		//[別天荒人][集英社][明日泥棒 第04巻][ISBN9784088776453][抜けあり]
+
+		BookInfo bookInfo = new BookInfo();
+		String name = dir.getName();
+		Matcher matcher = bookInfoReg1.matcher(name);
+		if (matcher.find()) {
+			bookInfo.setAuthor(matcher.group(1));
+			bookInfo.setPublisherName(matcher.group(2));
+			bookInfo.setTitleStr(matcher.group(3));
+			bookInfo.setNo(matcher.group(4));
+			bookInfo.setIsbn(matcher.group(5));
+			return bookInfo;
+		}
+		Matcher matcher2 = bookInfoReg2.matcher(name);
+		if (matcher2.find()) {
+			bookInfo.setAuthor(matcher2.group(1));
+			bookInfo.setPublisherName(matcher2.group(2));
+			bookInfo.setTitleStr(matcher2.group(3));
+
+			bookInfo.setIsbn(matcher2.group(4));
+			return bookInfo;
+		}
+
+		throw new IllegalStateException("ロジックがバグっている");
+
+	}
+
 	static {
 		ArrayList<Pattern> list = new ArrayList<Pattern>();
 		list.add(titleSReg);
 		list.add(titleReg1);
 		list.add(titleReg2);
+		list.add(titleReg7);
 		list.add(titleReg3);
 		list.add(titleReg4);
 		list.add(titleReg5);
@@ -46,6 +100,11 @@ public class BookInfo implements Comparable<BookInfo> {
 
 		regList = Collections.unmodifiableList(list);
 
+	}
+
+	public BookInfo() {
+		this.no = "";
+		this.seriesName = "";
 	}
 
 	public BookInfo(String title) {
