@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import util.file.FileOperationUtil;
 import conf.ConfConst;
+import static util.file.FileNameUtil.getExt;
 
 public class WinRARWrapper {
 	private static Logger log = LoggerFactory.getLogger(WinRARWrapper.class);
@@ -30,16 +31,21 @@ public class WinRARWrapper {
 
 	}
 
+	private static String createDecodeCmd(File src, File dest)
+			throws IOException, InterruptedException {
+		String cmd = "\"" + RAR_EXE + "\" X  -o+  -IBCK -inul \""
+				+ src.getAbsolutePath() + "\" * \"" + dest.getAbsolutePath()
+				+ "\"";
+		return cmd;
+	}
+
 	private static boolean decodeCore(File src, File dest) throws IOException,
 			InterruptedException {
 		dest.mkdir();
 
-		String cmd = "\"" + RAR_EXE + "\" X  -o+  -IBCK -inul \""
-				+ src.getAbsolutePath() + "\" * \"" + dest.getAbsolutePath()
-				+ "\"";
+		String cmd = createDecodeCmd(src, dest);
 
 		log.info(cmd);
-		log.debug(src.exists() + "\t" + dest.exists());
 
 		final Process exec = Runtime.getRuntime().exec(cmd);
 
@@ -51,7 +57,6 @@ public class WinRARWrapper {
 			int exitValue = exec.exitValue();
 
 			if (exitValue != 0) {
-				log.error("ERROR:" + cmd);
 
 				return false;
 			} else {
@@ -76,21 +81,14 @@ public class WinRARWrapper {
 		if (!b) {
 			File work1 = FileOperationUtil.createTempDir(WORK_DIR);
 
-			String ext = "";
-			if (src.getName().endsWith(".rar")) {
-				ext = "rar";
-			} else if ((src.getName().endsWith(".zip"))) {
-				ext = "zip";
-			} else {
-				throw new IllegalArgumentException();
-			}
+			String ext = getExt(src);
 
 			File temp = new File(work1.getAbsolutePath() + File.separator
 					+ "temp." + ext);
 
 			Files.copy(src.toPath(), temp.toPath());
 
-			File workDest = FileOperationUtil.createTempDir(WORK_DIR);
+			File workDest = FileOperationUtil.createTempDir(WORK_DIR, "DECODE");
 
 			boolean workResult = decodeCore(temp, workDest);
 
@@ -102,7 +100,8 @@ public class WinRARWrapper {
 			FileOperationUtil.deleteForce(workDest);
 
 			if (!workResult) {
-				log.error("致命的な解凍エラーが発生しました。{}", src.getAbsolutePath());
+				log.error("致命的な解凍エラーが発生しました。{}\n{}", src.getAbsolutePath(),
+						createDecodeCmd(temp, workDest));
 				throw new IllegalStateException("致命的な解凍エラーが発生しました。"
 						+ src.getAbsolutePath());
 			}
