@@ -45,9 +45,9 @@ import com.google.zxing.oned.EAN13Reader;
  * @author name
  *
  */
-public class BarcodeReader {
+public class BarcodeReader4Book {
 
-	private static Logger log = LoggerFactory.getLogger(BarcodeReader.class);
+	private static Logger log = LoggerFactory.getLogger(BarcodeReader4Book.class);
 
 	private static final int MAX_DIV = 6;
 
@@ -324,7 +324,7 @@ public class BarcodeReader {
 	 * @return
 	 */
 	private static List<Rect> createRect(BinaryBitmap bitmap, int div) {
-		List<Rect> set = new ArrayList<BarcodeReader.Rect>();
+		List<Rect> set = new ArrayList<BarcodeReader4Book.Rect>();
 
 		for (; div <= MAX_DIV; div++) {
 			for (int i = 0; i < div; i++) {

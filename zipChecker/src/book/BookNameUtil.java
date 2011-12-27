@@ -222,7 +222,7 @@ public class BookNameUtil {
 
 		String barcode = bookInfoFromFolderName(dir);
 		if (barcode == null) {
-			barcode = BarcodeReader.autoReadDir(dir);
+			barcode = BarcodeReader4Book.autoReadDir(dir);
 		}
 		if (barcode != null) {
 			BookInfo info1 = Amazon.getInfo(barcode);
