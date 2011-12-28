@@ -32,6 +32,11 @@ public class FileNameUtil {
 		return getExt(f.getName());
 	}
 
+	public static boolean haveExt(File s) {
+
+		return haveExt(s.getName());
+	}
+
 	public static boolean haveExt(String s) {
 
 		return s.contains(".");

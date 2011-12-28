@@ -1,18 +1,23 @@
 package book;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+
+import javax.imageio.ImageIO;
 
 import log.Log;
 
@@ -38,6 +43,7 @@ import book.webapi.BookInfo;
 import conf.ConfConst;
 import static util.file.FileNameUtil.createPath;
 import static util.file.FileNameUtil.getFileName;
+import static util.file.FileNameUtil.haveExt;
 
 /**
  * フォルダの整理関連に特化。
@@ -246,8 +252,47 @@ public class BookFileUtil {
 
 	}
 
-	public static void jpgCheck() {
+	/**
+	 * 拡張子が存在しないファイルに対し画像か確認を行います。
+	 * 画像だった場合は、JPEGとみなし、リネームします。
+	 * @param root
+	 */
+	public static void jpgCheck(File root) {
+		DirCollector srcDir = new DirCollector();
+		new FileWalker().walk(root, srcDir);
+		Collection<File> allFileFullPath = srcDir.getAllFile();
+		Set<File> noExtSet = new HashSet<>();
+		for (File file : allFileFullPath) {
+			if (!haveExt(file)) {
+				noExtSet.add(file);
+			}
+		}
 
+		for (File file : noExtSet) {
+			if (isImage(file)) {
+				File dest = new File(file.getAbsoluteFile() + ".jpg");
+				if (file.renameTo(dest)) {
+					throw new IllegalStateException(file.getAbsolutePath());
+				}
+			}
+
+		}
+
+	}
+
+	public static boolean isImage(File f) {
+		try {
+			BufferedImage image = ImageIO.read(f);
+			if (image != null) {
+				return true;
+			} else {
+				return false;
+			}
+		} catch (IOException e) {
+			log.error("想定外です。画像でない場合はNULLが返りECEPTIONは発生しません。{}", f, e);
+			throw new IllegalArgumentException(
+					"想定外です。画像でない場合はNULLが返りECEPTIONは発生しません。");
+		}
 	}
 
 	public static void rebuildArc(String name, Collection<File> newList)
