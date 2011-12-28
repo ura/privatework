@@ -24,7 +24,7 @@ public class BookInfo implements Comparable<BookInfo> {
 			.compile("(.*)[\\(（]{1}([    ([0-9]]+)[）\\)]{1}$");
 
 	private static final Pattern titleReg2 = Pattern
-			.compile("(.*[^0-9(（])[(（]*([0-9]+)(.*[^0-9]) [\\(\\(（].*[\\)）\\)]$");
+			.compile("(.*[^0-9(（])[(（]*([0-9]{1,2})([^0-9]+.*) [\\(\\(（].*[\\)）\\)]$");
 	private static final Pattern titleReg7 = Pattern
 			.compile("([^()（）]*)[()（）]([0-9０-９]+)[()（）]");
 

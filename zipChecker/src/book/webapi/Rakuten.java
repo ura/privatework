@@ -35,7 +35,13 @@ public class Rakuten {
 			.getVal(ConfConst.RAKUTEN_KEY);
 
 	static abstract class Query {
+		int page = 1;
+
 		public abstract void setCustomQuery(AbaronRESTClient stub);
+
+		public void increment() {
+			page++;
+		}
 
 	}
 
@@ -96,6 +102,9 @@ public class Rakuten {
 		stub.setParameter("ResponseGroup", "Small");
 		stub.setParameter("booksGenreID", "000");
 		stub.setParameter("size", "9");
+		stub.setParameter("page", q.page);
+
+		q.increment();
 
 		q.setCustomQuery(stub);
 
@@ -183,6 +192,11 @@ public class Rakuten {
 					set.add(new BookInfo(publisherName, seriesName, author, t,
 							isbn));
 
+				}
+				if (set.size() == 30) {
+					log.info("データ件数がMAXに達したので、次ページに移動します。", q.page);
+					SortedSet<BookInfo> info = getInfo(q);
+					set.addAll(info);
 				}
 			}
 

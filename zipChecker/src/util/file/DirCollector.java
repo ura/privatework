@@ -20,6 +20,17 @@ import org.slf4j.LoggerFactory;
  */
 public class DirCollector implements FileHandler, Iterable<Dir> {
 
+	public static DirCollector create(String root) {
+
+		return create(new File(root));
+	}
+
+	public static DirCollector create(File root) {
+		DirCollector srcDir = new DirCollector();
+		new FileWalker().walk(root, srcDir);
+		return srcDir;
+	}
+
 	private static Logger log = LoggerFactory.getLogger(DirCollector.class);
 
 	public SortedMap<File, Dir> dirSet = new TreeMap<File, Dir>(

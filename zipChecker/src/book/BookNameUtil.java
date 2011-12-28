@@ -30,9 +30,8 @@ import org.slf4j.LoggerFactory;
 import util.UserInput;
 import util.WinRARWrapper;
 import util.file.filter.DirFilter;
-import book.webapi.Amazon;
 import book.webapi.BookInfo;
-import book.webapi.Rakuten;
+import book.webapi.BookInfoFromWeb;
 import conf.ConfConst;
 import static util.file.FileNameUtil.createPath;
 import static util.file.FileNameUtil.getExt;
@@ -267,6 +266,38 @@ public class BookNameUtil {
 		return null;
 	}
 
+	private static Pattern FOLDER_REG = Pattern
+			.compile("[])」】  ]([^])」】]*) (第|v)([0-9]+)(巻|$)");
+
+	/**
+	 * 正規化前のフォルダ名より書籍情報を類推します。
+	 * @param dir
+	 * @return
+	 */
+	public static BookInfo bookInfoFromFolder(File dir) {
+		Matcher matcher = FOLDER_REG.matcher(dir.getName());
+		//期待できそう
+		if (matcher.find()) {
+			String title = matcher.group(1);
+			String no = matcher.group(3);
+
+			//dir.getName().split("[]「」『』【】 　");
+
+			BookInfo bookInfoFromTitle = BookInfoFromWeb.getBookInfoFromTitle(
+					title, no);
+			if (bookInfoFromTitle != null) {
+				log.warn("フォルダ名より書籍情報を推測しました。{} >> {}", dir.getName(),
+						bookInfoFromTitle.getInfo());
+				return bookInfoFromTitle;
+			}
+
+		}
+		return null;
+		//TODO 巻数がないバージョンも作ること。
+		//フォルダから巻　コミック等の値を抜く
+		//APIに突っ込んでみる
+	}
+
 	/**
 	 * バーコードスキャンをして、書籍情報を取得します。
 	 * @param dir
@@ -285,10 +316,8 @@ public class BookNameUtil {
 			barcode = BarcodeReader4Book.autoReadDir(dir);
 		}
 		if (barcode != null) {
-			BookInfo info1 = Amazon.getInfo(barcode);
-			BookInfo info2 = Rakuten.getInfo(barcode);
 
-			BookInfo info = marge(info1, info2);
+			BookInfo info = BookInfoFromWeb.getBookInfo(barcode);
 			if (info != null) {
 				return info;
 			} else {
@@ -303,49 +332,6 @@ public class BookNameUtil {
 			log.warn("バーコード情報が取得出来なかったので、フォルダ名を返します。{}", dir);
 
 			return new BookInfo(dir.getName());
-		}
-
-	}
-
-	private static BookInfo marge(BookInfo b1, BookInfo b2) {
-
-		if (b1 == null) {
-			return b2;
-		}
-		if (b2 == null) {
-			return b1;
-		}
-
-		if (b1.getInfo().equals(b2.getInfo())) {
-			return b1;
-		} else {
-			log.warn("書籍情報に差異があります。AWS   {}", b1.getInfo());
-			log.warn("書籍情報に差異があります。楽天  {}", b2.getInfo());
-
-			BookInfo r = b1;
-
-			if (b1.getTitle().length() > b2.getTitle().length()) {
-				r.setTitleStr(b2.getTitleStr());
-			} else {
-				r.setTitleStr(b1.getTitleStr());
-			}
-
-			if (b1.getAuthor().length() > b2.getAuthor().length()) {
-				r.setAuthor(b2.getAuthor());
-			} else {
-				r.setAuthor(b1.getAuthor());
-			}
-
-			if (b1.getPublisherName().length() > b2.getPublisherName().length()) {
-				r.setPublisherName(b2.getPublisherName());
-			} else {
-				r.setPublisherName(b1.getPublisherName());
-			}
-
-			log.warn("書籍情報を更新しました。　　　  {}", r.getInfo());
-
-			return r;
-
 		}
 
 	}

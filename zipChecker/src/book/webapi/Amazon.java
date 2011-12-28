@@ -124,6 +124,7 @@ public class Amazon {
 
 	public static SortedSet<BookInfo> getInfo(Query q) {
 		SortedSet<BookInfo> set = new TreeSet<>();
+		String xmlStr = "";
 		try {
 
 			String query = createQuery(q);
@@ -132,6 +133,7 @@ public class Amazon {
 			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 			DocumentBuilder db = dbf.newDocumentBuilder();
 			Document doc = db.parse(query);
+			xmlStr = document2String(doc);
 			NodeList titleNode = doc.getElementsByTagName("Title");
 			NodeList authorNode = doc.getElementsByTagName("Author");
 			NodeList manufacturerNode = doc
@@ -154,7 +156,7 @@ public class Amazon {
 		} catch (ParserConfigurationException | SAXException | IOException
 				| RuntimeException e) {
 
-			log.error("想定外のエラー", e);
+			log.error("想定外のエラー\n{}", xmlStr, e);
 
 		}
 		return set;
