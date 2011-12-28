@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -271,7 +273,8 @@ public class BookFileUtil {
 		for (File file : noExtSet) {
 			if (isImage(file)) {
 				File dest = new File(file.getAbsoluteFile() + ".jpg");
-				if (file.renameTo(dest)) {
+				log.warn("拡張子がないファイルがありましたが、これは画像でした。{}", file);
+				if (!file.renameTo(dest)) {
 					throw new IllegalStateException(file.getAbsolutePath());
 				}
 			}
@@ -297,37 +300,40 @@ public class BookFileUtil {
 
 	public static void rebuildArc(String name, Collection<File> newList)
 			throws IOException, InterruptedException {
+		{
+			File workF = FileOperationUtil.createTempDir(WORK_DIR);
 
-		File workF = FileOperationUtil.createTempDir(WORK_DIR);
-
-		decodeAll(workF, newList);
-		/*
-		//FileOperationUtil.moveFolderToParent(workF);
-		//FileOperationUtil.deleteEmptyDir(workF, "jpeg", "jpg");
-
-		File workF = new File("G:\\arkwork\\_1_1325028764755");
-		FileOperationUtil.removeFile(workF, new String[] { "^.*\\.html$",
-				"^.*\\.url$", "^.*\\.txt$", "^Thumbs\\.db", "^[^.]*$" });
-		FileOperationUtil.renameToSimpleFileName(workF);
-
-		Map<File, BookInfo> allbookInfo = BookNameUtil
-				.getAllbookInfoFromBarcode(workF);
-
-		SortedMap<BookInfo, File> s = new TreeMap<BookInfo, File>();
-
-		for (Entry<File, BookInfo> e : allbookInfo.entrySet()) {
-			File src = e.getKey();
-			BookInfo bookNo = e.getValue();
-
-			File newDir = createPath(workF, bookNo.getInfo());
-
-			s.put(bookNo, newDir);
-
-			moveDir(src, newDir, bookNo);
+			decodeAll(workF, newList);
 		}
+		if (false) {
+			File workF = new File("G:\\arkwork\\BASE");
 
-		BookNameUtil.createCominName(new File(WORK_DIR), s);
-		*/
+			FileOperationUtil.moveFolderToParent(workF);
+			jpgCheck(workF);
+			FileOperationUtil.deleteEmptyDir(workF, "jpeg", "jpg");
+
+			FileOperationUtil.removeFile(workF, new String[] { "^.*\\.html$",
+					"^.*\\.url$", "^.*\\.txt$", "^Thumbs\\.db", "^[^.]*$" });
+			FileOperationUtil.renameToSimpleFileName(workF);
+
+			Map<File, BookInfo> allbookInfo = BookNameUtil
+					.getAllbookInfoFromBarcode(workF);
+
+			SortedMap<BookInfo, File> s = new TreeMap<BookInfo, File>();
+
+			for (Entry<File, BookInfo> e : allbookInfo.entrySet()) {
+				File src = e.getKey();
+				BookInfo bookNo = e.getValue();
+
+				File newDir = createPath(workF, bookNo.getInfo());
+
+				s.put(bookNo, newDir);
+
+				moveDir(src, newDir, bookNo);
+			}
+
+			BookNameUtil.createCominName(new File(WORK_DIR), s);
+		}
 
 	}
 
