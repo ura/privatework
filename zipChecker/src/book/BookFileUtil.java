@@ -8,8 +8,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.SortedMap;
-import java.util.TreeMap;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -248,12 +246,17 @@ public class BookFileUtil {
 
 	}
 
+	public static void jpgCheck() {
+
+	}
+
 	public static void rebuildArc(String name, Collection<File> newList)
 			throws IOException, InterruptedException {
 
-		//File workF = FileOperationUtil.createTempDir(WORK_DIR);
+		File workF = FileOperationUtil.createTempDir(WORK_DIR);
 
-		//decodeAll(workF, newList);
+		decodeAll(workF, newList);
+		/*
 		//FileOperationUtil.moveFolderToParent(workF);
 		//FileOperationUtil.deleteEmptyDir(workF, "jpeg", "jpg");
 
@@ -279,6 +282,7 @@ public class BookFileUtil {
 		}
 
 		BookNameUtil.createCominName(new File(WORK_DIR), s);
+		*/
 
 	}
 
@@ -374,26 +378,24 @@ public class BookFileUtil {
 
 	/**
 	 * 同じファイルを削除します。
+	 * ROOTのディレクトリを渡す。
 	 */
-	public static void deleteSameFile(String src) {
+	public static void deleteSameFile(File root) {
 
 		DirCollector srcDir = new DirCollector();
-		new FileWalker().walk(new File(src), srcDir);
+		new FileWalker().walk(root, srcDir);
 		Collection<File> allFileFullPath = srcDir.getAllFile();
 
-		MapList<Long, File> map = new MapList<Long, File>();
-
-		List<File> list = new ArrayList<File>();
-		for (File f : allFileFullPath) {
-
-			list.add(f);
-		}
-
-		deleteFile(list);
+		deleteSameFile(allFileFullPath);
 
 	}
 
-	public static void deleteSameFile(List<File> list) {
+	/**
+	 * ファイルのリストを受け、CRCを確認し同一ファイルを削除する。
+	 * まず、ファイルサイズで判定する。
+	 * @param list
+	 */
+	public static void deleteSameFile(Collection<File> list) {
 
 		MapList<Long, File> map = new MapList<Long, File>();
 
@@ -413,6 +415,11 @@ public class BookFileUtil {
 		}
 	}
 
+	/**
+	 * 前提条件：ファイルサイズが等しい。
+	 * ファイルサイズが同一のリストを投入する。
+	 * @param list
+	 */
 	private static void deleteSamaFileByCRC(List<File> list) {
 		MapList<Long, File> mapList = new MapList<Long, File>();
 
@@ -451,7 +458,7 @@ public class BookFileUtil {
 
 	/**
 	 * ひとつのファイルを残して削除します。
-	 *
+	 * 前提条件として、CRC等で重複確認がされている必要があります。
 	 * @param list
 	 */
 	private static List<File> deleteFile(List<File> list) {

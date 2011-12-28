@@ -13,15 +13,15 @@ public class FileNameUtil {
 	 * 拡張子を取得
 	 */
 	public static String getExt(String str) {
-		try {
-			String strs[] = str.split("\\.");
 
-			return strs[strs.length - 1];
-		} catch (StringIndexOutOfBoundsException e) {
-			System.out.println(str);
-			e.printStackTrace();
+		if (!haveExt(str)) {
 			return "";
 		}
+
+		String strs[] = str.split("\\.");
+
+		return strs[strs.length - 1];
+
 	}
 
 	/**
@@ -32,12 +32,21 @@ public class FileNameUtil {
 		return getExt(f.getName());
 	}
 
+	public static boolean haveExt(String s) {
+
+		return s.contains(".");
+	}
+
 	/**
 	 * 拡張子を覗いたファイル名を取得する
 	 * @param str
 	 * @return
 	 */
 	public static String getFileName(String str) {
+
+		if (haveExt(str)) {
+			return str;
+		}
 
 		String ext = getExt(str);
 

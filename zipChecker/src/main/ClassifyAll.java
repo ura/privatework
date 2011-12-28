@@ -1,12 +1,12 @@
 package main;
 
+import java.io.File;
 import java.util.Collection;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import book.BookFileUtil;
-
 import conf.Config;
 import conf.ListConfig;
 
@@ -71,7 +71,7 @@ public class ClassifyAll {
 
 			//FileUtil.deletePassZipAll(strings[1]);
 
-			BookFileUtil.deleteSameFile(strings[1]);
+			BookFileUtil.deleteSameFile(new File(strings[1]));
 		}
 	}
 
