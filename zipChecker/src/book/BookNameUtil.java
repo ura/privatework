@@ -310,6 +310,10 @@ public class BookNameUtil {
 					dir.getAbsolutePath());
 			return BookInfo.createBookInfo(dir);
 		}
+		BookInfo bookInfoFromFolder = bookInfoFromFolder(dir);
+		if (bookInfoFromFolder != null) {
+			return bookInfoFromFolder;
+		}
 
 		String barcode = bookInfoFromFolderName(dir);
 		if (barcode == null) {

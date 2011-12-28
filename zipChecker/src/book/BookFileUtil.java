@@ -300,13 +300,14 @@ public class BookFileUtil {
 
 	public static void rebuildArc(String name, Collection<File> newList)
 			throws IOException, InterruptedException {
-		{
-			File workF = FileOperationUtil.createTempDir(WORK_DIR);
+		File workF = null;
+		if (false) {
+			workF = FileOperationUtil.createTempDir(WORK_DIR);
 
 			decodeAll(workF, newList);
 		}
-		if (false) {
-			File workF = new File("G:\\arkwork\\BASE");
+		if (true) {
+			workF = new File("G:\\arkwork\\test1");
 
 			FileOperationUtil.moveFolderToParent(workF);
 			jpgCheck(workF);
