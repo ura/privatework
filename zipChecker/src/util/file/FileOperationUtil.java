@@ -8,6 +8,7 @@ import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.SortedSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -116,6 +117,7 @@ public class FileOperationUtil {
 			dir2.deleteForce();
 
 		}
+		dir.delete();
 
 	}
 
@@ -151,19 +153,19 @@ public class FileOperationUtil {
 
 		DirCollector srcDir = new DirCollector();
 		new FileWalker().walk(src, srcDir);
-		Collection<String> allFileFullPath = srcDir.getAllFileFullPath();
+		Collection<File> allFileFullPath = srcDir.getAllFile();
 
-		for (String s : allFileFullPath) {
+		for (File s : allFileFullPath) {
 
 			if (ext == null) {
 
-				move(new File(s), src.getAbsolutePath(), rename);
+				move(s, src.getAbsolutePath(), rename);
 
 			} else {
 
 				for (String e : ext) {
-					if (s.endsWith(e)) {
-						move(new File(s), src.getAbsolutePath(), rename);
+					if (s.getName().endsWith(e)) {
+						move(s, src.getAbsolutePath(), rename);
 						break;
 					}
 
@@ -336,9 +338,8 @@ public class FileOperationUtil {
 		Collection<Dir> values = srcDir.dirSet.values();
 
 		for (Dir dir2 : values) {
-			SortedSet<String> fileNameSet = dir2.fileNameSet;
-			for (String file : fileNameSet) {
-				File f = new File(file);
+			SortedSet<File> fileNameSet = dir2.fileSet;
+			for (File f : fileNameSet) {
 
 				for (Pattern p : list) {
 					if (p.matcher(f.getName()).find()) {
@@ -354,19 +355,20 @@ public class FileOperationUtil {
 	 * 指定されたフォルダを再帰して、チェックしファイル名を単純化（アルファベット、数値のみ）します。
 	 * @param dir
 	 */
-	public static void renameFiles(File dir) {
+	public static void renameToSimpleFileName(File dir) {
 
 		DirCollector srcDir = new DirCollector();
 		new FileWalker().walk(dir, srcDir);
 		Collection<Dir> values = srcDir.dirSet.values();
 
 		for (Dir dir2 : values) {
-			SortedSet<String> fileNameSet = dir2.fileNameSet;
-			for (String file : fileNameSet) {
-				File f = new File(file);
+			SortedSet<File> fileNameSet = dir2.fileSet;
+			Map<File, File> nameMap = BookNameUtil
+					.createSimpleName(fileNameSet);
 
-				File dest = createPath(dir2.dir,
-						BookNameUtil.createSimpleName(f));
+			for (File f : fileNameSet) {
+
+				File dest = nameMap.get(f);
 
 				if (f.equals(dest)) {
 					//ファイル名に変更がなければ無視
@@ -376,15 +378,19 @@ public class FileOperationUtil {
 				if (!dest.exists()) {
 					boolean b = f.renameTo(dest);
 					if (!b) {
-						throw new IllegalStateException("RENAME不能:" + file
-								+ " >>" + dest.getPath());
+						throw new IllegalStateException("RENAME不能:"
+								+ f.getAbsolutePath() + " >>" + dest.getPath());
 					}
 				} else {
-					log.warn("他のファイル名と重複:" + file + ">>" + dest.getName());
+
+					//TODO ☆このロジック入らなくなるはず。重複しないように内容に名称を作るので、
+
+					log.warn("他のファイル名と重複:" + f.getAbsolutePath() + ">>"
+							+ dest.getName());
 
 					if (f.length() == dest.length()) {
 						log.warn("変換前と変換後の名称、ファイルサイズが同じため、同じファイルとみなし削除します。:"
-								+ file + ">>" + dest.getName());
+								+ f.getAbsolutePath() + ">>" + dest.getName());
 						f.delete();
 						continue;
 					}
@@ -392,11 +398,12 @@ public class FileOperationUtil {
 					String ext = getExt(dest);
 					String content = getFileName(dest);
 					File dest2 = createPath(dir2.dir, "z" + content + "." + ext);
-					log.warn("リネーム名変更:" + file + ">>" + dest2.getName());
+					log.warn("リネーム名変更:" + f.getAbsolutePath() + ">>"
+							+ dest2.getName());
 					boolean b = f.renameTo(dest2);
 					if (!b) {
-						throw new IllegalStateException("他のファイル名と重複:\n" + file
-								+ ">>" + dest.getName());
+						throw new IllegalStateException("他のファイル名と重複:\n"
+								+ f.getAbsolutePath() + ">>" + dest.getName());
 					}
 				}
 

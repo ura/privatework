@@ -13,9 +13,15 @@ public class FileNameUtil {
 	 * 拡張子を取得
 	 */
 	public static String getExt(String str) {
-		String strs[] = str.split("\\.");
+		try {
+			String strs[] = str.split("\\.");
 
-		return strs[strs.length - 1];
+			return strs[strs.length - 1];
+		} catch (StringIndexOutOfBoundsException e) {
+			System.out.println(str);
+			e.printStackTrace();
+			return "";
+		}
 	}
 
 	/**
@@ -32,6 +38,7 @@ public class FileNameUtil {
 	 * @return
 	 */
 	public static String getFileName(String str) {
+
 		String ext = getExt(str);
 
 		return str.substring(0, (str.length() - ext.length() - 1));
@@ -44,8 +51,13 @@ public class FileNameUtil {
 	 * @return
 	 */
 	public static String getFileName(File f) {
-
-		return getFileName(f.getName());
+		try {
+			return getFileName(f.getName());
+		} catch (StringIndexOutOfBoundsException e) {
+			System.out.println(f.getAbsolutePath());
+			e.printStackTrace();
+			return f.getName();
+		}
 
 	}
 

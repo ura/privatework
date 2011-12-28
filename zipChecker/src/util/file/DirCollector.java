@@ -11,7 +11,6 @@ import java.util.TreeMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 /**
  * ディレクトリ、ファイルを収集して、溜め込む。
  * 情報は、Dirに溜め込む。
@@ -73,12 +72,24 @@ public class DirCollector implements FileHandler, Iterable<Dir> {
 		return true;
 	}
 
-	public Collection<String> getAllFileFullPath() {
-		Collection<String> result = new ArrayList<String>();
+	public Collection<File> getAllFile() {
+		Collection<File> result = new ArrayList<>();
 		for (Dir dir : this.dirSet.values()) {
 
-			for (String s : dir.fileNameSet) {
+			for (File s : dir.fileSet) {
 				result.add(s);
+			}
+		}
+		return result;
+
+	}
+
+	public Collection<String> getAllFilePath() {
+		Collection<String> result = new ArrayList<>();
+		for (Dir dir : this.dirSet.values()) {
+
+			for (File s : dir.fileSet) {
+				result.add(s.getAbsolutePath());
 			}
 		}
 		return result;

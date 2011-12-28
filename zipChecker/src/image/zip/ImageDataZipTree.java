@@ -43,7 +43,7 @@ public class ImageDataZipTree extends ImageDataTree {
 
 		DirCollector srcDir = new DirCollector();
 		new FileWalker().walk(getPath(), srcDir);
-		Collection<String> allFileFullPath = srcDir.getAllFileFullPath();
+		Collection<String> allFileFullPath = srcDir.getAllFilePath();
 
 		int count = 0;
 

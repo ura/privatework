@@ -1,5 +1,6 @@
 package socre.calculator;
 
+import java.io.File;
 import java.util.Collection;
 import java.util.Map;
 
@@ -14,7 +15,6 @@ import util.file.Dir;
 
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
-
 
 /**
  * そのフォルダに入っているファイルの特徴をみて、スコアを登録する。
@@ -46,6 +46,7 @@ public class ScoreCalculatorByDirFile implements ScoreCalculator {
 	 * @param dir
 	 * @param filePart ファイル名。分割済み。分割してある必要があるのか？？？
 	 * @return
+	 * @deprecated
 	 */
 	public int score(Dir dir, String fileName) {
 
@@ -53,12 +54,12 @@ public class ScoreCalculatorByDirFile implements ScoreCalculator {
 				.getName(fileName));
 
 		Map<String, CollectionUtil.Counter> map = null;
-		int fCount = dir.fileNameSet.size();
+		int fCount = dir.fileSet.size();
 
 		//フォルダの状態を分析
-		for (String dirFile : dir.fileNameSet) {
-			map = CollectionUtil.count(map,
-					this.fileNameParser.parse(FilenameUtils.getName(fileName)),
+		for (File dirFile : dir.fileSet) {
+			map = CollectionUtil.count(map, this.fileNameParser
+					.parse(FilenameUtils.getName(dirFile.getAbsolutePath())),
 					fCount);
 		}
 

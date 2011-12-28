@@ -63,7 +63,7 @@ public class BookFileUtil {
 
 		DirCollector srcDir = new DirCollector();
 		new FileWalker().walk(new File(src), srcDir);
-		Collection<String> allFileFullPath = srcDir.getAllFileFullPath();
+		Collection<String> allFileFullPath = srcDir.getAllFilePath();
 
 		File moveDir = new File(src + "\\" + "ゴミ箱");
 		moveDir.mkdir();
@@ -251,14 +251,16 @@ public class BookFileUtil {
 	public static void rebuildArc(String name, Collection<File> newList)
 			throws IOException, InterruptedException {
 
-		File workF = FileOperationUtil.createTempDir(WORK_DIR);
+		//File workF = FileOperationUtil.createTempDir(WORK_DIR);
 
-		decodeAll(workF, newList);
-		FileOperationUtil.moveFolderToParent(workF);
-		FileOperationUtil.deleteEmptyDir(workF, "jpeg", "jpg");
-		FileOperationUtil.renameFiles(workF);
+		//decodeAll(workF, newList);
+		//FileOperationUtil.moveFolderToParent(workF);
+		//FileOperationUtil.deleteEmptyDir(workF, "jpeg", "jpg");
+
+		File workF = new File("G:\\arkwork\\_1_1325028764755");
 		FileOperationUtil.removeFile(workF, new String[] { "^.*\\.html$",
 				"^.*\\.url$", "^.*\\.txt$", "^Thumbs\\.db", "^[^.]*$" });
+		FileOperationUtil.renameToSimpleFileName(workF);
 
 		Map<File, BookInfo> allbookInfo = BookNameUtil
 				.getAllbookInfoFromBarcode(workF);
@@ -377,13 +379,13 @@ public class BookFileUtil {
 
 		DirCollector srcDir = new DirCollector();
 		new FileWalker().walk(new File(src), srcDir);
-		Collection<String> allFileFullPath = srcDir.getAllFileFullPath();
+		Collection<File> allFileFullPath = srcDir.getAllFile();
 
 		MapList<Long, File> map = new MapList<Long, File>();
 
 		List<File> list = new ArrayList<File>();
-		for (String filePath : allFileFullPath) {
-			File f = new File(filePath);
+		for (File f : allFileFullPath) {
+
 			list.add(f);
 		}
 
@@ -478,7 +480,7 @@ public class BookFileUtil {
 		DirCollector srcDir = new DirCollector();
 		new FileWalker().walk(new File(src), srcDir);
 
-		Collection<String> allFileFullPath = srcDir.getAllFileFullPath();
+		Collection<String> allFileFullPath = srcDir.getAllFilePath();
 		CollectionUtil.nameFilter(allFileFullPath, nameFilter, false);
 
 		DirCollector destDir = new DirCollector();

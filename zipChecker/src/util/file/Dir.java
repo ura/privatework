@@ -37,7 +37,7 @@ public class Dir implements Comparable<Dir> {
 
 		String[] args = path.split("\\\\");
 		nameSet = new TreeSet<String>();
-		fileNameSet = new TreeSet<String>();
+		fileSet = new TreeSet<File>();
 
 		for (String s : args) {
 			nameSet.add(s);
@@ -57,25 +57,25 @@ public class Dir implements Comparable<Dir> {
 	 * 子ファイルのセット
 	 * フォルダは含まない
 	 */
-	public SortedSet<String> fileNameSet;
+	public SortedSet<File> fileSet;
 
 	@Inject
 	@Named("core")
 	private FileNameParser fileNameParser;
 
 	public void addFile(File f) {
-		fileNameSet.add(f.getPath());
+		fileSet.add(f);
 	}
 
 	public void refreshFileInfo() {
 
-		SortedSet<String> s = new TreeSet<String>();
-		for (String fname : fileNameSet) {
-			if (new File(fname).exists()) {
-				s.add(fname);
+		SortedSet<File> s = new TreeSet<>();
+		for (File file : fileSet) {
+			if (file.exists()) {
+				s.add(file);
 			}
 		}
-		this.fileNameSet = s;
+		this.fileSet = s;
 	}
 
 	/**
@@ -110,7 +110,7 @@ public class Dir implements Comparable<Dir> {
 	public boolean isEmpty() {
 
 		refreshFileInfo();
-		return !(hasFolder() || fileNameSet.size() > 0);
+		return !(hasFolder() || fileSet.size() > 0);
 
 	}
 
@@ -119,8 +119,8 @@ public class Dir implements Comparable<Dir> {
 		refreshFileInfo();
 
 		long l = 0;
-		for (String str : this.fileNameSet) {
-			File file = new File(str);
+		for (File file : this.fileSet) {
+
 			l = +file.length();
 
 		}
@@ -165,10 +165,9 @@ public class Dir implements Comparable<Dir> {
 		Map<String, CollectionUtil.Counter> map = null;
 
 		//フォルダの状態を分析
-		for (String dirFile : this.fileNameSet) {
-			map = CollectionUtil.count(map,
-					fileNameParser.parse(FilenameUtils.getName(dirFile)),
-					fileNameSet.size());
+		for (File dirFile : fileSet) {
+			map = CollectionUtil.count(map, fileNameParser.parse(FilenameUtils
+					.getName(dirFile.getAbsolutePath())), fileSet.size());
 		}
 		if (map != null) {
 			SortedSet<MoveFiles> sort = new TreeSet<MoveFiles>();
@@ -183,8 +182,13 @@ public class Dir implements Comparable<Dir> {
 					}
 				}
 			}
+
 			//とりあえず、ふりわけ
-			SortedSet<String> temp = new TreeSet<String>(this.fileNameSet);
+			SortedSet<String> temp = new TreeSet<String>();
+			for (File f : this.fileSet) {
+				temp.add(f.getAbsolutePath());
+			}
+
 			for (MoveFiles key : sort) {
 				key.registFile(temp);
 			}
@@ -257,7 +261,7 @@ public class Dir implements Comparable<Dir> {
 	@Override
 	public String toString() {
 
-		return dir.getPath() + ": file=" + fileNameSet.size();
+		return dir.getPath() + ": file=" + fileSet.size();
 	}
 
 	@Override

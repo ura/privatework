@@ -4,8 +4,10 @@ import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -34,6 +36,7 @@ import book.webapi.Rakuten;
 import conf.ConfConst;
 import static util.file.FileNameUtil.createPath;
 import static util.file.FileNameUtil.getExt;
+import static util.file.FileNameUtil.getFileName;
 
 public class BookNameUtil {
 
@@ -79,9 +82,23 @@ public class BookNameUtil {
 	private static Pattern partermBetween = Pattern
 			.compile("[^\\[0-9]([0-9]{1,2})[-]+([0-9]{2})[^\\]]+");
 
-	private static Pattern fileName = Pattern
-	//.compile("([!A-Za-zＡ-Ｚａ-ｚ_\\.0-9#-_\\s]+)[^A-Za-zＡ-Ｚａ-ｚ_\\.0-9#-_\\s]*(\\.[A-Za-z0-9]+)");
-			.compile("([\\u4E00-\\u9FBF\\u0020-\\u007Ea-zA-Z0-9０-９　 \\u3040-\\u309F\\u30A0-\\u30FF\\u30A0-\\u30FF\\u30A0-\\u30FF]+\\.[a-zA-Z]+)");
+	private static Pattern FILE_NAME_REG2 = Pattern
+	//.compile("([!A-Za-zＡ-Ｚａ-ｚ_0-9#-_\\s]{2,20}).*(\\.[A-Za-z0-9]+)");
+			.compile("([\\u4E00-\\u9FBF\\u0020-\\u007Ea-zA-Z0-9０-９　 \\u3040-\\u309F\\u30A0-\\u30FF\\u30A0-\\u30FF\\u30A0-\\u30FF]{2,40}).*(\\.[a-zA-Z]+)");
+
+	private static Pattern FILE_NAME_REG1 = Pattern
+			.compile("([!A-Za-zＡ-Ｚａ-ｚ_0-9#-_\\s]{2,40}).*(\\.[A-Za-z0-9]+)");
+
+	private static Pattern FILE_NAME_REG3 = Pattern
+			.compile("[^!0-9]*([!0-9a-z]{2,40})(\\.[A-Za-z0-9]+)");
+
+	private static List<Pattern> FILE_NAME_REG_LIST = new ArrayList<>();
+	static {
+		FILE_NAME_REG_LIST.add(FILE_NAME_REG1);
+		FILE_NAME_REG_LIST.add(FILE_NAME_REG2);
+		FILE_NAME_REG_LIST.add(FILE_NAME_REG3);
+
+	}
 
 	/**
 	 * 日本語のみの名称に変換します。
@@ -89,16 +106,59 @@ public class BookNameUtil {
 	 */
 	public static String createSimpleName(File f) {
 
-		Matcher matcher = fileName.matcher(f.getName());
+		return createSimpleName(f, FILE_NAME_REG1);
 
-		if (matcher.find()) {
-			String group = matcher.group(1) + matcher.group(2);
-			return group;
+	}
+
+	private static String createSimpleName(File f, Pattern reg) {
+
+		//元が十分に短い場合は変更しない
+		if (getFileName(f).length() < 3) {
+			return getFileName(f);
 		}
 
-		log.warn("短縮化できないので、ダミーの値を返します。:{} {}", f.getAbsolutePath(), "0."
-				+ getExt(f));
+		Matcher matcher = reg.matcher(f.getName());
+
+		try {
+			if (matcher.find()) {
+				String group = matcher.group(1) + matcher.group(2);
+				return group;
+			}
+		} catch (Exception e) {
+			log.error("想定外のエラー", e);
+		}
+
 		return "0." + getExt(f);
+	}
+
+	/**
+	 * 日本語のみの名称に変換します。
+	 * シンプルな名前に置換した名称を返します。
+	 */
+	public static Map<File, File> createSimpleName(Collection<File> f) {
+
+		File sample = null;
+		for (Pattern REG : FILE_NAME_REG_LIST) {
+			Map<File, File> map = new HashMap<>();
+			Set<File> set = new HashSet<>();
+			for (File file : f) {
+
+				sample = file;
+				String createSimpleName = createSimpleName(file, REG);
+				File dest = createPath(file.getParent(), createSimpleName);
+				map.put(file, dest);
+				set.add(dest);
+			}
+
+			if (f.size() == set.size()) {
+				return map;
+			}
+		}
+
+		log.error("他のファイルと重複しないファイル名を作成することができませんでした。{}",
+				sample.getAbsolutePath());
+		throw new IllegalStateException("他のファイルと重複しないファイル名を作成することができませんでした。"
+				+ sample.getAbsolutePath());
 
 	}
 

@@ -98,6 +98,7 @@ public class WinRARWrapper {
 			FileUtils.copyDirectory(workDest, dest);
 
 			FileOperationUtil.deleteForce(workDest);
+			workDest.delete();
 
 			if (!workResult) {
 				log.error("致命的な解凍エラーが発生しました。{}\n{}", src.getAbsolutePath(),
