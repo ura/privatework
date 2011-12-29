@@ -52,8 +52,9 @@ public class Amazon {
 
 		@Override
 		public void setCustomQuery(Map<String, String> params) {
-			params.put("title", title);
-			throw new IllegalStateException("未実装");
+			params.put("Operation", "ItemSearch");
+			params.put("Keywords", title);
+			params.put("SearchIndex", "Books");
 
 		}
 	}
@@ -72,6 +73,7 @@ public class Amazon {
 			params.put("IdType", "ISBN");
 			params.put("ItemId", isbn);
 			params.put("SearchIndex", "Books");
+			params.put("Operation", "ItemLookup");
 		}
 	}
 
@@ -108,7 +110,6 @@ public class Amazon {
 			Map<String, String> params = new HashMap<String, String>();
 			params.put("Service", "AWSECommerceService");
 			params.put("Version", "2011-11-31");
-			params.put("Operation", "ItemLookup");
 
 			params.put("ResponseGroup", "Small");
 			params.put("AssociateTag", "a");
@@ -134,18 +135,20 @@ public class Amazon {
 			DocumentBuilder db = dbf.newDocumentBuilder();
 			Document doc = db.parse(query);
 			xmlStr = document2String(doc);
+			NodeList isbnNode = doc.getElementsByTagName("ASIN");
 			NodeList titleNode = doc.getElementsByTagName("Title");
 			NodeList authorNode = doc.getElementsByTagName("Author");
 			NodeList manufacturerNode = doc
 					.getElementsByTagName("Manufacturer");
 
 			for (int i = 0; i < titleNode.getLength(); i++) {
+				String isbn = "978" + isbnNode.item(i).getTextContent();
 				String title = titleNode.item(i).getTextContent();
 				String author = authorNode.item(i).getTextContent();
 				String pub = manufacturerNode.item(i).getTextContent();
 				log.info(title + "  " + author + "  " + pub);
 
-				BookInfo bookInfo = new BookInfo(pub, "", author, title, "");
+				BookInfo bookInfo = new BookInfo(pub, "", author, title, isbn);
 				set.add(bookInfo);
 
 			}
