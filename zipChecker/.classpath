@@ -4,34 +4,28 @@
 	<classpathentry kind="src" path="opencv"/>
 	<classpathentry kind="src" path="conf"/>
 	<classpathentry kind="src" path="src/main"/>
-	<classpathentry kind="lib" path="ant.jar"/>
-	<classpathentry kind="lib" path="lib/logback-classic-0.9.15.jar"/>
-	<classpathentry kind="lib" path="lib/logback-core-0.9.15.jar"/>
-	<classpathentry kind="lib" path="lib/slf4j-api-1.5.6.jar"/>
-	<classpathentry kind="lib" path="lib/commons-io-1.4.jar" sourcepath="lib/commons-io-1.4-sources.jar"/>
-	<classpathentry kind="lib" path="lib/janino.jar"/>
-	<classpathentry kind="lib" path="lib/aopalliance.jar"/>
-	<classpathentry kind="lib" path="lib/guice-2.0.jar"/>
-	<classpathentry kind="lib" path="lib/commons-collections-3.2.1.jar"/>
-	<classpathentry kind="lib" path="lib/abaron-0.9.8.jar"/>
-	<classpathentry kind="lib" path="lib/javacv.jar"/>
-	<classpathentry kind="lib" path="lib/win32-x86.jar"/>
-	<classpathentry kind="lib" path="lib/jna.jar"/>
-	<classpathentry kind="lib" path="lib/barcode/core.jar"/>
-	<classpathentry kind="lib" path="lib/barcode/javase.jar"/>
-	<classpathentry kind="lib" path="lib/mail.jar"/>
-	<classpathentry kind="lib" path="lib/commons-codec-1.6.jar"/>
-	<classpathentry kind="lib" path="lib/javolution-5.2.6.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="C:/x/pro/dev/pleiades-e3.7-ultimate-jre_20110924/eclipse/plugins/org.apache.commons.discovery_0.2.0.v201004190315/lib/commons-discovery-0.2.jar"/>
-	<classpathentry kind="lib" path="C:/x/pro/dev/pleiades-e3.7-ultimate-jre_20110924/eclipse/plugins/javax.xml.rpc_1.1.0.v201005080400/lib/jaxrpc.jar"/>
-	<classpathentry kind="lib" path="C:/x/pro/dev/pleiades-e3.7-ultimate-jre_20110924/eclipse/plugins/javax.xml.soap_1.2.0.v201005080501/lib/saaj.jar"/>
-	<classpathentry kind="lib" path="C:/x/pro/dev/pleiades-e3.7-ultimate-jre_20110924/eclipse/plugins/javax.wsdl_1.6.2.v201012040545.jar"/>
-	<classpathentry kind="lib" path="C:/x/pro/dev/pleiades-e3.7-ultimate-jre_20110924/eclipse/plugins/org.apache.commons.logging_1.0.4.v201101211617.jar"/>
-	<classpathentry kind="lib" path="C:/x/pro/dev/pleiades-e3.7-ultimate-jre_20110924/tomcat/7.0/lib/jsp-api.jar"/>
-	<classpathentry kind="lib" path="C:/x/pro/dev/pleiades-e3.7-ultimate-jre_20110924/tomcat/7.0/lib/servlet-api.jar"/>
-	<classpathentry kind="lib" path="C:/x/pro/dev/pleiades-e3.7-ultimate-jre_20110924/tomcat/7.0/lib/tomcat-api.jar"/>
+	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry exported="true" kind="lib" path="C:/Users/poti/.gradle/caches/artifacts-4/org.slf4j/slf4j-api/c12498cf18507aa6433a94eb7d3e77d5/jars/slf4j-api-1.6.4.jar" sourcepath="C:/Users/poti/.gradle/caches/artifacts-4/org.slf4j/slf4j-api/c12498cf18507aa6433a94eb7d3e77d5/sources/slf4j-api-1.6.4-sources.jar"/>
+	<classpathentry exported="true" kind="lib" path="C:/Users/poti/.gradle/caches/artifacts-4/ch.qos.logback/logback-core/c12498cf18507aa6433a94eb7d3e77d5/jars/logback-core-1.0.0.jar" sourcepath="C:/Users/poti/.gradle/caches/artifacts-4/ch.qos.logback/logback-core/c12498cf18507aa6433a94eb7d3e77d5/sources/logback-core-1.0.0-sources.jar"/>
+	<classpathentry exported="true" kind="lib" path="C:/Users/poti/.gradle/caches/artifacts-4/com.jolira/guice/c12498cf18507aa6433a94eb7d3e77d5/jars/guice-3.0.0.jar" sourcepath="C:/Users/poti/.gradle/caches/artifacts-4/com.jolira/guice/c12498cf18507aa6433a94eb7d3e77d5/sources/guice-3.0.0-sources.jar"/>
+	<classpathentry exported="true" kind="lib" path="C:/Users/poti/.gradle/caches/artifacts-4/javax.mail/mail/c12498cf18507aa6433a94eb7d3e77d5/jars/mail-1.4.4.jar" sourcepath="C:/Users/poti/.gradle/caches/artifacts-4/javax.mail/mail/c12498cf18507aa6433a94eb7d3e77d5/sources/mail-1.4.4-sources.jar"/>
+	<classpathentry exported="true" kind="lib" path="C:/Users/poti/.gradle/caches/artifacts-4/ch.qos.logback/logback-classic/c12498cf18507aa6433a94eb7d3e77d5/jars/logback-classic-1.0.0.jar" sourcepath="C:/Users/poti/.gradle/caches/artifacts-4/ch.qos.logback/logback-classic/c12498cf18507aa6433a94eb7d3e77d5/sources/logback-classic-1.0.0-sources.jar"/>
+	<classpathentry exported="true" kind="lib" path="C:/Users/poti/.gradle/caches/artifacts-4/net.sourceforge.javacsv/javacsv/c12498cf18507aa6433a94eb7d3e77d5/jars/javacsv-2.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="C:/Users/poti/flatjar/abaron-0.9.8.jar"/>
+	<classpathentry exported="true" kind="lib" path="C:/Users/poti/flatjar/commons-io-1.4.jar" sourcepath="C:/Users/poti/flatjar/commons-io-1.4-sources.jar"/>
+	<classpathentry exported="true" kind="lib" path="C:/Users/poti/flatjar/commons-codec-1.6.jar" sourcepath="C:/Users/poti/flatjar/commons-codec-1.6-sources.jar"/>
+	<classpathentry exported="true" kind="lib" path="C:/Users/poti/.gradle/caches/artifacts-4/org.apache.ant/ant/c12498cf18507aa6433a94eb7d3e77d5/jars/ant-1.8.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="C:/Users/poti/flatjar/ZXing-javacv-1.7.jar"/>
+	<classpathentry exported="true" kind="lib" path="C:/Users/poti/flatjar/ZXing-core-1.7.jar"/>
+	<classpathentry exported="true" kind="lib" path="C:/Users/poti/flatjar/jna-3.2.7.jar"/>
+	<classpathentry exported="true" kind="lib" path="C:/Users/poti/flatjar/javacv-20101001.jar"/>
+	<classpathentry exported="true" kind="lib" path="C:/Users/poti/.gradle/caches/artifacts-4/javax.inject/javax.inject/c12498cf18507aa6433a94eb7d3e77d5/jars/javax.inject-1.jar" sourcepath="C:/Users/poti/.gradle/caches/artifacts-4/javax.inject/javax.inject/c12498cf18507aa6433a94eb7d3e77d5/sources/javax.inject-1-sources.jar"/>
+	<classpathentry exported="true" kind="lib" path="C:/Users/poti/.gradle/caches/artifacts-4/aopalliance/aopalliance/c12498cf18507aa6433a94eb7d3e77d5/jars/aopalliance-1.0.jar" sourcepath="C:/Users/poti/.gradle/caches/artifacts-4/aopalliance/aopalliance/c12498cf18507aa6433a94eb7d3e77d5/sources/aopalliance-1.0-sources.jar"/>
+	<classpathentry exported="true" kind="lib" path="C:/Users/poti/.gradle/caches/artifacts-4/asm/asm/c12498cf18507aa6433a94eb7d3e77d5/jars/asm-3.1.jar" sourcepath="C:/Users/poti/.gradle/caches/artifacts-4/asm/asm/c12498cf18507aa6433a94eb7d3e77d5/sources/asm-3.1-sources.jar"/>
+	<classpathentry exported="true" kind="lib" path="C:/Users/poti/.gradle/caches/artifacts-4/cglib/cglib/c12498cf18507aa6433a94eb7d3e77d5/jars/cglib-2.2.jar" sourcepath="C:/Users/poti/.gradle/caches/artifacts-4/cglib/cglib/c12498cf18507aa6433a94eb7d3e77d5/sources/cglib-2.2-sources.jar"/>
+	<classpathentry exported="true" kind="lib" path="C:/Users/poti/.gradle/caches/artifacts-4/javax.activation/activation/c12498cf18507aa6433a94eb7d3e77d5/jars/activation-1.1.jar" sourcepath="C:/Users/poti/.gradle/caches/artifacts-4/javax.activation/activation/c12498cf18507aa6433a94eb7d3e77d5/sources/activation-1.1-sources.jar"/>
+	<classpathentry exported="true" kind="lib" path="C:/Users/poti/.gradle/caches/artifacts-4/org.apache.ant/ant-launcher/c12498cf18507aa6433a94eb7d3e77d5/jars/ant-launcher-1.8.2.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/junrar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
