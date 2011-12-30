@@ -301,12 +301,12 @@ public class BookFileUtil {
 	public static void rebuildArc(String name, Collection<File> newList)
 			throws IOException, InterruptedException {
 		File workF = null;
-		if (true) {
+		if (false) {
 			workF = FileOperationUtil.createTempDir(WORK_DIR);
 
 			decodeAll(workF, newList);
 		}
-		if (false) {
+		if (true) {
 			workF = new File("G:\\arkwork\\test1");
 
 			FileOperationUtil.moveFolderToParent(workF);

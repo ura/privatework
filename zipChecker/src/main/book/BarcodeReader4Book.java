@@ -38,6 +38,8 @@ import com.google.zxing.client.j2se.BufferedImageLuminanceSource;
 import com.google.zxing.common.HybridBinarizer;
 import com.google.zxing.oned.EAN13Reader;
 
+import conf.ConfConst;
+
 /**
  * 縦になっているバーコードがあるので、回転を検討する。
  *
@@ -47,11 +49,18 @@ import com.google.zxing.oned.EAN13Reader;
  */
 public class BarcodeReader4Book {
 
-	private static Logger log = LoggerFactory.getLogger(BarcodeReader4Book.class);
+	private static Logger log = LoggerFactory
+			.getLogger(BarcodeReader4Book.class);
 
 	private static final int MAX_DIV = 6;
 
+	private static final int THREAD_BARCODE = ConfConst.MAIN_CONF
+			.getInt(ConfConst.THREAD_BARCODE);
+	private static final int THREAD_BARCODE_DERAY = ConfConst.MAIN_CONF
+			.getInt(ConfConst.THREAD_BARCODE_DERAY);
+
 	public static String autoReadDir(File dir) {
+
 		log.info("バーコード抽出処理を開始します。{} ", dir.getAbsolutePath());
 		File[] files = dir.listFiles(new FileNameFilter(MODE.EXT_INCLUDE,
 				"jpg", "jpeg"));
@@ -246,8 +255,8 @@ public class BarcodeReader4Book {
 		}
 	}
 
-	private static ThreadPoolExecutorSync ex = new ThreadPoolExecutorSync(10,
-			200);
+	private static ThreadPoolExecutorSync ex = new ThreadPoolExecutorSync(
+			THREAD_BARCODE, THREAD_BARCODE_DERAY);
 
 	private static String read(List<File> asList, boolean retry) {
 

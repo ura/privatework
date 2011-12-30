@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
 
 import util.UserInput;
 import util.WinRARWrapper;
+import util.file.FileOperationUtil;
 import util.file.filter.DirFilter;
 import book.webapi.BookInfo;
 import book.webapi.BookInfoFromWeb;
@@ -431,6 +432,9 @@ public class BookNameUtil {
 			m.get(baseInfo).put(bookInfo, map.get(bookInfo));
 		}
 
+		File temp1 = FileOperationUtil.createTempDir(baseDir, "1ファイル");
+		File tempMany = FileOperationUtil.createTempDir(baseDir, "完成");
+
 		for (Entry<String, SortedMap<BookInfo, File>> e : m.entrySet()) {
 			SortedMap<BookInfo, File> value = e.getValue();
 			Set<BookInfo> keySet = value.keySet();
@@ -452,8 +456,10 @@ public class BookNameUtil {
 
 					}
 					WinRARWrapper.encode(path, path);
+					path.renameTo(createPath(tempMany, path.getName()));
 				} else {
 					List<BookInfo> subList = list.subList(i * 10, size);
+
 					String folderName = createCominName(subList);
 					File path = createPath(baseDir, folderName);
 					path.delete();
@@ -464,6 +470,13 @@ public class BookNameUtil {
 
 					}
 					WinRARWrapper.encode(path, path);
+
+					if (i == 0 && subList.size() == 1) {
+						path.renameTo(createPath(temp1, path.getName()));
+					} else {
+						path.renameTo(createPath(tempMany, path.getName()));
+					}
+
 					break;
 
 				}
