@@ -1,0 +1,78 @@
+
+
+
+task hello << {
+    println 'Hello Earth'
+}
+hello.doFirst {
+    println 'Hello Venus  doFirst'
+}
+hello.doLast {
+    println 'Hello Mars  doLast'
+}
+hello << {
+    println 'Hello Jupiter'
+}
+
+task count(dependsOn: hello) << {
+    4.times { print "$it " }
+}
+
+defaultTasks 'count'
+
+apply plugin: 'java'
+apply plugin: 'eclipse'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile group: 'org.slf4j', name: 'slf4j-api', version: '1.6.4'
+	compile group: 'ch.qos.logback', name: 'logback-core', version: '1.0.0'
+	compile group: 'org.slf4j', name: 'slf4j-api', version: '1.6.4'
+	compile 'com.jolira:guice:3.0.0'
+	compile 'javax.mail:mail:1.4.4'
+	compile 'ch.qos.logback:logback-core:1.0.0'
+	compile 'ch.qos.logback:logback-classic:1.0.0'
+	compile 'net.sourceforge.javacsv:javacsv:2.0'
+	compile 'abaron:abaron:0.9.8'
+	compile 'org.apache.commons:commons-io:1.4'
+	compile 'org.apache.commons:commons-codec:1.6'
+	compile 'org.apache.ant:ant:1.8.2'
+	compile 'ZXing:ZXing-javacv:1.7'
+	compile 'ZXing:ZXing-core:1.7'
+	compile 'com.sun.jna:jna:3.2.7'
+	compile 'javacv:javacv:20101001'
+
+
+
+
+
+
+}
+
+repositories {
+	ivy {
+		// URL can refer to a local directory
+		url "../local-repo"
+	}
+	flatDir {
+		dirs 'C:/Users/poti/flatjar'
+	}
+}
+
+eclipse.classpath.file {
+    beforeMerged {classpath ->
+		println(classpath)
+
+
+    }
+
+	whenMerged{classpath ->
+		println(classpath)
+	}
+
+
+
+}
