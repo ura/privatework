@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="test"/>
 	<classpathentry kind="src" path="opencv"/>
 	<classpathentry kind="src" path="conf"/>
+	<classpathentry kind="src" path="src/main"/>
 	<classpathentry kind="lib" path="ant.jar"/>
 	<classpathentry kind="lib" path="lib/logback-classic-0.9.15.jar"/>
 	<classpathentry kind="lib" path="lib/logback-core-0.9.15.jar"/>
@@ -21,6 +21,7 @@
 	<classpathentry kind="lib" path="lib/barcode/javase.jar"/>
 	<classpathentry kind="lib" path="lib/mail.jar"/>
 	<classpathentry kind="lib" path="lib/commons-codec-1.6.jar"/>
+	<classpathentry kind="lib" path="lib/javolution-5.2.6.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="C:/x/pro/dev/pleiades-e3.7-ultimate-jre_20110924/eclipse/plugins/org.apache.commons.discovery_0.2.0.v201004190315/lib/commons-discovery-0.2.jar"/>
@@ -31,5 +32,6 @@
 	<classpathentry kind="lib" path="C:/x/pro/dev/pleiades-e3.7-ultimate-jre_20110924/tomcat/7.0/lib/jsp-api.jar"/>
 	<classpathentry kind="lib" path="C:/x/pro/dev/pleiades-e3.7-ultimate-jre_20110924/tomcat/7.0/lib/servlet-api.jar"/>
 	<classpathentry kind="lib" path="C:/x/pro/dev/pleiades-e3.7-ultimate-jre_20110924/tomcat/7.0/lib/tomcat-api.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/junrar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
