@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import util.file.FileOperationUtil;
 import conf.ConfConst;
+import static util.file.FileNameUtil.createPath;
 import static util.file.FileNameUtil.getExt;
 
 public class WinRARWrapper {
@@ -114,17 +115,25 @@ public class WinRARWrapper {
 	public static void encode(String src, String destName) throws IOException,
 			InterruptedException {
 
+		String unicID = FileOperationUtil.createUnicID("rartemp");
+		File tempRar = createPath(new File(destName).getParent(), unicID);
+
 		String cmdZip = "\"" + RAR_EXE + "\" A -R -IBCK -afzip -ep1   \""
-				+ destName + "\" \"" + src + "/*\"";
+				+ tempRar.getAbsolutePath() + "\" \"" + src + "/*\"";
 
 		log.info(cmdZip);
+		tempRar.renameTo(new File(destName + ".zip"));
 
 		Process execZip = Runtime.getRuntime().exec(cmdZip);
+		try (InputStream i = execZip.getInputStream();
+				InputStream i2 = execZip.getErrorStream();
+				OutputStream o = execZip.getOutputStream();) {
 
-		execZip.waitFor();
-		int exitValue = execZip.exitValue();
-		if (exitValue == 0) {
-			//FileMoveUtil.deleteDir(new File(src));
+			execZip.waitFor();
+			int exitValue = execZip.exitValue();
+			if (exitValue == 0) {
+				//FileMoveUtil.deleteDir(new File(src));
+			}
 		}
 	}
 

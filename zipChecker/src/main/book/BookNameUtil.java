@@ -517,6 +517,8 @@ public class BookNameUtil {
 		SortedSet<String> set = new TreeSet<String>();
 		SortedSet<String> setNG = new TreeSet<String>();
 		int noCount = Integer.parseInt(list.get(0).getNo());
+		int noCountLast = Integer.parseInt(list.get(list.size() - 1).getNo());
+
 		for (int i = 0; i < size; i++) {
 			String noStr = list.get(i).getNo();
 			int no = Integer.parseInt(noStr);
@@ -528,6 +530,9 @@ public class BookNameUtil {
 				} else {
 					setNG.add(no_XX(noCount));
 					noCount++;
+				}
+				if (noCount > noCountLast) {
+					break;
 				}
 			}
 		}

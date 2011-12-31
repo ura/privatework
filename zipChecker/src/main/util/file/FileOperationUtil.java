@@ -262,10 +262,33 @@ public class FileOperationUtil {
 		long millis = System.currentTimeMillis();
 		long id = Thread.currentThread().getId();
 
-		String r = base + "/" + head + "_" + id + "_" + millis;
+		String r = base + "/" + createUnicID(head);
 		new File(r).mkdir();
 
 		return new File(r);
+
+	}
+
+	/**
+	 * マルチスレッド時でもフォルダ名が被らないようなIDを生成する。
+	 * @param base
+	 * @param head
+	 * @return
+	 */
+	public static String createUnicID(String head) {
+		long millis = System.currentTimeMillis();
+		long id = Thread.currentThread().getId();
+		String r = head + "_" + id + "_" + millis;
+		return r;
+
+	}
+
+	/**
+	 * マルチスレッド時でもフォルダ名が被らないようなフォルダを作成する。
+	 */
+	public static File createTempDir(File base, String head) throws IOException {
+
+		return createTempDir(base.getAbsolutePath(), head);
 
 	}
 

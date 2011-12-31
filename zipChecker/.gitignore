@@ -11,3 +11,5 @@
 *.zip
 *.rar
 **.log
+/target
+/mysample

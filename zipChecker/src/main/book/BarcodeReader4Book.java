@@ -343,21 +343,25 @@ public class BarcodeReader4Book {
 					set.add(new Rect(bitmap.getWidth() * i / div, bitmap
 							.getHeight() * j / div / 3,
 							bitmap.getWidth() / div, bitmap.getHeight() / div
-									/ 3));
+									/ 3
+
+							, bitmap.getWidth(), bitmap.getHeight()
+
+					));
 				}
 				for (int j = 0; j < div * 2; j++) {
 
 					set.add(new Rect(bitmap.getWidth() * i / div, bitmap
 							.getHeight() * j / div / 2,
 							bitmap.getWidth() / div, bitmap.getHeight() / div
-									/ 2));
+									/ 2, bitmap.getWidth(), bitmap.getHeight()));
 				}
 				for (int j = 0; j < div * 6; j++) {
 
 					set.add(new Rect(bitmap.getWidth() * i / div, bitmap
 							.getHeight() * j / div / 6,
 							bitmap.getWidth() / div, bitmap.getHeight() / div
-									/ 6));
+									/ 6, bitmap.getWidth(), bitmap.getHeight()));
 				}
 			}
 		}
@@ -367,18 +371,41 @@ public class BarcodeReader4Book {
 
 	public static class Rect {
 
-		public Rect(int left, int top, int width, int height) {
+		private int baseWidth;
+		private int baseHeight;
+
+		public Rect(int left, int top, int width, int height, int baseWidth,
+				int baseHeight) {
 			super();
 			this.top = top;
 			this.left = left;
 			this.width = width;
 			this.height = height;
+
+			this.baseHeight = baseHeight;
+			this.baseWidth = baseWidth;
 		}
 
 		public int top;
 		public int left;
 		public int width;
 		public int height;
+
+		/**
+		 * 幅を40とする
+		 * @return
+		 */
+		public int getWidthPoint() {
+			return 40;
+		}
+
+		/**
+		 * 幅を40とした場合のポイント
+		 * @return
+		 */
+		public int getHeightPoint() {
+			return 40 * baseHeight / baseWidth;
+		}
 
 		@Override
 		public String toString() {

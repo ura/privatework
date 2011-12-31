@@ -307,7 +307,7 @@ public class BookFileUtil {
 			decodeAll(workF, newList);
 		}
 		if (true) {
-			workF = new File("G:\\arkwork\\test1");
+			workF = new File("G:\\arkwork\\test2");
 
 			FileOperationUtil.moveFolderToParent(workF);
 			jpgCheck(workF);

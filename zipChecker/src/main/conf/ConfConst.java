@@ -13,6 +13,9 @@ public class ConfConst {
 	public static final String THREAD_GET_BOOKINFO = "THREAD_GET_BOOKINFO";
 	public static final String THREAD_DECODE = "THREAD_DECODE";
 
+	public static final String THREAD_BARCODE = "THREAD_BARCODE";
+	public static final String THREAD_BARCODE_DERAY = "THREAD_BARCODE_DERAY";
+
 	public static final String MAIN_CONF_FILE = "/main.properties";
 
 	public static Config MAIN_CONF = Config.loadConfig(MAIN_CONF_FILE,
