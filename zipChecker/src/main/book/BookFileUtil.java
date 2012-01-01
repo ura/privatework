@@ -322,6 +322,9 @@ public class BookFileUtil {
 
 			SortedMap<BookInfo, File> s = new TreeMap<BookInfo, File>();
 
+			File tempDest1 = FileOperationUtil.createTempDir(WORK_DIR, "名称重複");
+			File tempDest2 = FileOperationUtil.createTempDir(WORK_DIR, "完全一致");
+
 			for (Entry<File, BookInfo> e : allbookInfo.entrySet()) {
 				File src = e.getKey();
 				BookInfo bookNo = e.getValue();
@@ -330,7 +333,7 @@ public class BookFileUtil {
 
 				s.put(bookNo, newDir);
 
-				moveDir(src, newDir, bookNo);
+				moveDir(src, newDir, bookNo, tempDest1, tempDest2);
 			}
 
 			BookNameUtil.createCominName(new File(WORK_DIR), s);
@@ -338,8 +341,16 @@ public class BookFileUtil {
 
 	}
 
-	private static void moveDir(File src, File dest, BookInfo bookNo)
-			throws IOException {
+	/**
+	 * ディレクトリの移動を行います。
+	 * ディレクトリのサイズ等を確認し、重複確認等を実施します。
+	 * @param src
+	 * @param dest
+	 * @param bookNo
+	 * @throws IOException
+	 */
+	private static void moveDir(File src, File dest, BookInfo bookNo,
+			File tempDest1, File tempDest2) throws IOException {
 		boolean b = false;
 
 		if (!dest.exists()) {
@@ -355,18 +366,16 @@ public class BookFileUtil {
 				long destSize = dirSize(dest);
 
 				if (srcSize < destSize) {
-					File tempDir = FileOperationUtil.createTempDir(WORK_DIR,
-							"重複");
-					File path = createPath(tempDir, bookNo.getInfo());
+
+					File path = createPath(tempDest1, bookNo.getInfo());
 					FileOperationUtil.renameTo(src, path);
 
 					log.warn("サイズの小さいフォルダをテンポラリに移しました:{}  :{}K  {}K",
 							new Object[] { path, srcSize / 1024,
 									destSize / 1024 });
 				} else {
-					File tempDir = FileOperationUtil.createTempDir(WORK_DIR,
-							"重複");
-					File path = createPath(tempDir, bookNo.getInfo());
+
+					File path = createPath(tempDest1, bookNo.getInfo());
 					FileOperationUtil.renameTo(dest, path);
 					FileOperationUtil.renameTo(src, dest);
 
@@ -375,6 +384,11 @@ public class BookFileUtil {
 									destSize / 1024 });
 
 				}
+
+			} else {
+
+				File path = createPath(tempDest2, bookNo.getInfo());
+				FileOperationUtil.renameTo(src, path);
 
 			}
 
