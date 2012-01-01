@@ -323,7 +323,8 @@ public class BarcodeReader4Book {
 	 */
 	private static BinaryBitmap crop(BinaryBitmap bitmap, Rect rect) {
 
-		return bitmap.crop(rect.left, rect.top, rect.width, rect.height);
+		return bitmap.crop(rect.getLeft(), rect.getTop(), rect.getWidth(),
+				rect.getHeight());
 	}
 
 	/**
@@ -336,32 +337,26 @@ public class BarcodeReader4Book {
 		List<Rect> set = new ArrayList<BarcodeReader4Book.Rect>();
 
 		for (; div <= MAX_DIV; div++) {
+
 			for (int i = 0; i < div; i++) {
 				//暫定対策：縦の方の分解率を上げ、二段バーコードの上を取りやすくする。
 				for (int j = 0; j < div * 3; j++) {
 
-					set.add(new Rect(bitmap.getWidth() * i / div, bitmap
-							.getHeight() * j / div / 3,
-							bitmap.getWidth() / div, bitmap.getHeight() / div
-									/ 3
+					set.add(new Rect(i, j, div, div * 3
 
-							, bitmap.getWidth(), bitmap.getHeight()
+					, bitmap.getWidth(), bitmap.getHeight()
 
 					));
 				}
 				for (int j = 0; j < div * 2; j++) {
 
-					set.add(new Rect(bitmap.getWidth() * i / div, bitmap
-							.getHeight() * j / div / 2,
-							bitmap.getWidth() / div, bitmap.getHeight() / div
-									/ 2, bitmap.getWidth(), bitmap.getHeight()));
+					set.add(new Rect(i, j, div, div * 2, bitmap.getWidth(),
+							bitmap.getHeight()));
 				}
 				for (int j = 0; j < div * 6; j++) {
 
-					set.add(new Rect(bitmap.getWidth() * i / div, bitmap
-							.getHeight() * j / div / 6,
-							bitmap.getWidth() / div, bitmap.getHeight() / div
-									/ 6, bitmap.getWidth(), bitmap.getHeight()));
+					set.add(new Rect(i, j, div, div * 6, bitmap.getWidth(),
+							bitmap.getHeight()));
 				}
 			}
 		}
@@ -374,13 +369,13 @@ public class BarcodeReader4Book {
 		private int baseWidth;
 		private int baseHeight;
 
-		public Rect(int left, int top, int width, int height, int baseWidth,
-				int baseHeight) {
+		public Rect(int left, int top, int widthMax, int heightMax,
+				int baseWidth, int baseHeight) {
 			super();
 			this.top = top;
 			this.left = left;
-			this.width = width;
-			this.height = height;
+			this.widthMax = widthMax;
+			this.heightMax = heightMax;
 
 			this.baseHeight = baseHeight;
 			this.baseWidth = baseWidth;
@@ -388,29 +383,31 @@ public class BarcodeReader4Book {
 
 		public int top;
 		public int left;
-		public int width;
-		public int height;
+		public int widthMax;
+		public int heightMax;
 
-		/**
-		 * 幅を40とする
-		 * @return
-		 */
-		public int getWidthPoint() {
-			return 40;
+		public int getLeft() {
+			return getWidth() * left;
 		}
 
-		/**
-		 * 幅を40とした場合のポイント
-		 * @return
-		 */
-		public int getHeightPoint() {
-			return 40 * baseHeight / baseWidth;
+		public int getTop() {
+			return getHeight() * top;
+		}
+
+		public int getWidth() {
+			return baseWidth / widthMax;
+		}
+
+		public int getHeight() {
+			return baseHeight / heightMax;
 		}
 
 		@Override
 		public String toString() {
-			return "Rect [top=" + top + ", left=" + left + ", width=" + width
-					+ ", height=" + height + "]";
+			return "Rect [top=" + getTop() + ", left=" + getLeft()
+					+ ", height=" + getHeight() + ", width=" + getWidth() + "]"
+					+ "[" + baseHeight + ":" + baseWidth + "]" + "[" + top
+					+ ":" + left + ":" + widthMax + ":" + heightMax + "]";
 		}
 
 	}
