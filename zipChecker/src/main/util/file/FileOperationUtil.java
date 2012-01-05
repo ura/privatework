@@ -436,16 +436,30 @@ public class FileOperationUtil {
 
 	}
 
+	/**
+	 * 必要に応じリネームして解決する
+	 * @param src
+	 * @param dest
+	 * @return
+	 */
 	public static boolean renameTo(File src, File dest) {
+		File baseDest = dest;
 		int i = 0;
-		while (!src.renameTo(dest)) {
-			sleep(100);
-			i++;
+		int j = 1;
+		if (!src.equals(dest)) {
+			while (!src.renameTo(dest)) {
+				sleep(100);
+				i++;
 
-			if (i > 200) {
-				log.warn("ファイルのリネームに失敗しました。 {} >> {}", src, dest);
-				throw new IllegalStateException("ファイルのリネームに失敗しました。 " + src
-						+ " >> " + dest);
+				if (i > 200) {
+					log.warn("ファイルのリネームに失敗しました。 {} >> {}", src, dest);
+					throw new IllegalStateException("ファイルのリネームに失敗しました。 " + src
+							+ " >> " + dest);
+				}
+				if (i % 10 == 9) {
+					dest = new File(baseDest.getAbsolutePath() + "-" + j);
+					j++;
+				}
 			}
 		}
 

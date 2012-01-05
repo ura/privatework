@@ -38,6 +38,12 @@ public class Amazon {
 	private static final String ENDPOINT = "ecs.amazonaws.jp";
 
 	static abstract class Query {
+		int page = 1;
+
+		public void increment() {
+			page++;
+		}
+
 		public abstract void setCustomQuery(Map<String, String> params);
 
 	}
@@ -55,6 +61,33 @@ public class Amazon {
 			params.put("Operation", "ItemSearch");
 			params.put("Keywords", title);
 			params.put("SearchIndex", "Books");
+
+			params.put("ItemPage", page + "");
+
+			increment();
+		}
+	}
+
+	public static class TitleAutherQuery extends Query {
+
+		private String title;
+
+		private String author;
+
+		public TitleAutherQuery(String t, String author) {
+			this.author = author;
+			this.title = t;
+		}
+
+		@Override
+		public void setCustomQuery(Map<String, String> params) {
+			params.put("Operation", "ItemSearch");
+			params.put("Keywords", title + " " + author);
+			params.put("SearchIndex", "Books");
+
+			params.put("ItemPage", page + "");
+
+			increment();
 
 		}
 	}
@@ -79,6 +112,11 @@ public class Amazon {
 
 	public static SortedSet<BookInfo> getInfoByTitle(String title) {
 		return Amazon.getInfo(new Amazon.TitleQuery(title));
+	}
+
+	public static SortedSet<BookInfo> getInfoByTitleAuther(String title,
+			String auther) {
+		return Amazon.getInfo(new Amazon.TitleAutherQuery(title, auther));
 	}
 
 	/**
@@ -151,6 +189,12 @@ public class Amazon {
 				BookInfo bookInfo = new BookInfo(pub, "", author, title, isbn);
 				set.add(bookInfo);
 
+			}
+
+			if (set.size() == 10) {
+				log.info("データ件数がMAXに達したので、次ページに移動します。", q.page);
+				SortedSet<BookInfo> info = getInfo(q);
+				set.addAll(info);
 			}
 
 			if (log.isDebugEnabled()) {

@@ -122,7 +122,6 @@ public class WinRARWrapper {
 				+ tempRar.getAbsolutePath() + "\" \"" + src + "/*\"";
 
 		log.info(cmdZip);
-		tempRar.renameTo(new File(destName + ".zip"));
 
 		Process execZip = Runtime.getRuntime().exec(cmdZip);
 		try (InputStream i = execZip.getInputStream();
@@ -135,6 +134,9 @@ public class WinRARWrapper {
 				//FileMoveUtil.deleteDir(new File(src));
 			}
 		}
+		new File(tempRar.getAbsolutePath() + ".zip").renameTo(new File(destName
+				+ ".zip"));
+
 	}
 
 	public static void encode(File src, File dest) throws IOException,

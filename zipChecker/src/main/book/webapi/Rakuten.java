@@ -66,6 +66,30 @@ public class Rakuten {
 		}
 	}
 
+	public static class TitleAuthorQuery extends Query {
+
+		private String title;
+		private String author;
+
+		public TitleAuthorQuery(String t, String author) {
+			this.author = author;
+			this.title = t;
+		}
+
+		@Override
+		public void setCustomQuery(AbaronRESTClient stub) {
+
+			stub.setParameter("title", title);
+			stub.setParameter("author", author);
+		}
+
+		@Override
+		public String toString() {
+
+			return "タイトル検索:" + title + "著者検索:" + author;
+		}
+	}
+
 	public static class IsbnQuery extends Query {
 
 		private String isbn;
@@ -133,6 +157,11 @@ public class Rakuten {
 
 	public static SortedSet<BookInfo> getInfoByTitle(String title) {
 		return Rakuten.getInfo(new Rakuten.TitleQuery(title));
+	}
+
+	public static SortedSet<BookInfo> getInfoByTitleAuther(String title,
+			String author) {
+		return Rakuten.getInfo(new Rakuten.TitleAuthorQuery(title, author));
 	}
 
 	/**

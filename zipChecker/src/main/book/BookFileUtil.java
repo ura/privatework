@@ -301,13 +301,13 @@ public class BookFileUtil {
 	public static void rebuildArc(String name, Collection<File> newList)
 			throws IOException, InterruptedException {
 		File workF = null;
-		if (false) {
+		if (true) {
 			workF = FileOperationUtil.createTempDir(WORK_DIR);
 
 			decodeAll(workF, newList);
 		}
 		if (true) {
-			workF = new File("G:\\arkwork\\test2");
+			//workF = new File("G:\\arkwork\\_1_1325601971376");
 
 			FileOperationUtil.moveFolderToParent(workF);
 			jpgCheck(workF);
@@ -325,6 +325,7 @@ public class BookFileUtil {
 			File tempDest1 = FileOperationUtil.createTempDir(WORK_DIR, "名称重複");
 			File tempDest2 = FileOperationUtil.createTempDir(WORK_DIR, "完全一致");
 
+			boolean flag = false;
 			for (Entry<File, BookInfo> e : allbookInfo.entrySet()) {
 				File src = e.getKey();
 				BookInfo bookNo = e.getValue();
@@ -333,7 +334,14 @@ public class BookFileUtil {
 
 				s.put(bookNo, newDir);
 
-				moveDir(src, newDir, bookNo, tempDest1, tempDest2);
+				try {
+					moveDir(src, newDir, bookNo, tempDest1, tempDest2);
+				} catch (Exception e1) {
+					flag = true;
+				}
+			}
+			if (flag) {
+				return;
 			}
 
 			BookNameUtil.createCominName(new File(WORK_DIR), s);
@@ -352,47 +360,51 @@ public class BookFileUtil {
 	private static void moveDir(File src, File dest, BookInfo bookNo,
 			File tempDest1, File tempDest2) throws IOException {
 		boolean b = false;
-
-		if (!dest.exists()) {
-			b = FileOperationUtil.renameTo(src, dest);
-			if (!b) {
-				log.warn("フォルダのリネームに失敗しました:" + bookNo);
-			}
-		} else {
-
-			if (!isSame(src, dest)) {
-
+		log.info("下記の移動を検討します。{} >> {}", src, dest);
+		if (!src.equals(dest)) {
+			if (!dest.exists()) {
+				b = FileOperationUtil.renameTo(src, dest);
+				if (!b) {
+					log.warn("フォルダのリネームに失敗しました:" + bookNo);
+				}
+			} else {
 				long srcSize = dirSize(src);
 				long destSize = dirSize(dest);
+				if (notSame(src, tempDest2)) {
 
-				if (srcSize < destSize) {
+					if (srcSize < destSize) {
 
-					File path = createPath(tempDest1, bookNo.getInfo());
-					FileOperationUtil.renameTo(src, path);
+						File path = createPath(tempDest1, bookNo.getInfo());
+						FileOperationUtil.renameTo(src, path);
 
-					log.warn("サイズの小さいフォルダをテンポラリに移しました:{}  :{}K  {}K",
-							new Object[] { path, srcSize / 1024,
-									destSize / 1024 });
+						log.warn("サイズの小さいフォルダをテンポラリに移しました:{}  :{}K  {}K",
+								new Object[] { path, srcSize / 1024,
+										destSize / 1024 });
+					} else {
+
+						File path = createPath(tempDest1, bookNo.getInfo());
+						FileOperationUtil.renameTo(dest, path);
+						FileOperationUtil.renameTo(src, dest);
+
+						log.warn("サイズの小さいフォルダをテンポラリに移しました:{}  :{}K  {}K",
+								new Object[] { path, srcSize / 1024,
+										destSize / 1024 });
+
+					}
 				} else {
-
-					File path = createPath(tempDest1, bookNo.getInfo());
-					FileOperationUtil.renameTo(dest, path);
-					FileOperationUtil.renameTo(src, dest);
-
-					log.warn("サイズの小さいフォルダをテンポラリに移しました:{}  :{}K  {}K",
+					File path = createPath(tempDest2, bookNo.getInfo());
+					FileOperationUtil.renameTo(src, path);
+					log.warn("フォルダサイズが一緒でした。テンポラリに移動します。:{}  :{}K  {}K",
 							new Object[] { path, srcSize / 1024,
 									destSize / 1024 });
-
 				}
 
-			} else {
-
-				File path = createPath(tempDest2, bookNo.getInfo());
-				FileOperationUtil.renameTo(src, path);
-
 			}
-
+		} else {
+			log.info("送り先と送り元が同様でした。{} >> {}", src.getAbsolutePath(),
+					dest.getAbsolutePath());
 		}
+
 	}
 
 	/**
@@ -402,21 +414,24 @@ public class BookFileUtil {
 	 * @param dest
 	 * @return
 	 */
-	private static boolean isSame(File src, File dest) {
+	private static boolean notSame(File src, File dest) {
 
 		if (src.equals(dest)) {
-			return true;
+			return false;
 		} else {
 			long srcSize = dirSize(src);
 			long destSize = dirSize(dest);
 
-			if (srcSize == destSize) {
+			int i = src.list().length;
+			int j = dest.list().length;
+
+			if (srcSize == destSize && i == j) {
 
 				log.warn("フォルダのサイズが一致しました。同じフォルダとみなします。{} : {} ", src, dest);
-				return true;
+				return false;
 			} else {
 				log.info("フォルダのサイズが一致しましませんでした。{} : {} ", src, dest);
-				return false;
+				return true;
 			}
 		}
 

@@ -1,6 +1,7 @@
 package book.webapi;
 
 import java.io.File;
+import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -13,7 +14,12 @@ import org.slf4j.LoggerFactory;
 
 import util.Normalizer;
 
-public class BookInfo implements Comparable<BookInfo> {
+public class BookInfo implements Comparable<BookInfo>, Serializable {
+
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 311214406048533356L;
 
 	private static Logger log = LoggerFactory.getLogger(BookInfo.class);
 
@@ -29,11 +35,13 @@ public class BookInfo implements Comparable<BookInfo> {
 			.compile("([^()（）]*)[()（）]([0-9０-９]+)[()（）]");
 
 	private static final Pattern titleReg3 = Pattern
-			.compile("(.*[^0-9()])([0-9]+)(.*[^0-9]) [\\(\\(（].*[\\)）\\)]$");
+			.compile("(.*[^0-9()])([0-9０-９]+)(.*[^0-9]) [\\(\\(（].*[\\)）\\)]$");
 	private static final Pattern titleReg4 = Pattern
 			.compile("(.*[^0-9])[(（]第([0-9]*)巻[）)]$");
 	private static final Pattern titleReg5 = Pattern
 			.compile("(.*)[\\(（]{1}([    ([0-9]]+)[）\\)]{1}");
+	private static final Pattern titleReg8 = Pattern
+			.compile("([^0-9０-９(（]*)[ 　]([0-9０-９]+) [(（].*");
 	private static final Pattern titleReg6 = Pattern
 			.compile("(.*[^0-9(（])[(（ ]*([0-9]+)[^0-9]*$");
 
@@ -49,21 +57,35 @@ public class BookInfo implements Comparable<BookInfo> {
 			.compile("\\[(.*)\\]\\[(.*)\\]\\[(.*)\\]\\[ISBN([0-9A-Za-z ]*)\\]");
 
 	private static final List<Pattern> regList;
+	static {
+		ArrayList<Pattern> list = new ArrayList<Pattern>();
+		list.add(titleSReg);
+		list.add(titleReg1);
+		list.add(titleReg2);
+		list.add(titleReg7);
+		list.add(titleReg3);
+		list.add(titleReg4);
+		list.add(titleReg5);
+		list.add(titleReg8);
+		list.add(titleReg6);
 
-	public static boolean isBookInfoName(File dir) {
+		regList = Collections.unmodifiableList(list);
 
-		String name = dir.getName();
+	}
+
+	public static boolean isBookInfoName(String name) {
+
 		Matcher matcher = bookInfoReg1.matcher(name);
 		Matcher matcher2 = bookInfoReg2.matcher(name);
 		return matcher.find() || matcher2.find();
 
 	}
 
-	public static BookInfo createBookInfo(File dir) {
+	public static BookInfo createBookInfo(String name) {
 		//[別天荒人][集英社][明日泥棒 第04巻][ISBN9784088776453][抜けあり]
 
 		BookInfo bookInfo = new BookInfo();
-		String name = dir.getName();
+
 		Matcher matcher = bookInfoReg1.matcher(name);
 		if (matcher.find()) {
 			bookInfo.setAuthor(matcher.group(1));
@@ -87,19 +109,14 @@ public class BookInfo implements Comparable<BookInfo> {
 
 	}
 
-	static {
-		ArrayList<Pattern> list = new ArrayList<Pattern>();
-		list.add(titleSReg);
-		list.add(titleReg1);
-		list.add(titleReg2);
-		list.add(titleReg7);
-		list.add(titleReg3);
-		list.add(titleReg4);
-		list.add(titleReg5);
-		list.add(titleReg6);
+	public static boolean isBookInfoName(File dir) {
 
-		regList = Collections.unmodifiableList(list);
+		return isBookInfoName(dir.getName());
 
+	}
+
+	public static BookInfo createBookInfo(File dir) {
+		return createBookInfo(dir.getName());
 	}
 
 	public BookInfo() {

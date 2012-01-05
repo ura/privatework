@@ -20,4 +20,9 @@ public class Log {
 	 */
 	public static final Marker INFO = MarkerFactory.getMarker("INFO");
 
+	/**
+	 * 操作の無い情報マーカ
+	 */
+	public static final Marker STATIC = MarkerFactory.getMarker("STATIC");
+
 }

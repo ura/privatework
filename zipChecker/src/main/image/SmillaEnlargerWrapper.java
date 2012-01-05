@@ -23,12 +23,12 @@ public class SmillaEnlargerWrapper {
 
 	//C:\Users\poti\Downloads\SmillaEnlarger-0.9.0\SmillaEnlarger\SmillaEnlargerCL.exe E:\workcomic\JPG\1_1324222630058\06\A002.jpg -z 200 -o E:\workcomic\JPG\1_1324222630058\06\A002-1.jpg -sharp 100 -flat 0 -dither 10 -deNoise 19 -preSharp 19 -fNoise 0
 
-	public static boolean convert(String src, String dest, int per) {
+	public boolean convert(String src, String dest, int per) {
 		return convert(new File(src), new File(dest), new SmillaEnlargerConf(
 				per));
 	}
 
-	public static File convertTempFile(File src, int per) throws IOException {
+	public File convertTempFile(File src, int per) throws IOException {
 
 		File tempFile = File.createTempFile("img", "." + getExt(src));
 
@@ -37,7 +37,7 @@ public class SmillaEnlargerWrapper {
 
 	}
 
-	public static File convertTempFile(File src, SmillaEnlargerConf conf)
+	public File convertTempFile(File src, SmillaEnlargerConf conf)
 			throws IOException {
 
 		File tempFile = File.createTempFile("img", "." + getExt(src));
@@ -54,7 +54,7 @@ public class SmillaEnlargerWrapper {
 	 * @return
 	 * @throws IOException
 	 */
-	public static List<SmillaEnlargerConf> convertConfList(File src, int per)
+	public List<SmillaEnlargerConf> convertConfList(File src, int per)
 			throws IOException {
 
 		List<SmillaEnlargerConf> l = new ArrayList<SmillaEnlargerConf>();
@@ -135,9 +135,17 @@ public class SmillaEnlargerWrapper {
 		int deNoise;
 		int preSharp;
 		int fNoise;
+
+		@Override
+		public String toString() {
+			return "SmillaEnlargerConf [per=" + per + ", sharp=" + sharp
+					+ ", flat=" + flat + ", dither=" + dither + ", deNoise="
+					+ deNoise + ", preSharp=" + preSharp + ", fNoise=" + fNoise
+					+ "]";
+		}
 	}
 
-	public static boolean convert(File src, File dest, SmillaEnlargerConf conf) {
+	public boolean convert(File src, File dest, SmillaEnlargerConf conf) {
 
 		try {
 

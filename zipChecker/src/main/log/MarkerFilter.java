@@ -12,10 +12,12 @@ public class MarkerFilter extends AbstractMatcherFilter {
 		if (!isStarted())
 			return FilterReply.NEUTRAL;
 		LoggingEvent event = (LoggingEvent) eventObject;
-		if (event.getMarker() != null && event.getMarker().contains(marker))
+
+		if (event.getMarker() != null && event.getMarker().contains(marker)) {
 			return onMatch;
-		else
+		} else {
 			return onMismatch;
+		}
 	}
 
 	public String marker;

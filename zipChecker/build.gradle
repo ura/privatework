@@ -23,18 +23,26 @@ defaultTasks 'count'
 apply plugin: 'java'
 apply plugin: 'eclipse'
 
+
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    compile group: 'org.slf4j', name: 'slf4j-api', version: '1.6.4'
-	compile group: 'ch.qos.logback', name: 'logback-core', version: '1.0.0'
-	compile group: 'org.slf4j', name: 'slf4j-api', version: '1.6.4'
+
+	//compile project(':../../junrar/unrar')
+
+    //compile group: 'org.slf4j', name: 'slf4j-api', version: '1.6.4'
+	//compile group: 'ch.qos.logback', name: 'logback-core', version: '1.0.0'
+	//compile 'ch.qos.logback:logback-classic:1.0.0'
+	compile 'org.perf4j:perf4j:0.9.16'
+	compile 'org.slf4j:slf4j-api:1.5.6'
+	compile 'ch.qos.logback:logback-classic:0.9.15'
+
 	compile 'com.jolira:guice:3.0.0'
 	compile 'javax.mail:mail:1.4.4'
-	compile 'ch.qos.logback:logback-core:1.0.0'
-	compile 'ch.qos.logback:logback-classic:1.0.0'
+
+
 	compile 'net.sourceforge.javacsv:javacsv:2.0'
 	compile 'abaron:abaron:0.9.8'
 	compile 'org.apache.commons:commons-io:1.4'
@@ -44,6 +52,16 @@ dependencies {
 	compile 'ZXing:ZXing-core:1.7'
 	compile 'com.sun.jna:jna:3.2.7'
 	compile 'javacv:javacv:20101001'
+
+	compile 'unrar:unrar:0.9'
+
+
+	//PREF4j
+
+	compile 'org.aspectj:aspectjrt:1.6.1'
+	compile 'commons-jexl:commons-jexl:1.1'
+	compile 'org.springframework:spring:2.0.6'
+	compile 'cglib:cglib:2.1_3'
 
 
 
@@ -63,15 +81,19 @@ repositories {
 }
 
 eclipse.classpath.file {
-    beforeMerged {classpath ->
-		println(classpath)
 
-
-    }
-
-	whenMerged{classpath ->
-		println(classpath)
+	beforeMerged { classpath ->
+		classpath.entries.removeAll { entry -> entry.kind == 'lib' || entry.kind == 'var' }
 	}
+
+
+//    beforeMerged {classpath ->
+//		println(classpath)
+//    }
+
+//	whenMerged{classpath ->
+//		println(classpath)
+//	}
 
 
 

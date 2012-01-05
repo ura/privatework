@@ -24,18 +24,19 @@ import java.util.concurrent.Future;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import module.InjectorMgr;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import util.UserInput;
 import util.WinRARWrapper;
+import util.file.DirCollector;
 import util.file.FileOperationUtil;
-import util.file.filter.DirFilter;
 import book.webapi.BookInfo;
 import book.webapi.BookInfoFromWeb;
 import conf.ConfConst;
 import static util.file.FileNameUtil.createPath;
-import static util.file.FileNameUtil.getExt;
 import static util.file.FileNameUtil.getFileName;
 
 public class BookNameUtil {
@@ -100,6 +101,9 @@ public class BookNameUtil {
 
 	}
 
+	private static BarcodeReader4Book barcodeReader = InjectorMgr.get()
+			.getInstance(BarcodeReader4Book.class);
+
 	/**
 	 * 日本語のみの名称に変換します。
 	 * シンプルな名前に置換した名称を返します。
@@ -117,18 +121,24 @@ public class BookNameUtil {
 			return getFileName(f);
 		}
 
-		Matcher matcher = reg.matcher(f.getName());
+		String replaceAll = getFileName(f)
+				.replaceAll(
+						"[^\\u4E00-\\u9FBF\\u0020-\\u007Ea-zA-Z0-9０-９　 \\u3040-\\u309F\\u30A0-\\u30FF\\u30A0-\\u30FF\\u30A0-\\u30FF]",
+						"_");
 
-		try {
-			if (matcher.find()) {
-				String group = matcher.group(1) + matcher.group(2);
-				return group;
-			}
-		} catch (Exception e) {
-			log.error("想定外のエラー", e);
-		}
+		return replaceAll.replace("_{2,20}", "_");
+		//		Matcher matcher = reg.matcher(f.getName());
+		//
+		//		try {
+		//			if (matcher.find()) {
+		//				String group = matcher.group(1) + matcher.group(2);
+		//				return group;
+		//			}
+		//		} catch (Exception e) {
+		//			log.error("想定外のエラー", e);
+		//		}
 
-		return "0." + getExt(f);
+		//return "0." + getExt(f);
 	}
 
 	/**
@@ -191,7 +201,7 @@ public class BookNameUtil {
 	}
 
 	public static Map<File, BookInfo> getAllbookInfoFromBarcode(File root) {
-		File[] dirs = root.listFiles(new DirFilter());
+		DirCollector dirs = DirCollector.create(root);
 
 		Map<File, BookInfo> m = new HashMap<>();
 
@@ -199,7 +209,7 @@ public class BookNameUtil {
 			ExecutorService ex = Executors
 					.newFixedThreadPool(THREAD_GET_BOOKINFO);
 			List<Callable<Map<File, BookInfo>>> l = new ArrayList<>();
-			for (File dir : dirs) {
+			for (File dir : dirs.dirSet.keySet()) {
 
 				l.add(new BookInfoFromBarcodeTask(dir));
 
@@ -318,7 +328,7 @@ public class BookNameUtil {
 
 		String barcode = bookInfoFromFolderName(dir);
 		if (barcode == null) {
-			barcode = BarcodeReader4Book.autoReadDir(dir);
+			barcode = barcodeReader.autoReadDir(dir);
 		}
 		if (barcode != null) {
 

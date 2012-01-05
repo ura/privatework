@@ -1,26 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-  <appender name="STDOUT"
-    class="ch.qos.logback.core.ConsoleAppender">
-   <Target>System.out</Target>
-   	<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-      <level>warn</level>
-    </filter>
-    <layout class="ch.qos.logback.classic.PatternLayout">
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<Target>System.out</Target>
+		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+			<level>warn</level>
+		</filter>
+		<layout class="ch.qos.logback.classic.PatternLayout">
 
-    <!--
-      <Pattern>%d{HH:mm:ss} [%thread] %-5level %logger{36}  %msg%n</Pattern>
-            -->
+			<!-- <Pattern>%d{HH:mm:ss} [%thread] %-5level %logger{36} %msg%n</Pattern> -->
 
-      <Pattern>%-5level %logger{36}.%-20M - %msg%n</Pattern>
-    </layout>
-  </appender>
-  <appender name="FILE"
+			<Pattern>%-5level %logger{36}.%-20M - %msg%n</Pattern>
+		</layout>
+	</appender>
+	<appender name="FILE"
 		class="ch.qos.logback.core.rolling.RollingFileAppender">
 		<file>log.log</file>
 		<append>true</append>
-		<rollingPolicy
-			class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
 			<FileNamePattern>log.%d{yyyy-MM-dd}.log</FileNamePattern>
 		</rollingPolicy>
 		<encoding>UTF-8</encoding>
@@ -31,19 +27,68 @@
 		</layout>
 	</appender>
 
-	  <appender name="FILEWARM"
-		class="ch.qos.logback.core.rolling.RollingFileAppender"
 
-		>
 
-	 <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-      <level>warn</level>
-    </filter>
+
+<!-- 	<appender name="CoalescingStatistics" -->
+<!-- 		class="org.perf4j.log4j.AsyncCoalescingStatisticsAppender"> -->
+ -->
+<!-- 		<param name="TimeSlice" value="10000" /> -->
+<!-- 		<appender-ref ref="xx" /> -->
+<!-- 	</appender> -->
+
+<!-- 	<appender name="xx" -->
+<!-- 		class="ch.qos.logback.core.rolling.RollingFileAppender"> -->
+<!-- 		<file>CoalescingStatistics.log</file> -->
+<!-- 		<append>true</append> -->
+<!-- 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy"> -->
+<!-- 			<FileNamePattern>CoalescingStatistics.%d{yyyy-MM-dd}.log</FileNamePattern> -->
+<!-- 		</rollingPolicy> -->
+<!-- 		<encoding>UTF-8</encoding> -->
+<!-- 		<layout class="ch.qos.logback.classic.PatternLayout"> -->
+<!-- 			<Pattern> -->
+<!-- 				 %msg%n -->
+<!-- 			</Pattern> -->
+<!-- 		</layout> -->
+<!-- 	</appender> -->
+
+
+	<!-- Loggers -->
+	<!-- The Perf4J logger. Note that org.perf4j.TimingLogger is the value of
+		the org.perf4j.StopWatch.DEFAULT_LOGGER_NAME constant. Also, note that additivity
+		is set to false, which is usually what is desired - this means that timing
+		statements will only be sent to this logger and NOT to upstream loggers. -->
+
+
+
+	<appender name="FILEPREF4j"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>FILEPREF4j.log</file>
+		<append>true</append>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<FileNamePattern>log.%d{yyyy-MM-dd}.log</FileNamePattern>
+		</rollingPolicy>
+		<encoding>UTF-8</encoding>
+		<layout class="ch.qos.logback.classic.PatternLayout">
+			<Pattern>
+				%msg%n
+			</Pattern>
+		</layout>
+	</appender>
+
+
+
+
+	<appender name="FILEWARM"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+
+		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+			<level>warn</level>
+		</filter>
 
 		<file>logWarm.log</file>
 		<append>true</append>
-		<rollingPolicy
-			class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
 			<FileNamePattern>log.%d{yyyy-MM-dd}.log</FileNamePattern>
 		</rollingPolicy>
 		<encoding>UTF-8</encoding>
@@ -54,76 +99,106 @@
 		</layout>
 	</appender>
 
-  <appender name="FILEX"
+	<appender name="summary"
 		class="ch.qos.logback.core.rolling.RollingFileAppender">
-<!--
-		<filter class="ch.qos.logback.core.filter.EvaluatorFilter">
-	      <evaluator name="myEval">
-	        <expression>marker.contains("OP")</expression>
-	      </evaluator>
-	      <OnMismatch>DENY</OnMismatch>
-	      <OnMatch>ACCEPT</OnMatch>
-	    </filter>
- -->
- 		<filter class="log.MarkerFilter">
-	      <marker>OP</marker>
-	      <OnMismatch>DENY</OnMismatch>
-	      <OnMatch>ACCEPT</OnMatch>
-	    </filter>
+		<!-- <filter class="ch.qos.logback.core.filter.EvaluatorFilter"> <evaluator
+			name="myEval"> <expression>marker.contains("OP")</expression> </evaluator>
+			<OnMismatch>DENY</OnMismatch> <OnMatch>ACCEPT</OnMatch> </filter> -->
+		<filter class="log.MarkerFilter">
+			<marker>OP</marker>
+			<OnMismatch>DENY</OnMismatch>
+			<OnMatch>ACCEPT</OnMatch>
+		</filter>
 
 
 		<file>summary.log</file>
 		<append>true</append>
-		<rollingPolicy
-			class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
 			<FileNamePattern>samary.%d{yyyy-MM-dd}.log</FileNamePattern>
 		</rollingPolicy>
 		<encoding>UTF-8</encoding>
 		<layout class="ch.qos.logback.classic.PatternLayout">
 			<Pattern>
-				%date  %logger{35} \t- %msg%n
+				%date %logger{35} \t- %msg%n
+			</Pattern>
+		</layout>
+	</appender>
+
+	<appender name="staticLog"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<!-- <filter class="ch.qos.logback.core.filter.EvaluatorFilter"> <evaluator
+			name="myEval"> <expression>marker.contains("OP")</expression> </evaluator>
+			<OnMismatch>DENY</OnMismatch> <OnMatch>ACCEPT</OnMatch> </filter> -->
+		<filter class="log.MarkerFilter">
+			<marker>STATIC</marker>
+			<OnMismatch>DENY</OnMismatch>
+			<OnMatch>ACCEPT</OnMatch>
+		</filter>
+
+
+		<file>staticLog.log</file>
+		<append>true</append>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<FileNamePattern>staticLog.%d{yyyy-MM-dd}.log</FileNamePattern>
+		</rollingPolicy>
+		<encoding>UTF-8</encoding>
+		<layout class="ch.qos.logback.classic.PatternLayout">
+			<Pattern>
+				%logger{35} \t- %msg%n
 			</Pattern>
 		</layout>
 	</appender>
 
 
-  <logger name="socre.calculator">
-    <level value="ERROR" />
-  </logger>
-  <logger name="util.file.FileWalker">
-    <level value="ERROR" />
-  </logger>
-  <logger name="util.ThreadPoolExecutorSync">
-    <level value="INFO" />
-  </logger>
+
+	<logger name="socre.calculator">
+		<level value="ERROR" />
+	</logger>
+	<logger name="util.file.FileWalker">
+		<level value="ERROR" />
+	</logger>
+	<logger name="util.ThreadPoolExecutorSync">
+		<level value="INFO" />
+	</logger>
 
 
-  <logger name="barcode.BarcodeReader">
-    <level value="INFO" />
-  </logger>
-  <logger name="webapi.Amazon">
-    <level value="INFO" />
-  </logger>
+	<logger name="barcode.BarcodeReader">
+		<level value="INFO" />
+	</logger>
+
+	<logger name="org.slf4j">
+		<level value="ERROR" />
+	</logger>
+	<logger name="ch.qos.logback">
+		<level value="ERROR" />
+	</logger>
+	<logger name="org.perf4j.TimingLogger" additivity="false">
+		<level value="INFO" />
+<!-- 		<appender-ref ref="CoalescingStatistics" /> -->
+		 <appender-ref 		ref="FILEPREF4j" />
+	</logger>
+
+	<logger name="book">
+		<appender-ref ref="STDOUT" />
+		<appender-ref ref="FILE" />
+		<appender-ref ref="summary" />
+		<appender-ref ref="staticLog" />
+	</logger>
+	<logger name="util">
+		<appender-ref ref="STDOUT" />
+		<appender-ref ref="FILE" />
+		<appender-ref ref="summary" />
+		<appender-ref ref="staticLog" />
+	</logger>
 
 
 
 
+	<!-- <logger name="image.Histogram"> <level value="DEBUG" /> </logger> -->
+
+	<root>
+		<level value="INFO" />
 
 
-
-
-<!--
-  <logger name="image.Histogram">
-    <level value="DEBUG" />
-  </logger>
- -->
-
-  <root>
-    <level value="INFO" />
-    <appender-ref ref="STDOUT" />
-    <appender-ref ref="FILE" />
-    <appender-ref ref="FILEX" />
-    <appender-ref ref="FILEWARM" />
-
-  </root>
+	</root>
 </configuration>

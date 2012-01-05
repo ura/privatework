@@ -2,6 +2,7 @@ package book.webapi;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.WeakHashMap;
@@ -81,6 +82,58 @@ public class BookInfoFromWeb {
 			return null;
 		}
 
+	}
+
+	public static Set<BookInfo> getBookInfoFromTitleAuther(String title,
+			String auther) {
+
+		String titleString = title.trim();
+
+		SortedSet<BookInfo> infoByTitle1 = cacheMap1.get(titleString + "-"
+				+ auther);
+		if (infoByTitle1 == null) {
+			infoByTitle1 = Rakuten.getInfoByTitleAuther(titleString, auther);
+			cacheMap1.put(titleString + "-" + auther, infoByTitle1);
+		} else {
+			log.info("楽天キャッシュより結果を取得しました。{}", titleString + "-" + auther);
+		}
+		SortedSet<BookInfo> infoByTitle2 = cacheMap1.get(titleString + "-"
+				+ auther);
+		if (infoByTitle2 == null) {
+			infoByTitle2 = Amazon.getInfoByTitleAuther(titleString, auther);
+			cacheMap2.put(titleString + "-" + auther, infoByTitle2);
+		} else {
+			log.info("Amazonキャッシュより結果を取得しました。{}", titleString + "-" + auther);
+		}
+
+		SortedSet<BookInfo> margeSet = margeMap.get(titleString + "-" + auther);
+		if (margeSet == null) {
+			margeSet = new TreeSet<>();
+			Map<String, BookInfo> m1 = new HashMap<String, BookInfo>();
+			for (BookInfo bookInfo : infoByTitle1) {
+				m1.put(bookInfo.getIsbn(), bookInfo);
+			}
+			for (BookInfo bookInfo : infoByTitle2) {
+
+				//検索性能が違う可能性があるため。
+				BookInfo bookInfo2 = m1.get(bookInfo.getIsbn());
+				if (bookInfo2 != null) {
+					bookInfo2 = Rakuten.getInfo(bookInfo.getIsbn());
+				}
+				margeSet.add(marge(bookInfo, bookInfo2));
+
+				m1.remove(bookInfo.getIsbn());
+			}
+			//楽天の残りかす
+			for (BookInfo bookInfo : m1.values()) {
+				margeSet.add(marge(bookInfo, Amazon.getInfo(bookInfo.getIsbn())));
+			}
+
+			margeMap.put(titleString + "-" + auther, margeSet);
+
+		}
+
+		return margeSet;
 	}
 
 	public static BookInfo getBookInfo(String isbn) {

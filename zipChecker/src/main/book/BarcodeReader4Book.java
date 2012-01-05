@@ -17,6 +17,9 @@ import java.util.concurrent.Callable;
 
 import javax.imageio.ImageIO;
 
+import log.Log;
+import module.InjectorMgr;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,11 +62,15 @@ public class BarcodeReader4Book {
 	private static final int THREAD_BARCODE_DERAY = ConfConst.MAIN_CONF
 			.getInt(ConfConst.THREAD_BARCODE_DERAY);
 
-	public static String autoReadDir(File dir) {
+	public String autoReadDir(File dir) {
 
 		log.info("バーコード抽出処理を開始します。{} ", dir.getAbsolutePath());
 		File[] files = dir.listFiles(new FileNameFilter(MODE.EXT_INCLUDE,
 				"jpg", "jpeg"));
+		if (files.length == 0) {
+			return null;
+		}
+
 		List<File> asList = Arrays.asList(files);
 		for (File f : asList) {
 			log.debug("バーコード抽出一次対象：{}", f);
@@ -93,7 +100,7 @@ public class BarcodeReader4Book {
 	 * @param asList
 	 * @return
 	 */
-	private static int mid(List<File> asList) {
+	private int mid(List<File> asList) {
 
 		MapList<Integer, File> map = new MapList<>();
 		for (File file : asList) {
@@ -122,7 +129,7 @@ public class BarcodeReader4Book {
 	 * @param asList
 	 * @return
 	 */
-	private static List<File> readFileList(List<File> asList) {
+	private List<File> readFileList(List<File> asList) {
 		int param = 8;
 
 		List<File> l = new ArrayList<>();
@@ -172,7 +179,7 @@ public class BarcodeReader4Book {
 		return l;
 	}
 
-	private static class Task<Strings> implements Callable<String> {
+	public class Task<Strings> implements Callable<String> {
 
 		public Task(int i, boolean retry, File file) {
 			super();
@@ -183,7 +190,7 @@ public class BarcodeReader4Book {
 
 		private boolean retry;
 		private File file;
-		int i;
+		private int i;
 
 		@Override
 		public String toString() {
@@ -193,72 +200,14 @@ public class BarcodeReader4Book {
 
 		@Override
 		public String call() throws Exception {
-			String barcord = null;
-			try {
-				if (retry) {
-					log.info("高精細化を目論みます。{}", file.getAbsolutePath());
-					File tempFile = SmillaEnlargerWrapper.convertTempFile(file,
-							200);
-					barcord = autoRead(tempFile.getAbsolutePath(), 2);
-					//barcord = autoRead(file.getAbsolutePath(), 2);
-					tempFile.delete();
-
-				} else {
-					barcord = autoRead(file.getAbsolutePath(), 2);
-				}
-
-				//書籍には、二段のバーコードがあり、上のバーコードがほしい
-				if (barcord != null) {
-					log.info("バーコード検出 IDX=" + i + "\t" + file.getAbsolutePath()
-							+ "\t" + barcord);
-					if (barcord.startsWith("978")) {
-						log.info("書籍バーコード検出 IDX=" + i + "\t"
-								+ file.getAbsolutePath() + "\t" + barcord);
-						return barcord;
-					}
-
-					if (barcord.startsWith("192")) {
-						log.info("求めているバーコードではないため、スキップします。 IDX=" + i + "\t"
-								+ file.getAbsolutePath() + "\t" + barcord);
-
-					} else if (!barcord.startsWith("978")) {
-
-						log.info("バーコードの読取エラーと想定されます。スキップします。 IDX=" + i + "\t"
-								+ file.getAbsolutePath() + "\t" + barcord);
-
-					}
-
-					List<SmillaEnlargerConf> list = SmillaEnlargerWrapper
-							.convertConfList(file, 200);
-					for (SmillaEnlargerConf smillaEnlargerConf : list) {
-						File tempFile = SmillaEnlargerWrapper.convertTempFile(
-								file, smillaEnlargerConf);
-						barcord = autoRead(tempFile.getAbsolutePath(), 2);
-						tempFile.delete();
-
-						if (barcord != null && barcord.startsWith("978")) {
-							log.info("バーコード検出 IDX=" + i + "\t"
-									+ file.getAbsolutePath() + "\t" + barcord);
-							return barcord;
-						} else {
-							log.info("不正なバーコードです IDX=" + i + "\t"
-									+ file.getAbsolutePath() + "\t" + barcord);
-						}
-
-					}
-
-				}
-			} catch (Exception e) {
-				log.warn("バーコード読み取り時にエラー:{}", file.getAbsoluteFile(), e);
-			}
-			return barcord;
+			return readImpl(retry, file, i);
 		}
 	}
 
-	private static ThreadPoolExecutorSync ex = new ThreadPoolExecutorSync(
+	private ThreadPoolExecutorSync ex = new ThreadPoolExecutorSync(
 			THREAD_BARCODE, THREAD_BARCODE_DERAY);
 
-	private static String read(List<File> asList, boolean retry) {
+	protected String read(List<File> asList, boolean retry) {
 
 		//最初と最後にしか、バーコードはついていないと推定する
 
@@ -292,7 +241,7 @@ public class BarcodeReader4Book {
 	 * @param div
 	 * @return
 	 */
-	public static String autoRead(String src, final int div) {
+	public String autoRead(String src, final int div) {
 
 		log.debug(src);
 		try {
@@ -321,7 +270,7 @@ public class BarcodeReader4Book {
 	 * @param rect
 	 * @return
 	 */
-	private static BinaryBitmap crop(BinaryBitmap bitmap, Rect rect) {
+	protected BinaryBitmap crop(BinaryBitmap bitmap, Rect rect) {
 
 		return bitmap.crop(rect.getLeft(), rect.getTop(), rect.getWidth(),
 				rect.getHeight());
@@ -333,32 +282,44 @@ public class BarcodeReader4Book {
 	 * @param div
 	 * @return
 	 */
-	private static List<Rect> createRect(BinaryBitmap bitmap, int div) {
+	protected List<Rect> createRect(BinaryBitmap bitmap, int div) {
 		List<Rect> set = new ArrayList<BarcodeReader4Book.Rect>();
 
+		int c = 0;
 		for (; div <= MAX_DIV; div++) {
 
-			for (int i = 0; i < div; i++) {
-				//暫定対策：縦の方の分解率を上げ、二段バーコードの上を取りやすくする。
-				for (int j = 0; j < div * 3; j++) {
-
+			//暫定対策：縦の方の分解率を上げ、二段バーコードの上を取りやすくする。
+			for (int j = 0; j < div * 3; j++) {
+				for (int i = 0; i < div; i++) {
 					set.add(new Rect(i, j, div, div * 3
 
-					, bitmap.getWidth(), bitmap.getHeight()
+					, bitmap.getWidth(), bitmap.getHeight(), c++
 
 					));
 				}
-				for (int j = 0; j < div * 2; j++) {
+			}
 
-					set.add(new Rect(i, j, div, div * 2, bitmap.getWidth(),
-							bitmap.getHeight()));
-				}
-				for (int j = 0; j < div * 6; j++) {
-
+			for (int j = 0; j < div * 6; j++) {
+				for (int i = 0; i < div; i++) {
 					set.add(new Rect(i, j, div, div * 6, bitmap.getWidth(),
-							bitmap.getHeight()));
+							bitmap.getHeight(), c++));
 				}
 			}
+
+			for (int j = 0; j < div * 12; j++) {
+				for (int i = 0; i < div; i++) {
+					set.add(new Rect(i, j, div, div * 12, bitmap.getWidth(),
+							bitmap.getHeight(), c++));
+				}
+			}
+
+			for (int j = 0; j < div * 24; j++) {
+				for (int i = 0; i < div; i++) {
+					set.add(new Rect(i, j, div, div * 24, bitmap.getWidth(),
+							bitmap.getHeight(), c++));
+				}
+			}
+
 		}
 
 		return set;
@@ -368,9 +329,14 @@ public class BarcodeReader4Book {
 
 		private int baseWidth;
 		private int baseHeight;
+		private int top;
+		private int left;
+		private int widthMax;
+		private int heightMax;
+		private int count;
 
 		public Rect(int left, int top, int widthMax, int heightMax,
-				int baseWidth, int baseHeight) {
+				int baseWidth, int baseHeight, int count) {
 			super();
 			this.top = top;
 			this.left = left;
@@ -379,12 +345,8 @@ public class BarcodeReader4Book {
 
 			this.baseHeight = baseHeight;
 			this.baseWidth = baseWidth;
+			this.count = count;
 		}
-
-		public int top;
-		public int left;
-		public int widthMax;
-		public int heightMax;
 
 		public int getLeft() {
 			return getWidth() * left;
@@ -410,9 +372,15 @@ public class BarcodeReader4Book {
 					+ ":" + left + ":" + widthMax + ":" + heightMax + "]";
 		}
 
+		public String getStaticInfo() {
+			return "Rect [" + 20 * baseHeight / baseWidth + "][top=" + top
+					+ ", left=" + left + ", widthMax=" + widthMax
+					+ ", heightMax=" + heightMax + "]" + count + ":";
+		}
+
 	}
 
-	private static String decode(BinaryBitmap basemap, List<Rect> set) {
+	protected String decode(BinaryBitmap basemap, List<Rect> set) {
 
 		//Reader reader = new MultiFormatReader();
 
@@ -420,44 +388,146 @@ public class BarcodeReader4Book {
 		Reader reader = new EAN13Reader();
 
 		String temp = null;
-		for (Rect rect : set) {
-			BinaryBitmap bitmap = crop(basemap, rect);
 
-			// デコードを実行
-			Result result;
-			try {
-				result = reader.decode(bitmap);
-				// フォーマットを取得
-				BarcodeFormat format = result.getBarcodeFormat();
-				log.debug("フォ－マット: " + format);
-				// コンテンツを取得
-				String text = result.getText();
-				log.debug("テキスト: " + text);
-				if (!text.startsWith("978")) {
-					log.info("目的外バーコードのため、スキップします。{}", text);
-					temp = text;
-					continue;
+		for (Rect rect : set) {
+
+			String r = x(basemap, reader, rect);
+			if (r != null && r.startsWith("978")) {
+				return r;
+			}
+			if (r != null) {
+				temp = r;
+			}
+
+		}
+		return temp;
+	}
+
+	protected String x(BinaryBitmap basemap, Reader reader, Rect rect) {
+		BinaryBitmap bitmap = crop(basemap, rect);
+
+		// デコードを実行
+		Result result;
+		try {
+			//バーコードが見つからない場合はエラー
+			result = reader.decode(bitmap);
+			// フォーマットを取得
+			BarcodeFormat format = result.getBarcodeFormat();
+			log.debug("フォ－マット: " + format);
+			// コンテンツを取得
+			String text = result.getText();
+			log.debug("テキスト: " + text);
+
+			if (!text.startsWith("978")) {
+				log.info("目的外バーコードのため、スキップします。{}", text);
+				log.info(Log.STATIC, "NG:RECT:{}[{}]", rect.getStaticInfo());
+				log.info("{}", rect);
+				ResultPoint[] points = result.getResultPoints();
+
+				for (int i = 0; i < points.length; i++) {
+					log.info("    Point[" + i + "] = " + points[i]);
 				}
 
-				// 位置検出パターンおよびアラインメントパターンの座標を取得
+				return text;
+			} else {
 				ResultPoint[] points = result.getResultPoints();
+
+				log.info(Log.STATIC, "OK:RECT:{}[{}]", rect.getStaticInfo());
 
 				log.debug("位置検出パターン／アライメントパターンの座標: ");
 				for (int i = 0; i < points.length; i++) {
 					log.debug("    Point[" + i + "] = " + points[i]);
 				}
-
-				if (format.toString().equals("EAN_13")) {
-					return text;
-				}
-
-			} catch (NotFoundException | ChecksumException | FormatException
-					| ArrayIndexOutOfBoundsException e) {
-				//見つからないことは普通にある。そのために探しまくっている
-
+				return text;
 			}
 
+			/*
+			// 位置検出パターンおよびアラインメントパターンの座標を取得
+			ResultPoint[] points = result.getResultPoints();
+
+			log.debug("位置検出パターン／アライメントパターンの座標: ");
+			for (int i = 0; i < points.length; i++) {
+				log.debug("    Point[" + i + "] = " + points[i]);
+			}
+
+			if (format.toString().equals("EAN_13")) {
+				return text;
+			}*/
+
+		} catch (NotFoundException | ChecksumException | FormatException
+				| ArrayIndexOutOfBoundsException e) {
+			//見つからないことは普通にある。そのために探しまくっている
+			log.debug(Log.STATIC, "NG:RECT:{}", rect.getStaticInfo());
 		}
-		return temp;
+		return null;
+	}
+
+	private SmillaEnlargerWrapper wrapper = InjectorMgr.get().getInstance(
+			SmillaEnlargerWrapper.class);
+
+	protected String readImpl(boolean retry, File file, int i) {
+		String barcord = null;
+		try {
+			if (retry) {
+				log.info("高精細化を目論みます。{}", file.getAbsolutePath());
+				File tempFile = wrapper.convertTempFile(file, 200);
+				barcord = autoRead(tempFile.getAbsolutePath(), 2);
+				//barcord = autoRead(file.getAbsolutePath(), 2);
+				tempFile.delete();
+
+			} else {
+				barcord = autoRead(file.getAbsolutePath(), 2);
+			}
+
+			//書籍には、二段のバーコードがあり、上のバーコードがほしい
+			if (barcord != null) {
+				log.info("バーコード検出 IDX=" + i + "\t" + file.getAbsolutePath()
+						+ "\t" + barcord);
+				if (barcord.startsWith("978")) {
+					log.info("書籍バーコード検出 IDX=" + i + "\t"
+							+ file.getAbsolutePath() + "\t" + barcord);
+					return barcord;
+				}
+
+				if (barcord.startsWith("192")) {
+					log.info("求めているバーコードではないため、スキップします。 IDX=" + i + "\t"
+							+ file.getAbsolutePath() + "\t" + barcord);
+
+				} else if (!barcord.startsWith("978")) {
+
+					log.info("バーコードの読取エラーと想定されます。スキップします。 IDX=" + i + "\t"
+							+ file.getAbsolutePath() + "\t" + barcord);
+
+				}
+
+				List<SmillaEnlargerConf> list = wrapper.convertConfList(file,
+						200);
+				for (SmillaEnlargerConf smillaEnlargerConf : list) {
+					File tempFile = wrapper.convertTempFile(file,
+							smillaEnlargerConf);
+					barcord = autoRead(tempFile.getAbsolutePath(), 2);
+					tempFile.delete();
+
+					if (barcord != null && barcord.startsWith("978")) {
+						log.info("バーコード検出 IDX=" + i + "\t"
+								+ file.getAbsolutePath() + "\t" + barcord);
+						log.info(Log.STATIC, "OK:SmillaEnlargerConf:{}",
+								smillaEnlargerConf);
+
+						return barcord;
+					} else {
+						log.info("不正なバーコードです IDX=" + i + "\t"
+								+ file.getAbsolutePath() + "\t" + barcord);
+						log.info(Log.STATIC, "NG:SmillaEnlargerConf:{}",
+								smillaEnlargerConf);
+					}
+
+				}
+
+			}
+		} catch (Exception e) {
+			log.warn("バーコード読み取り時にエラー:{}", file.getAbsoluteFile(), e);
+		}
+		return barcord;
 	}
 }
