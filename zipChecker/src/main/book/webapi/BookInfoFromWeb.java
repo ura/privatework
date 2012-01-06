@@ -19,6 +19,18 @@ public class BookInfoFromWeb {
 	static private WeakHashMap<String, SortedSet<BookInfo>> margeMap = new WeakHashMap<String, SortedSet<BookInfo>>();
 
 	public static BookInfo getBookInfoFromTitle(String title, String no) {
+		return getBookInfoFromTitle(title, no, false);
+	}
+
+	/**
+	 * 巻数と、刷数で検索。厳密フラグが立っている場合にはタイトルの完全一致が必要
+	 * @param title
+	 * @param no
+	 * @param restrict
+	 * @return
+	 */
+	public static BookInfo getBookInfoFromTitle(String title, String no,
+			boolean restrict) {
 
 		String titleString = title.trim();
 
@@ -29,7 +41,7 @@ public class BookInfoFromWeb {
 		} else {
 			log.info("楽天キャッシュより結果を取得しました。{}", titleString);
 		}
-		SortedSet<BookInfo> infoByTitle2 = cacheMap1.get(titleString);
+		SortedSet<BookInfo> infoByTitle2 = cacheMap2.get(titleString);
 		if (infoByTitle2 == null) {
 			infoByTitle2 = Amazon.getInfoByTitle(titleString);
 			cacheMap2.put(titleString, infoByTitle2);
@@ -68,7 +80,14 @@ public class BookInfoFromWeb {
 		for (BookInfo bookInfo : margeSet) {
 			if (bookInfo.getNo().equals(no)) {
 
-				result.add(bookInfo);
+				if (restrict) {
+
+					if (bookInfo.getTitleStr().equals(title)) {
+						result.add(bookInfo);
+					}
+				} else {
+					result.add(bookInfo);
+				}
 				log.info(bookInfo.getInfo());
 			}
 		}
@@ -104,7 +123,7 @@ public class BookInfoFromWeb {
 		} else {
 			log.info("楽天キャッシュより結果を取得しました。{}", titleString + "-" + auther);
 		}
-		SortedSet<BookInfo> infoByTitle2 = cacheMap1.get(titleString + "-"
+		SortedSet<BookInfo> infoByTitle2 = cacheMap2.get(titleString + "-"
 				+ auther);
 		if (infoByTitle2 == null) {
 			infoByTitle2 = Amazon.getInfoByTitleAuther(titleString, auther);

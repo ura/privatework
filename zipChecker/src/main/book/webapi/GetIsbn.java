@@ -45,7 +45,7 @@ public class GetIsbn {
 
 					BookInfo infoByTitle = BookInfoFromWeb
 							.getBookInfoFromTitle(bookInfo.getTitleStr(),
-									bookInfo.getNo());
+									bookInfo.getNo(), true);
 
 					if (infoByTitle != null) {
 						log.warn("ISBNの更新を行います。{}", d.dir.getAbsolutePath());

@@ -312,7 +312,7 @@ public class BookFileUtil {
 			FileOperationUtil.moveFewFile(workF);
 			FileOperationUtil.moveFolderToParent(workF);
 			jpgCheck(workF);
-			FileOperationUtil.deleteEmptyDir(workF, "jpeg", "jpg");
+			FileOperationUtil.deleteEmptyDir(workF, "jpeg", "jpg", "png");
 
 			FileOperationUtil.removeFile(workF, new String[] { "^.*\\.html$",
 					"^.*\\.url$", "^.*\\.txt$", "^Thumbs\\.db", "^[^.]*$" });

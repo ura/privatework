@@ -26,6 +26,9 @@ public class BookInfo implements Comparable<BookInfo>, Serializable {
 	private static final Pattern titleSReg = Pattern
 			.compile("(.*)[\\s　]+([0-9]+)$");
 
+	private static final Pattern titleReg0 = Pattern
+			.compile("([^0-9０-９(（]*)[ 　][(（]第([0-9０-９]+)巻.*");
+
 	private static final Pattern titleReg1 = Pattern
 			.compile("(.*)[\\(（]{1}([    ([0-9]]+)[）\\)]{1}$");
 
@@ -59,6 +62,7 @@ public class BookInfo implements Comparable<BookInfo>, Serializable {
 	private static final List<Pattern> regList;
 	static {
 		ArrayList<Pattern> list = new ArrayList<Pattern>();
+		list.add(titleReg0);
 		list.add(titleSReg);
 		list.add(titleReg1);
 		list.add(titleReg2);

@@ -120,25 +120,40 @@ public class BookInfoRepo implements Serializable {
 	 * @return
 	 */
 	public Set<BookInfo> get(State state) {
-		return get(null, state);
+		return get(state, null);
 	}
 
 	/**
 	 * キーワード（title,auther）で検索する。
 	 * @param info
 	 */
-	public Set<BookInfo> get(String keyword, State state) {
+	public Set<BookInfo> get(State state, String... keywords) {
 		Set<BookInfo> set = new HashSet<>();
 		for (Entry<Key, BookInfo> e : map.entrySet()) {
 			if (e.getKey().state == state) {
-				if (keyword == null || "".equals(keyword)) {
-					set.add(e.getValue());
 
-				} else if (e.getValue().getTitleStr().contains(keyword)) {
-					set.add(e.getValue());
-				} else if (e.getValue().getAuthor().contains(keyword)) {
+				if (keywords != null) {
+					boolean title = true;
+					for (String keyword : keywords) {
+						if (!e.getValue().getTitleStr().contains(keyword)) {
+							title = false && title;
+						}
+
+					}
+					boolean autthor = true;
+					for (String keyword : keywords) {
+						if (e.getValue().getAuthor().contains(keyword)) {
+							autthor = false && autthor;
+						}
+					}
+
+					if (title || autthor) {
+						set.add(e.getValue());
+					}
+				} else {
 					set.add(e.getValue());
 				}
+
 			}
 		}
 

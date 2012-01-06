@@ -24,24 +24,24 @@ public class BookInfoRepoTest {
 			System.out.println(bookInfo.getInfo());
 		}
 		System.out.println();
-		Set<BookInfo> set2 = repo.get("華麗なる食卓", State.HAVE);
+		Set<BookInfo> set2 = repo.get(State.HAVE, "華麗なる食卓");
 		for (BookInfo bookInfo : set2) {
 			System.out.println(bookInfo.getInfo());
 		}
 		System.out.println();
-		Set<BookInfo> set3 = repo.get("華麗", State.HAVE);
+		Set<BookInfo> set3 = repo.get(State.HAVE, "華麗");
 		for (BookInfo bookInfo : set3) {
 			System.out.println(bookInfo.getInfo());
 		}
 
 		System.out.println();
-		Set<BookInfo> set4 = repo.get("食卓", State.HAVE);
+		Set<BookInfo> set4 = repo.get(State.HAVE, "食卓");
 		for (BookInfo bookInfo : set4) {
 			System.out.println(bookInfo.getInfo());
 		}
 
 		System.out.println();
-		Set<BookInfo> set5 = repo.get("ふなつ", State.HAVE);
+		Set<BookInfo> set5 = repo.get(State.HAVE, "ふなつ");
 		for (BookInfo bookInfo : set5) {
 			System.out.println(bookInfo.getInfo());
 		}

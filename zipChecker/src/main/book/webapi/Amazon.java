@@ -203,7 +203,7 @@ public class Amazon {
 		} catch (ParserConfigurationException | SAXException | IOException
 				| RuntimeException e) {
 
-			log.error("想定外のエラー\n{}", xmlStr, e);
+			log.error("想定外のエラー\n{},\n{}", xmlStr, e);
 
 		}
 		return set;
