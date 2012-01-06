@@ -83,62 +83,32 @@ public class BookNameUtil {
 	private static Pattern partermBetween = Pattern
 			.compile("[^\\[0-9]([0-9]{1,2})[-]+([0-9]{2})[^\\]]+");
 
-	private static Pattern FILE_NAME_REG2 = Pattern
-	//.compile("([!A-Za-zＡ-Ｚａ-ｚ_0-9#-_\\s]{2,20}).*(\\.[A-Za-z0-9]+)");
-			.compile("([\\u4E00-\\u9FBF\\u0020-\\u007Ea-zA-Z0-9０-９　 \\u3040-\\u309F\\u30A0-\\u30FF\\u30A0-\\u30FF\\u30A0-\\u30FF]{2,40}).*(\\.[a-zA-Z]+)");
-
-	private static Pattern FILE_NAME_REG1 = Pattern
-			.compile("([!A-Za-zＡ-Ｚａ-ｚ_0-9#-_\\s]{2,40}).*(\\.[A-Za-z0-9]+)");
-
-	private static Pattern FILE_NAME_REG3 = Pattern
-			.compile("[^!0-9]*([!0-9a-z]{2,40})(\\.[A-Za-z0-9]+)");
-
-	private static List<Pattern> FILE_NAME_REG_LIST = new ArrayList<>();
+	private static List<String> REPLASE_LIST = new ArrayList<>();
 	static {
-		FILE_NAME_REG_LIST.add(FILE_NAME_REG1);
-		FILE_NAME_REG_LIST.add(FILE_NAME_REG2);
-		FILE_NAME_REG_LIST.add(FILE_NAME_REG3);
+		REPLASE_LIST
+				.add("[^\\u4E00-\\u9FBF\\u0020-\\u007Ea-zA-Z0-9０-９　 \\u3040-\\u309F\\u30A0-\\u30FF\\u30A0-\\u30FF\\u30A0-\\u30FF]");
+		REPLASE_LIST
+				.add("_[\\[\\]\\u4E00-\\u9FBF\\u0020-\\u007Ea-zA-Z0-9０-９　 \\u3040-\\u309F\\u30A0-\\u30FF\\u30A0-\\u30FF\\u30A0-\\u30FF]_");
+		REPLASE_LIST
+				.add("_[\\[\\]\\u4E00-\\u9FBF\\u0020-\\u007Ea-zA-Z0-9０-９　 \\u3040-\\u309F\\u30A0-\\u30FF\\u30A0-\\u30FF\\u30A0-\\u30FF]_");
+		REPLASE_LIST.add("^_");
 
 	}
 
 	private static BarcodeReader4Book barcodeReader = InjectorMgr.get()
 			.getInstance(BarcodeReader4Book.class);
 
-	/**
-	 * 日本語のみの名称に変換します。
-	 * シンプルな名前に置換した名称を返します。
-	 */
-	public static String createSimpleName(File f) {
-
-		return createSimpleName(f, FILE_NAME_REG1);
-
-	}
-
-	private static String createSimpleName(File f, Pattern reg) {
+	private static String createSimpleName(File f, String reg) {
 
 		//元が十分に短い場合は変更しない
 		if (getFileName(f).length() < 3) {
 			return getFileName(f);
 		}
 
-		String replaceAll = getFileName(f)
-				.replaceAll(
-						"[^\\u4E00-\\u9FBF\\u0020-\\u007Ea-zA-Z0-9０-９　 \\u3040-\\u309F\\u30A0-\\u30FF\\u30A0-\\u30FF\\u30A0-\\u30FF]",
-						"_");
+		String replaceAll = getFileName(f).replaceAll(reg, "_");
 
 		return replaceAll.replace("_{2,20}", "_");
-		//		Matcher matcher = reg.matcher(f.getName());
-		//
-		//		try {
-		//			if (matcher.find()) {
-		//				String group = matcher.group(1) + matcher.group(2);
-		//				return group;
-		//			}
-		//		} catch (Exception e) {
-		//			log.error("想定外のエラー", e);
-		//		}
 
-		//return "0." + getExt(f);
 	}
 
 	/**
@@ -147,22 +117,34 @@ public class BookNameUtil {
 	 */
 	public static Map<File, File> createSimpleName(Collection<File> f) {
 
+		Map<File, File> map = new HashMap<>();
 		File sample = null;
-		for (Pattern REG : FILE_NAME_REG_LIST) {
-			Map<File, File> map = new HashMap<>();
-			Set<File> set = new HashSet<>();
-			for (File file : f) {
+		for (File file : f) {
+			map.put(file, file);
+			sample = file;
+		}
 
-				sample = file;
-				String createSimpleName = createSimpleName(file, REG);
-				File dest = createPath(file.getParent(), createSimpleName);
-				map.put(file, dest);
+		Map<File, File> result = null;
+		for (String rep : REPLASE_LIST) {
+
+			Set<File> set = new HashSet<>();
+			for (Entry<File, File> file : map.entrySet()) {
+
+				String createSimpleName = createSimpleName(file.getValue(), rep);
+				File dest = createPath(file.getValue().getParentFile(),
+						createSimpleName);
+				map.put(file.getKey(), dest);
 				set.add(dest);
 			}
 
 			if (f.size() == set.size()) {
-				return map;
+				result = map;
 			}
+		}
+
+		if (result != null) {
+			return result;
+
 		}
 
 		log.error("他のファイルと重複しないファイル名を作成することができませんでした。{}",
@@ -437,7 +419,8 @@ public class BookNameUtil {
 		};
 
 		for (BookInfo bookInfo : map.keySet()) {
-			String baseInfo = bookInfo.getBaseInfo();
+			String baseInfo = bookInfo.getAuthor() + "_"
+					+ bookInfo.getTitleStr();
 			log.info("分類しています。{} >>  {}", baseInfo, bookInfo.getInfo());
 			m.get(baseInfo).put(bookInfo, map.get(bookInfo));
 		}

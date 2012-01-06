@@ -518,19 +518,6 @@ public class FileOperationUtil {
 
 		boolean b = false;
 
-		if (rename) {
-
-			String name = BookNameUtil.createSimpleName(f);
-			if (!f.getName().equals(name)) {
-				log.info(Log.OP, "RENAME {} >> {}", new Object[] { f.getName(),
-						name });
-				File f2 = new File(f.getParent() + "\\" + name);
-				f.renameTo(f2);
-				f = f2;
-
-			}
-		}
-
 		if (f.getParent().equals(dir.getPath())) {
 			log.info("notmove {} == {}", new Object[] { f.getParent(), dir });
 			return true;
