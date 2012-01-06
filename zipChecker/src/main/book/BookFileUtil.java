@@ -309,6 +309,7 @@ public class BookFileUtil {
 		if (true) {
 			//workF = new File("G:\\arkwork\\_1_1325601971376");
 
+			FileOperationUtil.moveFewFile(workF);
 			FileOperationUtil.moveFolderToParent(workF);
 			jpgCheck(workF);
 			FileOperationUtil.deleteEmptyDir(workF, "jpeg", "jpg");

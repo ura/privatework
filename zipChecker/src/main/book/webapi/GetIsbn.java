@@ -60,7 +60,8 @@ public class GetIsbn {
 						}
 
 					} else {
-						log.warn("タイトルが不適切なため、目的の候補が得られませんでした。{}");
+						log.warn("タイトルが不適切なため、目的の候補が得られませんでした。{} {}",
+								bookInfo.getTitleStr(), bookInfo.getNo());
 
 					}
 				}

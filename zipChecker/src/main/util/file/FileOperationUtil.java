@@ -38,7 +38,7 @@ import static util.file.FileNameUtil.getFileName;
  *
  */
 public class FileOperationUtil {
-	static Pattern fileNoPattern = Pattern.compile("(.*)_(\\d*)");
+	static Pattern fileNoPattern = Pattern.compile("(\\d*)_(.*)");
 	private static Logger log = LoggerFactory
 			.getLogger(FileOperationUtil.class);
 
@@ -59,8 +59,20 @@ public class FileOperationUtil {
 		return b;
 	}
 
+	/**
+	 * ファイルをディレクトリに移動します。 ファイル名が重複している場合は、ファイル名をつけ直します。
+	 *
+	 *
+	 * @param f
+	 * @param dirPath
+	 * @return
+	 */
 	public static boolean move(File f, String dirPath) {
 		return move(f, dirPath, false);
+	}
+
+	public static boolean move(File f, File dir) {
+		return move(f, dir.getAbsolutePath(), false);
 	}
 
 	/**
@@ -197,6 +209,35 @@ public class FileOperationUtil {
 	}
 
 	/**
+	 * 下位にあるフォルダで、ファイル数が少ないフォルダは上位のフォルダに移動させる。
+	 * なお、親フォルダが一定数のファイルを持っている場合のみに移動する。
+	 *
+	 * @param src
+	 * @return
+	 */
+	public static boolean moveFewFile(File src) {
+
+		for (Dir dir : DirCollector.create(src)) {
+
+			if (dir.fileSet.size() < 10
+					&& dir.dir.getParentFile()
+							.listFiles(
+									new FileNameFilter(MODE.EXT_INCLUDE, "jpg",
+											"jpeg")).length > 20) {
+
+				log.info("ファイル数が限られていたので、上位フォルダに移動します。{}", dir.dir);
+				for (File f : dir.fileSet) {
+					FileOperationUtil.move(f, dir.dir.getParentFile());
+				}
+
+			}
+
+		}
+
+		return true;
+	}
+
+	/**
 	 * 下位にあるフォルダをすべてSRC直下に移動する
 	 *
 	 * @param src
@@ -215,8 +256,8 @@ public class FileOperationUtil {
 			File srcPath = dir.dir;
 			File destPath = FileNameUtil.createNewPath(src, dir.dir);
 
-			log.info(srcPath.getAbsolutePath() + "\t" + srcPath.exists() + "\t"
-					+ destPath.getAbsolutePath() + "\t" + destPath.exists());
+			log.info(srcPath.getAbsolutePath() + ">> "
+					+ destPath.getAbsolutePath());
 
 			if (srcPath.exists()) {
 				try {
@@ -294,7 +335,7 @@ public class FileOperationUtil {
 
 	/**
 	 * ファイル名を作成する。対象とするディレクトリに、同名のファイルが存在するか、 確認し、同名のファイルが存在していた場合は
-	 * 「元の名前_数字.拡張子」 といった処理をする。数字は、インクリメントされる。
+	 * 「数字元の名前.拡張子」 といった処理をする。数字は、インクリメントされる。
 	 *
 	 * @param filename
 	 * @param dir
@@ -309,7 +350,7 @@ public class FileOperationUtil {
 
 			Matcher m = fileNoPattern.matcher(base);
 			if (m.matches()) {
-				String s = m.group(2);
+				String s = m.group(1);
 				int i;
 				if (s.length() != 0) {
 					i = Integer.parseInt(s);
@@ -317,10 +358,10 @@ public class FileOperationUtil {
 				} else {
 					i = 1;
 				}
-				String newFileName = m.group(1) + "_" + i + "." + ext;
+				String newFileName = i + "_" + m.group(2) + "." + ext;
 				return createFileName(newFileName, dir);
 			} else {
-				String newFileName = base + "_" + 1 + "." + ext;
+				String newFileName = 1 + "_" + base + "." + ext;
 				return createFileName(newFileName, dir);
 			}
 
@@ -478,6 +519,7 @@ public class FileOperationUtil {
 		boolean b = false;
 
 		if (rename) {
+
 			String name = BookNameUtil.createSimpleName(f);
 			if (!f.getName().equals(name)) {
 				log.info(Log.OP, "RENAME {} >> {}", new Object[] { f.getName(),
