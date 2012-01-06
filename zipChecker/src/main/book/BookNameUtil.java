@@ -401,6 +401,13 @@ public class BookNameUtil {
 		return l;
 	}
 
+	/**
+	 * ファイルをまとめ直し、リビルドする。
+	 * @param baseDir
+	 * @param map
+	 * @throws IOException
+	 * @throws InterruptedException
+	 */
 	public static void createCominName(File baseDir,
 			SortedMap<BookInfo, File> map) throws IOException,
 			InterruptedException {
@@ -452,16 +459,24 @@ public class BookNameUtil {
 					path.renameTo(createPath(tempMany, path.getName()));
 				} else {
 					List<BookInfo> subList = list.subList(i * 10, size);
+					File path;
 
-					String folderName = createCominName(subList);
-					File path = createPath(baseDir, folderName);
-					path.delete();
-					path.mkdir();
-					for (BookInfo bookInfo : subList) {
-						File file = value.get(bookInfo);
-						file.renameTo(createPath(path, file));
+					if (subList.size() == 1) {
+						File file = value.get(subList.get(0));
+						path = createPath(baseDir, file);
+						file.renameTo(path);
+					} else {
+						String folderName = createCominName(subList);
+						path = createPath(baseDir, folderName);
+						path.delete();
+						path.mkdir();
+						for (BookInfo bookInfo : subList) {
+							File file = value.get(bookInfo);
+							file.renameTo(createPath(path, file));
 
+						}
 					}
+
 					WinRARWrapper.encode(path, path);
 
 					if (i == 0 && subList.size() == 1) {
