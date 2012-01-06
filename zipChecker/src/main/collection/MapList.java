@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
 public class MapList<K, V> {
 
@@ -41,6 +41,10 @@ public class MapList<K, V> {
 
 	public Set<Entry<K, Collection<V>>> entrySet() {
 		return innerMap.entrySet();
+	}
+
+	public Collection<Collection<V>> valuse() {
+		return innerMap.values();
 	}
 
 	public Collection<V> get(K k) {

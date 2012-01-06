@@ -1,6 +1,7 @@
 package book.webapi;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
@@ -75,8 +76,14 @@ public class BookInfoFromWeb {
 		if (result.size() == 1) {
 			return result.first();
 		} else {
+			Set<String> set = new HashSet<>();
 			for (BookInfo bookInfo : result) {
 				log.warn("タイトル検索で複数結果が検出されました。{}", bookInfo.getInfo());
+				set.add(bookInfo.getBaseInfo());
+			}
+			if (set.size() == 1) {
+				log.warn("基礎情報は同一だったため、代表して返します。。{}", result.first().getInfo());
+				return result.first();
 			}
 
 			return null;

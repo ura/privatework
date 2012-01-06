@@ -63,10 +63,11 @@ public class BookInfo implements Comparable<BookInfo>, Serializable {
 		list.add(titleReg1);
 		list.add(titleReg2);
 		list.add(titleReg7);
+
+		list.add(titleReg8);
 		list.add(titleReg3);
 		list.add(titleReg4);
 		list.add(titleReg5);
-		list.add(titleReg8);
 		list.add(titleReg6);
 
 		regList = Collections.unmodifiableList(list);

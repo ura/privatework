@@ -12,7 +12,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.concurrent.Callable;
 
 import javax.imageio.ImageIO;
@@ -96,31 +95,27 @@ public class BarcodeReader4Book {
 	}
 
 	/**
-	 * ファイル名でもっとも、多い長さを返す。
+	 * ファイル名であまりないファイル名のファイルを返す。
 	 * @param asList
 	 * @return
 	 */
-	private int mid(List<File> asList) {
+	private List<File> fewLengthFile(List<File> asList) {
 
 		MapList<Integer, File> map = new MapList<>();
 		for (File file : asList) {
 			int length = file.getName().length();
 			map.put(length, file);
 		}
-		int maxCount = 0;
-		int result = 0;
-		for (Entry<Integer, Collection<File>> e : map.entrySet()) {
-			Integer key = e.getKey();
-			int count = e.getValue().size();
 
-			if (count > maxCount) {
-				maxCount = count;
-				result = key.intValue();
+		ArrayList<File> arrayList = new ArrayList<>();
+		for (Collection<File> col : map.valuse()) {
+			if (col.size() < 8) {
+				arrayList.addAll(col);
 			}
 
 		}
 
-		return result;
+		return arrayList;
 
 	}
 
@@ -134,18 +129,12 @@ public class BarcodeReader4Book {
 
 		List<File> l = new ArrayList<>();
 		List<File> l2 = new ArrayList<>();
-		int mid = mid(asList);
+
+		List<File> mid = fewLengthFile(asList);
+		l.addAll(mid);
 
 		for (File file : asList) {
-			//ファイル名の長さが最頻値と違う場合
-			if (file.getName().length() != mid && !l.contains(file)
-					&& !l2.add(file)) {
-				if (HSV.isColar(file)) {
-					l.add(file);
-				} else {
-					l2.add(file);
-				}
-			}
+
 			//ルールが変なものも表紙かも
 			if (file.getName().matches("[0-9]+[a-zA-Z]{1}\\.[a-zA-Z]+")
 					&& !l.contains(file) && !l2.add(file)) {
