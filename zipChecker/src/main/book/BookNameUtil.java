@@ -29,17 +29,17 @@ import module.InjectorMgr;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import util.UserInput;
 import util.WinRARWrapper;
 import util.file.DirCollector;
 import util.file.FileOperationUtil;
+import util.file.NameUtil;
 import book.webapi.BookInfo;
 import book.webapi.BookInfoFromWeb;
 import conf.ConfConst;
 import static util.file.FileNameUtil.createPath;
 import static util.file.FileNameUtil.getFileName;
 
-public class BookNameUtil {
+public class BookNameUtil implements NameUtil {
 
 	private static Logger log = LoggerFactory.getLogger(BookNameUtil.class);
 
@@ -98,7 +98,12 @@ public class BookNameUtil {
 	private static BarcodeReader4Book barcodeReader = InjectorMgr.get()
 			.getInstance(BarcodeReader4Book.class);
 
-	private static String createSimpleName(File f, String reg) {
+	/**
+	 * 日本語のみの名称に変換します。
+	 * シンプルな名前に置換した名称を返します。
+	 *
+	 */
+	private String createSimpleName(File f, String reg) {
 
 		//元が十分に短い場合は変更しない
 		if (getFileName(f).length() < 3) {
@@ -114,8 +119,9 @@ public class BookNameUtil {
 	/**
 	 * 日本語のみの名称に変換します。
 	 * シンプルな名前に置換した名称を返します。
+	 * REPLASE_LIST
 	 */
-	public static Map<File, File> createSimpleName(Collection<File> f) {
+	public Map<File, File> createSimpleName(Collection<File> f) {
 
 		Map<File, File> map = new HashMap<>();
 		File sample = null;
@@ -154,35 +160,13 @@ public class BookNameUtil {
 
 	}
 
-	public static String kan(File f) {
-
-		return kan(f.getName());
-
-	}
-
-	public static String kan(String s) {
-
-		try {
-			return "第" + bookNo(s) + "巻";
-		} catch (IllegalArgumentException e) {
-
-			log.warn(e.getMessage());
-			log.warn("巻数の取得できないファイルが存在しました。");
-			log.warn("どのように対応しますか？対応する場合は、文言を入力してください");
-
-			if (UserInput.isInput()) {
-
-				return UserInput.getUserInput();
-
-			} else {
-				throw e;
-			}
-
-		}
-
-	}
-
-	public static Map<File, BookInfo> getAllbookInfoFromBarcode(File root) {
+	/**
+	 * バーコード、フォルダ名、その他もろもろの手段を利用して
+	 * 書籍情報を取得します。
+	 * @param root
+	 * @return
+	 */
+	public Map<File, BookInfo> getAllbookInfo(File root) {
 		DirCollector dirs = DirCollector.create(root);
 
 		Map<File, BookInfo> m = new HashMap<>();
@@ -193,7 +177,7 @@ public class BookNameUtil {
 			List<Callable<Map<File, BookInfo>>> l = new ArrayList<>();
 			for (File dir : dirs.dirSet.keySet()) {
 
-				l.add(new BookInfoFromBarcodeTask(dir));
+				l.add(new GetBookInfoTask(dir));
 
 			}
 			List<Future<Map<File, BookInfo>>> invokeAll = ex.invokeAll(l);
@@ -214,10 +198,9 @@ public class BookNameUtil {
 
 	}
 
-	private static class BookInfoFromBarcodeTask implements
-			Callable<Map<File, BookInfo>> {
+	private class GetBookInfoTask implements Callable<Map<File, BookInfo>> {
 
-		public BookInfoFromBarcodeTask(File dir) {
+		public GetBookInfoTask(File dir) {
 			super();
 
 			this.dir = dir;
@@ -228,7 +211,7 @@ public class BookNameUtil {
 		@Override
 		public Map<File, BookInfo> call() throws Exception {
 
-			BookInfo bookNo = BookNameUtil.bookInfoFromBarcode(dir);
+			BookInfo bookNo = getBookInfo(dir);
 
 			HashMap<File, BookInfo> hashMap = new HashMap<File, BookInfo>();
 			hashMap.put(dir, bookNo);
@@ -242,7 +225,7 @@ public class BookNameUtil {
 	 * @param dir
 	 * @return
 	 */
-	public static String bookInfoFromFolderName(File dir) {
+	public String getISBNFromFolderName(File dir) {
 		String name = dir.getName();
 		for (Pattern reg : regIsbnList) {
 			Matcher matcher = reg.matcher(name);
@@ -267,7 +250,7 @@ public class BookNameUtil {
 	 * @param dir
 	 * @return
 	 */
-	public static BookInfo bookInfoFromFolder(File dir) {
+	public BookInfo bookInfoFromFolder(File dir) {
 		Matcher matcher = FOLDER_REG.matcher(dir.getName());
 		//期待できそう
 		if (matcher.find()) {
@@ -296,7 +279,7 @@ public class BookNameUtil {
 	 * @param dir
 	 * @return
 	 */
-	public static BookInfo bookInfoFromBarcode(File dir) {
+	public BookInfo getBookInfo(File dir) {
 
 		if (BookInfo.isBookInfoName(dir)) {
 			log.warn("フォルダ名より、処理済みのフォルダと認識したため、そのまま情報を使用します。{}",
@@ -308,7 +291,7 @@ public class BookNameUtil {
 			return bookInfoFromFolder;
 		}
 
-		String barcode = bookInfoFromFolderName(dir);
+		String barcode = getISBNFromFolderName(dir);
 		if (barcode == null) {
 			barcode = barcodeReader.autoReadDir(dir);
 		}
@@ -333,7 +316,7 @@ public class BookNameUtil {
 
 	}
 
-	public static String bookNo(String no) {
+	public String bookNo(String no) {
 
 		for (Pattern reg : regList) {
 			Matcher matcher = reg.matcher(no);

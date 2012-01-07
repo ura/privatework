@@ -28,6 +28,7 @@ public class DefaultModule extends AbstractModule {
 				FileNameParseImpl.class);
 		bind(FileNameParser.class).annotatedWith(Names.named("core")).to(
 				FileNameParseCoreOnly.class);
+
 		//bindInterceptor(any(), any(), new LoggingInterceptor());
 		binder().bindInterceptor(Matchers.any(), Matchers.any(),
 				new MethodInterceptor() {

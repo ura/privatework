@@ -14,6 +14,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import log.Log;
+import module.InjectorMgr;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -39,6 +40,10 @@ import static util.file.FileNameUtil.getFileName;
  */
 public class FileOperationUtil {
 	static Pattern fileNoPattern = Pattern.compile("(\\d*)_(.*)");
+
+	private static NameUtil nameUitl = InjectorMgr.get().getInstance(
+			BookNameUtil.class);
+
 	private static Logger log = LoggerFactory
 			.getLogger(FileOperationUtil.class);
 
@@ -427,8 +432,7 @@ public class FileOperationUtil {
 
 		for (Dir dir2 : values) {
 			SortedSet<File> fileNameSet = dir2.fileSet;
-			Map<File, File> nameMap = BookNameUtil
-					.createSimpleName(fileNameSet);
+			Map<File, File> nameMap = nameUitl.createSimpleName(fileNameSet);
 
 			for (File f : fileNameSet) {
 

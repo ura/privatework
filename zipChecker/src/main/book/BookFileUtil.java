@@ -22,6 +22,7 @@ import java.util.concurrent.Future;
 import javax.imageio.ImageIO;
 
 import log.Log;
+import module.InjectorMgr;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.comparator.NameFileComparator;
@@ -60,6 +61,8 @@ public class BookFileUtil {
 			.getVal(ConfConst.ARC_WORK_DIR);
 	private static final int THREAD_DECODE = ConfConst.MAIN_CONF
 			.getInt(ConfConst.THREAD_DECODE);
+	private static BookNameUtil bookName = InjectorMgr.get().getInstance(
+			BookNameUtil.class);
 
 	/**
 	 * パスワードつきのファイルを削除します。
@@ -307,7 +310,6 @@ public class BookFileUtil {
 			decodeAll(workF, newList);
 		}
 		if (true) {
-			//workF = new File("G:\\arkwork\\_1_1325601971376");
 
 			FileOperationUtil.moveFewFile(workF);
 			FileOperationUtil.moveFolderToParent(workF);
@@ -319,8 +321,7 @@ public class BookFileUtil {
 					"spot\\.com\\.jpg" });
 			FileOperationUtil.renameToSimpleFileName(workF);
 
-			Map<File, BookInfo> allbookInfo = BookNameUtil
-					.getAllbookInfoFromBarcode(workF);
+			Map<File, BookInfo> allbookInfo = bookName.getAllbookInfo(workF);
 
 			SortedMap<BookInfo, File> s = new TreeMap<BookInfo, File>();
 
