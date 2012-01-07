@@ -56,6 +56,8 @@ public class ThreadPoolExecutorSync {
 	 */
 	public <V> Future<V> submit(Callable<V> task) {
 		while (true) {
+			//不正確だがブロックしておく。
+
 			if (ex.getActiveCount() < threadCount) {
 				log.info("TASK投入。{}", task);
 				Future<V> submit = ex.submit(task);
@@ -72,6 +74,16 @@ public class ThreadPoolExecutorSync {
 
 	}
 
+	/**
+	 * タスクの投機的実行をします。
+	 * なお、実行予約をしてしまったタスクがある場合、
+	 * それらのタスクが完了するまで、戻って来ません。
+	 * 理由は、失敗するであろうタスクであってもリソースを保持していることによる
+	 * 影響が考えられる為です。
+	 *
+	 * @param asList
+	 * @return
+	 */
 	public <V> V invokeAll(List<Callable<V>> asList) {
 
 		V result;
@@ -81,10 +93,6 @@ public class ThreadPoolExecutorSync {
 
 			for (int i = 0; i < asList.size(); i++) {
 
-				if (i % (threadCount / 2) == (threadCount / 2) - 1) {
-					//なんかタスクが入りすぎるので、、、
-					sleep(500l);
-				}
 				Callable<V> c = asList.get(i);
 
 				Future<V> submit = submit(c);
@@ -122,6 +130,13 @@ public class ThreadPoolExecutorSync {
 
 	}
 
+	/**
+	 * 予約してしまったタスクが残っているか？
+	 * @param list
+	 * @return
+	 * @throws InterruptedException
+	 * @throws ExecutionException
+	 */
 	private <V> boolean isRemainTask(List<Future<V>> list)
 			throws InterruptedException, ExecutionException {
 
@@ -134,6 +149,13 @@ public class ThreadPoolExecutorSync {
 		return false;
 	}
 
+	/**
+	 * 結果を出したタスクはあるか？
+	 * @param list
+	 * @return
+	 * @throws InterruptedException
+	 * @throws ExecutionException
+	 */
 	private <V> V getTaskResult(List<Future<V>> list)
 			throws InterruptedException, ExecutionException {
 		V result = null;
