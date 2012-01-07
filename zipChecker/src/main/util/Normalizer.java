@@ -208,7 +208,7 @@ public class Normalizer {
 
 		}
 
-		return normalize;
+		return normalize.toLowerCase();
 
 	}
 }

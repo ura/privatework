@@ -99,6 +99,9 @@ public class BookNameUtil implements NameUtil {
 	@Inject
 	private BarcodeReader4Book barcodeReader;
 
+	@Inject
+	private BookInfoRepo bookInfoRepo;
+
 	/**
 	 * 日本語のみの名称に変換します。
 	 * シンプルな名前に置換した名称を返します。
@@ -122,30 +125,33 @@ public class BookNameUtil implements NameUtil {
 	 * シンプルな名前に置換した名称を返します。
 	 * REPLASE_LIST
 	 */
-	public Map<File, File> createSimpleName(Collection<File> f) {
+	public Map<File, File> createSimpleName(Collection<File> fList) {
 
-		Map<File, File> map = new HashMap<>();
+		Map<File, File> baseMap = new HashMap<>();
 		File sample = null;
-		for (File file : f) {
-			map.put(file, file);
+		for (File file : fList) {
+			baseMap.put(file, file);
 			sample = file;
 		}
 
 		Map<File, File> result = null;
 		for (String rep : REPLASE_LIST) {
 
-			Set<File> set = new HashSet<>();
+			Set<String> set = new HashSet<>();
+			Map<File, File> map = new HashMap<>(baseMap);
 			for (Entry<File, File> file : map.entrySet()) {
 
 				String createSimpleName = createSimpleName(file.getValue(), rep);
 				File dest = createPath(file.getValue().getParentFile(),
 						createSimpleName);
 				map.put(file.getKey(), dest);
-				set.add(dest);
+				set.add(dest.getName());
 			}
 
-			if (f.size() == set.size()) {
+			if (fList.size() == set.size()) {
 				result = map;
+			} else {
+				break;
 			}
 		}
 
@@ -277,6 +283,7 @@ public class BookNameUtil implements NameUtil {
 
 	/**
 	 * バーコードスキャンをして、書籍情報を取得します。
+	 * スキャンした結果はレポジトリに書き込みます。
 	 * @param dir
 	 * @return
 	 */
@@ -285,21 +292,28 @@ public class BookNameUtil implements NameUtil {
 		if (BookInfo.isBookInfoName(dir)) {
 			log.warn("フォルダ名より、処理済みのフォルダと認識したため、そのまま情報を使用します。{}",
 					dir.getAbsolutePath());
-			return BookInfo.createBookInfo(dir);
+			BookInfo bookInfo = BookInfo.createBookInfo(dir);
+			bookInfoRepo.addHave(bookInfo);
+			return bookInfo;
 		}
 		BookInfo bookInfoFromFolder = bookInfoFromFolder(dir);
 		if (bookInfoFromFolder != null) {
+			bookInfoRepo.addHave(bookInfoFromFolder);
 			return bookInfoFromFolder;
 		}
 
 		String barcode = getISBNFromFolderName(dir);
 		if (barcode == null) {
-			barcode = barcodeReader.autoReadDir(dir);
+			//雑誌が入っていたら、バーコード見ても無駄。
+			if (!dir.getAbsolutePath().contains("雑誌")) {
+				barcode = barcodeReader.autoReadDir(dir);
+			}
 		}
 		if (barcode != null) {
 
 			BookInfo info = BookInfoFromWeb.getBookInfo(barcode);
 			if (info != null) {
+				bookInfoRepo.addHave(info);
 				return info;
 			} else {
 
@@ -390,9 +404,9 @@ public class BookNameUtil implements NameUtil {
 
 			log.warn("基礎名の分類結果です。{} : data数 {}", e.getKey(), keySet.size());
 			int size = list.size();
-			for (int i = 0; i < 10; i++) {
+			for (int i = 0; i < 20; i++) {
 
-				if ((i + 1) * 10 < size) {
+				if ((i + 1) * 20 < size) {
 					List<BookInfo> subList = list.subList(i * 10, (i + 1) * 10);
 					String folderName = createCominName(subList);
 					File path = createPath(baseDir, folderName);
@@ -524,6 +538,14 @@ public class BookNameUtil implements NameUtil {
 
 	public void setBarcodeReader(BarcodeReader4Book barcodeReader) {
 		this.barcodeReader = barcodeReader;
+	}
+
+	public BookInfoRepo getBookInfoRepo() {
+		return bookInfoRepo;
+	}
+
+	public void setBookInfoRepo(BookInfoRepo bookInfoRepo) {
+		this.bookInfoRepo = bookInfoRepo;
 	}
 
 }

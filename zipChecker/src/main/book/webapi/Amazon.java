@@ -1,11 +1,20 @@
 package book.webapi;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.StringWriter;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -17,11 +26,15 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.apache.commons.io.CopyUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
+
+import com.google.common.io.Files;
+import com.google.common.io.OutputSupplier;
 
 import conf.ConfConst;
 
@@ -161,6 +174,50 @@ public class Amazon {
 
 	}
 
+	public static void getImage(String asin, String url) {
+		try (InputStream openStream = new URL(
+				"http://www.amazon.co.jp/dp/images/" + asin).openStream();
+				BufferedReader br = new BufferedReader(new InputStreamReader(
+						openStream, "UTF-8"));) {
+
+			String line;
+			StringBuilder sb = new StringBuilder();
+			while ((line = br.readLine()) != null) {
+				sb.append(line);
+			}
+
+			String string = sb.toString();
+			Pattern compile = Pattern
+					.compile("(http://ec2.images-amazon.com/images[^\"]*\\.jpg)\"");
+			Matcher matcher = compile.matcher(string);
+			if (matcher.find()) {
+				log.warn("イメージ取得のURLを取得しました。{} : {}", matcher.group(1),
+						"http://www.amazon.co.jp/dp/images/" + asin);
+				writeImage(new File("image/" + asin + ".jpg"), matcher.group(1));
+			} else {
+				log.warn("イメージ取得ができませんでした。{}",
+						"http://www.amazon.co.jp/dp/images/" + asin);
+			}
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private static void writeImage(File f, String url) {
+		OutputSupplier<FileOutputStream> newOutputStreamSupplier = Files
+				.newOutputStreamSupplier(f);
+		try (InputStream openStream = new URL(url).openStream();
+				BufferedInputStream br = new BufferedInputStream(openStream);
+				FileOutputStream output = newOutputStreamSupplier.getOutput();) {
+
+			CopyUtils.copy(br, output);
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
 	public static SortedSet<BookInfo> getInfo(Query q) {
 		SortedSet<BookInfo> set = new TreeSet<>();
 		String xmlStr = "";
@@ -178,9 +235,17 @@ public class Amazon {
 			NodeList authorNode = doc.getElementsByTagName("Author");
 			NodeList manufacturerNode = doc
 					.getElementsByTagName("Manufacturer");
+			NodeList detailPageURLNode = doc
+					.getElementsByTagName("DetailPageURL");
 
 			for (int i = 0; i < titleNode.getLength(); i++) {
+
+				String url = detailPageURLNode.item(i).getTextContent();
+
+				//TODO 古い書籍だと、この形ではない・・・・。
 				String isbn = "978" + isbnNode.item(i).getTextContent();
+				getImage(isbnNode.item(i).getTextContent(), url);
+
 				String title = titleNode.item(i).getTextContent();
 				String author = authorNode.item(i).getTextContent();
 				String pub = manufacturerNode.item(i).getTextContent();

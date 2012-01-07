@@ -28,6 +28,12 @@ repositories {
     mavenCentral()
 }
 
+repositories {
+	maven {
+		url "http://repo.mycompany.com/maven2"
+	}
+}
+
 dependencies {
 
 	//compile project(':../../junrar/unrar')
@@ -40,6 +46,9 @@ dependencies {
 	compile 'ch.qos.logback:logback-classic:0.9.15'
 
 	compile 'com.jolira:guice:3.0.0'
+	compile 'com.google.guava:guava:11.0'
+
+
 	compile 'javax.mail:mail:1.4.4'
 
 

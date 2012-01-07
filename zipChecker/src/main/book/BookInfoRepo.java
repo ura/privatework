@@ -53,8 +53,12 @@ public class BookInfoRepo implements Serializable {
 		/**
 		 * 検索用ダミーキー
 		 */
-		DUMMY
+		DUMMY, ANY
 	};
+
+	public BookInfoRepo() {
+		load();
+	}
 
 	static class Key implements Serializable {
 		public Key(String isbn, State state) {
@@ -110,7 +114,13 @@ public class BookInfoRepo implements Serializable {
 			//書籍情報は編集されている可能性があるため。ISBNで検索する
 			if (!map.containsKey(new Key(info.getIsbn(), State.DUMMY))) {
 
-				map.put(new Key(info.getIsbn(), State.BAT), info);
+				if (getByTitle_Author_No(State.ANY, info.getRowTitle(),
+						info.getAuthor(), info.getNo()).size() == 0) {
+					map.put(new Key(info.getIsbn(), State.BAT), info);
+				} else {
+					log.warn("類似の書籍情報が存在していたため、登録しませんでした。{}", info.getInfo());
+				}
+
 			}
 		}
 
@@ -143,6 +153,16 @@ public class BookInfoRepo implements Serializable {
 		Set<BookInfo> set = get(state, t, a);
 		Set<BookInfo> result = new HashSet<>();
 
+		for (BookInfo bookInfo : set) {
+
+			if (bookInfo.getTitleStr().equals(t)
+					&& bookInfo.getAuthor().equals(a)
+					&& bookInfo.getNo().equals(n)) {
+				result.add(bookInfo);
+			}
+
+		}
+
 		return result;
 
 	}
@@ -156,7 +176,7 @@ public class BookInfoRepo implements Serializable {
 		Set<BookInfo> set = new TreeSet<BookInfo>();
 		log.info("{}:{}:{}:{}", keywords);
 		for (Entry<Key, BookInfo> e : map.entrySet()) {
-			if (e.getKey().state == state) {
+			if (state == State.ANY || e.getKey().state == state) {
 
 				if (keywords != null) {
 					boolean flag = true;
@@ -195,7 +215,9 @@ public class BookInfoRepo implements Serializable {
 	}
 
 	/**
-	 * バッチ。
+	 * 新刊情報を検索する。
+	 * 具体的には、
+	 * 持っている本の「タイトル」「著者名」で検索し
 	 * @param info
 	 */
 	public void searchNewBook() {
