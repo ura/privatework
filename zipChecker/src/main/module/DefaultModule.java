@@ -33,6 +33,10 @@ public class DefaultModule extends AbstractModule {
 		//	bind(BookNameUtil.class).to(BookNameUtil.class);
 
 		//bindInterceptor(any(), any(), new LoggingInterceptor());
+		interceptorStopWatch();
+	}
+
+	protected void interceptorStopWatch() {
 		binder().bindInterceptor(Matchers.any(), Matchers.any(),
 				new MethodInterceptor() {
 					@Override
@@ -45,9 +49,13 @@ public class DefaultModule extends AbstractModule {
 
 						Object x = mi.proceed();
 
-						log.info(stopWatch.stop(t));
+						String stop = stopWatch.stop(t);
+						long elapsedTime = stopWatch.getElapsedTime();
+
+						log.info(stop);
 						return x;
 					}
 				});
 	}
+
 }

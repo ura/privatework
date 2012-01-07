@@ -170,8 +170,9 @@ public class BookInfo implements Comparable<BookInfo>, Serializable {
 				this.titleStr = Normalizer.normalizer(matcher.group(1));
 				this.no = no_XX(matcher.group(2));
 
-				log.info("base:{}  title:{}  NO:{}  REG:{}", new String[] {
-						this.rowTitle, this.titleStr, this.no, reg.pattern() });
+				log.info("base:{}  title:{}  NO:{}  REG:{}  ISBN:{}",
+						new String[] { this.rowTitle, this.titleStr, this.no,
+								reg.pattern(), this.isbn });
 
 				break;
 
@@ -358,14 +359,6 @@ public class BookInfo implements Comparable<BookInfo>, Serializable {
 
 	public void setAuthor(String author) {
 		this.author = author;
-	}
-
-	public String getTitle() {
-		return rowTitle;
-	}
-
-	public void setTitle(String title) {
-		this.rowTitle = title;
 	}
 
 	public String getNo() {

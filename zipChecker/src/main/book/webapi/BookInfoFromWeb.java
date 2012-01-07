@@ -189,7 +189,7 @@ public class BookInfoFromWeb {
 
 			BookInfo r = b1;
 
-			if (b1.getTitle().length() > b2.getTitle().length()) {
+			if (b1.getTitleStr().length() > b2.getTitleStr().length()) {
 				r.setTitleStr(b2.getTitleStr());
 			} else {
 				r.setTitleStr(b1.getTitleStr());

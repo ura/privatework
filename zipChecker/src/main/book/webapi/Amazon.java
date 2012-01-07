@@ -203,7 +203,9 @@ public class Amazon {
 		} catch (ParserConfigurationException | SAXException | IOException
 				| RuntimeException e) {
 
-			log.error("想定外のエラー\n{},\n{}", xmlStr, e);
+			log.error("想定外のエラーです。タイトルがない、出版社がない等だと思われます。基本無視してください。\n{},\n{}",
+					xmlStr, e);
+			log.info("", e);
 
 		}
 		return set;

@@ -10,6 +10,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.zip.ZipException;
 
 import org.apache.tools.zip.ZipEntry;
@@ -41,7 +44,16 @@ public class BookInfoRepo implements Serializable {
 	private Map<Key, BookInfo> map = new HashMap<Key, BookInfo>();
 
 	public enum State implements Serializable {
-		HAVE, WANT, BAT, NEEDLESS, DUMMY
+
+		HAVE, WANT,
+		/**
+		 * 新刊探査の結果キー
+		 */
+		BAT, NEEDLESS,
+		/**
+		 * 検索用ダミーキー
+		 */
+		DUMMY
 	};
 
 	static class Key implements Serializable {
@@ -93,10 +105,11 @@ public class BookInfoRepo implements Serializable {
 	 * 持っていない候補を突っ込む。
 	 * @param info
 	 */
-	private void addBatch(Set<BookInfo> bookInfos) {
+	private synchronized void addBatch(Set<BookInfo> bookInfos) {
 		for (BookInfo info : bookInfos) {
-			//書籍情報は編集されている可能性があるため。ISBN出検索する
+			//書籍情報は編集されている可能性があるため。ISBNで検索する
 			if (!map.containsKey(new Key(info.getIsbn(), State.DUMMY))) {
+
 				map.put(new Key(info.getIsbn(), State.BAT), info);
 			}
 		}
@@ -125,34 +138,49 @@ public class BookInfoRepo implements Serializable {
 		return get(state, null);
 	}
 
+	public Set<BookInfo> getByTitle_Author_No(State state, String t, String a,
+			String n) {
+		Set<BookInfo> set = get(state, t, a);
+		Set<BookInfo> result = new HashSet<>();
+
+		return result;
+
+	}
+
 	/**
 	 * キーワード（title,auther）で検索する。
+	 * 巻数は対象外。
 	 * @param info
 	 */
 	public Set<BookInfo> get(State state, String... keywords) {
 		Set<BookInfo> set = new TreeSet<BookInfo>();
+		log.info("{}:{}:{}:{}", keywords);
 		for (Entry<Key, BookInfo> e : map.entrySet()) {
 			if (e.getKey().state == state) {
 
 				if (keywords != null) {
-					boolean title = true;
+					boolean flag = true;
+
 					for (String keyword : keywords) {
-						if (!Normalizer.contain(e.getValue().getTitleStr(),
+
+						if (Normalizer.contain(e.getValue().getTitleStr(),
 								keyword)) {
-							title = false;
+							continue;
 						}
+
+						if (Normalizer.contain(e.getValue().getAuthor(),
+								keyword)) {
+							continue;
+						}
+						if (Normalizer.contain(e.getValue().getNo(), keyword)) {
+							continue;
+						}
+						flag = false;
+						break;
 
 					}
 
-					boolean autthor = true;
-					for (String keyword : keywords) {
-						if (!Normalizer.contain(e.getValue().getAuthor(),
-								keyword)) {
-							autthor = false;
-						}
-					}
-
-					if (title || autthor) {
+					if (flag) {
 						set.add(e.getValue());
 					}
 				} else {
@@ -173,7 +201,7 @@ public class BookInfoRepo implements Serializable {
 	public void searchNewBook() {
 
 		Set<Tuple> set = new HashSet<>();
-
+		removeSearchInfo();
 		for (Entry<Key, BookInfo> e : map.entrySet()) {
 			State state = e.getKey().state;
 			if (state == State.HAVE || state == State.WANT) {
@@ -183,10 +211,47 @@ public class BookInfoRepo implements Serializable {
 
 		}
 
+		//作ったけど、無駄に。1秒に1件のみらしい。
+		ThreadPoolExecutor ex = new ThreadPoolExecutor(1, 1, 0L,
+				TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
+
 		for (Tuple tuple : set) {
-			Set<BookInfo> bookInfos = BookInfoFromWeb
-					.getBookInfoFromTitleAuther(tuple.title, tuple.author);
-			addBatch(bookInfos);
+
+			final Tuple t = tuple;
+			ex.submit(new Runnable() {
+
+				@Override
+				public void run() {
+					Set<BookInfo> bookInfos = BookInfoFromWeb
+							.getBookInfoFromTitleAuther(t.title, t.author);
+					addBatch(bookInfos);
+
+				}
+
+			});
+
+		}
+
+	}
+
+	/**
+	 * バッチ。
+	 * @param info
+	 */
+	public void removeSearchInfo() {
+
+		Set<Key> set = new HashSet<>();
+
+		for (Entry<Key, BookInfo> e : map.entrySet()) {
+			State state = e.getKey().state;
+			if (state == State.BAT) {
+
+				set.add(e.getKey());
+			}
+
+		}
+		for (Key key : set) {
+			map.remove(key);
 		}
 
 	}
