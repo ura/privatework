@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.zip.ZipException;
 
 import org.apache.tools.zip.ZipEntry;
@@ -16,6 +17,7 @@ import org.apache.tools.zip.ZipFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import util.Normalizer;
 import util.file.Dir;
 import util.file.DirCollector;
 import util.file.ObjectUtil;
@@ -128,22 +130,25 @@ public class BookInfoRepo implements Serializable {
 	 * @param info
 	 */
 	public Set<BookInfo> get(State state, String... keywords) {
-		Set<BookInfo> set = new HashSet<>();
+		Set<BookInfo> set = new TreeSet<BookInfo>();
 		for (Entry<Key, BookInfo> e : map.entrySet()) {
 			if (e.getKey().state == state) {
 
 				if (keywords != null) {
 					boolean title = true;
 					for (String keyword : keywords) {
-						if (!e.getValue().getTitleStr().contains(keyword)) {
-							title = false && title;
+						if (!Normalizer.contain(e.getValue().getTitleStr(),
+								keyword)) {
+							title = false;
 						}
 
 					}
+
 					boolean autthor = true;
 					for (String keyword : keywords) {
-						if (e.getValue().getAuthor().contains(keyword)) {
-							autthor = false && autthor;
+						if (!Normalizer.contain(e.getValue().getAuthor(),
+								keyword)) {
+							autthor = false;
 						}
 					}
 
@@ -215,6 +220,7 @@ public class BookInfoRepo implements Serializable {
 		try {
 			zip = new org.apache.tools.zip.ZipFile(file, "MS932");
 
+			@SuppressWarnings("unchecked")
 			Enumeration<ZipEntry> e = zip.getEntries();
 
 			while (e.hasMoreElements()) {

@@ -48,9 +48,9 @@ public class BookInfoRepoTest {
 
 	}
 
-	//@Test
+	@Test
 	public void testLoadFile() {
-		repo.load(new File("G:\\完成品"));
+		repo.load(new File("G:\\arkwork\\完成"));
 	}
 
 	@org.junit.After

@@ -315,7 +315,8 @@ public class BookFileUtil {
 			FileOperationUtil.deleteEmptyDir(workF, "jpeg", "jpg", "png");
 
 			FileOperationUtil.removeFile(workF, new String[] { "^.*\\.html$",
-					"^.*\\.url$", "^.*\\.txt$", "^Thumbs\\.db", "^[^.]*$" });
+					"^.*\\.url$", "^.*\\.txt$", "^Thumbs\\.db", "^[^.]*$",
+					"spot\\.com\\.jpg" });
 			FileOperationUtil.renameToSimpleFileName(workF);
 
 			Map<File, BookInfo> allbookInfo = BookNameUtil

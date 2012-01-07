@@ -9,16 +9,6 @@ public class Normalizer {
 	static {
 		{
 			Map<String, String> m = new HashMap<String, String>();
-			m.put("0", "０");
-			m.put("1", "１");
-			m.put("2", "２");
-			m.put("3", "３");
-			m.put("4", "４");
-			m.put("5", "５");
-			m.put("6", "６");
-			m.put("7", "７");
-			m.put("8", "８");
-			m.put("9", "９");
 			m.put("a", "ａ");
 			m.put("b", "ｂ");
 			m.put("c", "ｃ");
@@ -45,32 +35,32 @@ public class Normalizer {
 			m.put("x", "ｘ");
 			m.put("y", "ｙ");
 			m.put("z", "ｚ");
-			m.put("A", "Ａ");
-			m.put("B", "Ｂ");
-			m.put("C", "Ｃ");
-			m.put("D", "Ｄ");
-			m.put("E", "Ｅ");
-			m.put("F", "Ｆ");
-			m.put("G", "Ｇ");
-			m.put("H", "Ｈ");
-			m.put("I", "Ｉ");
-			m.put("J", "Ｊ");
-			m.put("K", "Ｋ");
-			m.put("L", "Ｌ");
-			m.put("M", "Ｍ");
-			m.put("N", "Ｎ");
-			m.put("O", "Ｏ");
-			m.put("P", "Ｐ");
-			m.put("Q", "Ｑ");
-			m.put("R", "Ｒ");
-			m.put("S", "Ｓ");
-			m.put("T", "Ｔ");
-			m.put("U", "Ｕ");
-			m.put("V", "Ｖ");
-			m.put("W", "Ｗ");
-			m.put("X", "Ｘ");
-			m.put("Y", "Ｙ");
-			m.put("Z", "Ｚ");
+			m.put("a", "Ａ");
+			m.put("b", "Ｂ");
+			m.put("c", "Ｃ");
+			m.put("d", "Ｄ");
+			m.put("e", "Ｅ");
+			m.put("f", "Ｆ");
+			m.put("g", "Ｇ");
+			m.put("h", "Ｈ");
+			m.put("i", "Ｉ");
+			m.put("j", "Ｊ");
+			m.put("k", "Ｋ");
+			m.put("l", "Ｌ");
+			m.put("m", "Ｍ");
+			m.put("n", "Ｎ");
+			m.put("o", "Ｏ");
+			m.put("p", "Ｐ");
+			m.put("q", "Ｑ");
+			m.put("r", "Ｒ");
+			m.put("s", "Ｓ");
+			m.put("t", "Ｔ");
+			m.put("u", "Ｕ");
+			m.put("v", "Ｖ");
+			m.put("w", "Ｗ");
+			m.put("x", "Ｘ");
+			m.put("y", "Ｙ");
+			m.put("z", "Ｚ");
 			for (Entry<String, String> e : m.entrySet()) {
 				hmCharTbl.put(e.getValue(), e.getKey());
 
@@ -179,6 +169,24 @@ public class Normalizer {
 		hmCharTbl.put("！", "!");
 		hmCharTbl.put(" ", "");
 		hmCharTbl.put("　", "");
+
+	}
+
+	public static boolean equals(String str1, String str2) {
+
+		return normalizer(str1).equals(normalizer(str2));
+
+	}
+
+	/**
+	 * ノーマライズした上で判定。
+	 * @param str1
+	 * @param str2
+	 * @return
+	 */
+	public static boolean contain(String str1, String str2) {
+
+		return normalizer(str1).contains(normalizer(str2));
 
 	}
 
