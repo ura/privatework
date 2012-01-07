@@ -349,41 +349,6 @@ public class BookNameUtil implements NameUtil {
 
 	}
 
-	public static List<String> booksNo(String no) {
-
-		List<String> l = new ArrayList<String>();
-
-		if (partermBetween.matcher(no).find()) {
-			Matcher matcher = partermBetween.matcher(no);
-			matcher.find();
-			String s = matcher.group(1);
-			String e = matcher.group(2);
-			int s1 = Integer.parseInt(s);
-			int e1 = Integer.parseInt(e);
-
-			for (int i = s1; i <= e1; i++) {
-
-				l.add(no_XX(i));
-			}
-
-		} else if (partermAll.matcher(no).find()) {
-			Matcher matcher = partermAll.matcher(no);
-			matcher.find();
-
-			String e = matcher.group(1);
-			int e1 = Integer.parseInt(e);
-
-			for (int i = 1; i <= e1; i++) {
-
-				l.add(no_XX(i));
-			}
-
-		} else {
-			throw new IllegalStateException("変");
-		}
-		return l;
-	}
-
 	/**
 	 * ファイルをまとめ直し、リビルドする。
 	 * @param baseDir
@@ -391,9 +356,8 @@ public class BookNameUtil implements NameUtil {
 	 * @throws IOException
 	 * @throws InterruptedException
 	 */
-	public static void createCominName(File baseDir,
-			SortedMap<BookInfo, File> map) throws IOException,
-			InterruptedException {
+	public void createCominName(File baseDir, SortedMap<BookInfo, File> map)
+			throws IOException, InterruptedException {
 
 		//コミックの名称（巻を除く）ごとに分別
 		SortedMap<String, SortedMap<BookInfo, File>> m = new TreeMap<String, SortedMap<BookInfo, File>>() {
@@ -478,11 +442,12 @@ public class BookNameUtil implements NameUtil {
 	}
 
 	/**
-	 * 前提条件　baseInfoが揃っているものを入れること
+	 * 前提条件　baseInfoが揃っているものを入れること。
+	 * 著者、出版社、書名、巻数でフォルダ名を作る
 	 * @param list
 	 * @return
 	 */
-	public static String createCominName(List<BookInfo> list) {
+	public String createCominName(List<BookInfo> list) {
 
 		Collections.sort(list);
 		BookInfo sampleinfo = list.get(0);
@@ -502,7 +467,16 @@ public class BookNameUtil implements NameUtil {
 
 	}
 
-	private static String createComicNoStr(List<BookInfo> list) {
+	/**
+	 * 巻数部分を作成する。
+	 * [01-10]
+	 * や、
+	 * [01-10 09抜け]
+	 * など
+	 * @param list
+	 * @return
+	 */
+	private String createComicNoStr(List<BookInfo> list) {
 
 		int size = list.size();
 		SortedSet<String> set = new TreeSet<String>();
@@ -540,27 +514,6 @@ public class BookNameUtil implements NameUtil {
 		}
 
 		return sb.toString();
-
-	}
-
-	private static Map<String, String> map = new HashMap<String, String>();
-	static {
-		map.put("ジャンプ・コミックス", "Wジャンプ");
-		map.put("Monthly shonen magazine comics", "Mマガジン");
-		map.put("ヤングジャンプ・コミックス", "Yジャンプ");
-		map.put("単行本コミックス", "");
-		map.put("", "");
-		map.put("", "");
-		map.put("", "");
-	}
-
-	private static void convertpPublisherName(BookInfo info) {
-
-		String publisherName = info.getPublisherName();
-		String s = map.get(publisherName);
-		if (s != null) {
-			info.setPublisherName(s);
-		}
 
 	}
 

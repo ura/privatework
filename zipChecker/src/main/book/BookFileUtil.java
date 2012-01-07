@@ -347,7 +347,7 @@ public class BookFileUtil {
 				return;
 			}
 
-			BookNameUtil.createCominName(new File(WORK_DIR), s);
+			bookName.createCominName(new File(WORK_DIR), s);
 		}
 
 	}
