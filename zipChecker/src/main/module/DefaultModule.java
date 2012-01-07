@@ -29,6 +29,9 @@ public class DefaultModule extends AbstractModule {
 		bind(FileNameParser.class).annotatedWith(Names.named("core")).to(
 				FileNameParseCoreOnly.class);
 
+		//	bind(BarcodeReader4Book.class).to(BarcodeReader4Book.class);
+		//	bind(BookNameUtil.class).to(BookNameUtil.class);
+
 		//bindInterceptor(any(), any(), new LoggingInterceptor());
 		binder().bindInterceptor(Matchers.any(), Matchers.any(),
 				new MethodInterceptor() {

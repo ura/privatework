@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -25,13 +24,11 @@ import log.Log;
 import module.InjectorMgr;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.comparator.NameFileComparator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import socre.ScoreUtil;
 import util.CollectionUtil;
-import util.MapList;
 import util.UserInput;
 import util.WinRARWrapper;
 import util.file.Checker;
@@ -61,6 +58,7 @@ public class BookFileUtil {
 			.getVal(ConfConst.ARC_WORK_DIR);
 	private static final int THREAD_DECODE = ConfConst.MAIN_CONF
 			.getInt(ConfConst.THREAD_DECODE);
+
 	private static BookNameUtil bookName = InjectorMgr.get().getInstance(
 			BookNameUtil.class);
 
@@ -458,105 +456,6 @@ public class BookFileUtil {
 			dir.createNewDir();
 
 		}
-	}
-
-	/**
-	 * 同じファイルを削除します。
-	 * ROOTのディレクトリを渡す。
-	 */
-	public static void deleteSameFile(File root) {
-
-		DirCollector srcDir = new DirCollector();
-		new FileWalker().walk(root, srcDir);
-		Collection<File> allFileFullPath = srcDir.getAllFile();
-
-		deleteSameFile(allFileFullPath);
-
-	}
-
-	/**
-	 * ファイルのリストを受け、CRCを確認し同一ファイルを削除する。
-	 * まず、ファイルサイズで判定する。
-	 * @param list
-	 */
-	public static void deleteSameFile(Collection<File> list) {
-
-		MapList<Long, File> map = new MapList<Long, File>();
-
-		for (File f : list) {
-
-			long l = f.length();
-			map.add(l, f);
-		}
-		for (Map.Entry<Long, List<File>> e : map.duplicationEntrys()) {
-			// TODO 大きいファイルは、CRCが重いかと思っていたが、とりあえず、やってみる方針で
-			// 1000M以下だったら
-			if (e.getKey().longValue() < 5000 * 1000 * 1000l) {
-				deleteSamaFileByCRC(e.getValue());
-			} else {
-
-			}
-		}
-	}
-
-	/**
-	 * 前提条件：ファイルサイズが等しい。
-	 * ファイルサイズが同一のリストを投入する。
-	 * @param list
-	 */
-	private static void deleteSamaFileByCRC(List<File> list) {
-		MapList<Long, File> mapList = new MapList<Long, File>();
-
-		if (list.size() == 1) {
-			log.info("このファイルは重複の可能性がないため、スキップします。 FILE {}", list.get(0));
-			return;
-		}
-
-		for (File f : list) {
-			long crc;
-			try {
-				crc = FileUtils.checksumCRC32(f);
-
-				log.info("CRC [{}] FILE {}", crc, f.getName());
-			} catch (IOException e) {
-				throw new IllegalStateException(e);
-			}
-			mapList.add(crc, f);
-		}
-
-		for (Entry<Long, List<File>> e : mapList.duplicationEntrys()) {
-			List<File> value = e.getValue();
-
-			if (log.isInfoEnabled()) {
-				for (File file : value) {
-					log.info("重複CRC [{}] FILE {}", e.getKey(), file.getName());
-				}
-			}
-			List<File> deleteFile = deleteFile(value);
-
-			list.removeAll(deleteFile);
-
-		}
-
-	}
-
-	/**
-	 * ひとつのファイルを残して削除します。
-	 * 前提条件として、CRC等で重複確認がされている必要があります。
-	 * @param list
-	 */
-	private static List<File> deleteFile(List<File> list) {
-		Collections.sort(list, new NameFileComparator());
-		List<File> delList = new ArrayList<File>();
-
-		for (int i = 1; i < list.size(); i++) {
-			log.info(Log.OP, "DELETE FILE {}", list.get(i));
-			list.get(i).delete();
-			delList.add(list.get(i));
-
-		}
-
-		return delList;
 	}
 
 	/**

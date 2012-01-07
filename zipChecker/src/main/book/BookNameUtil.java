@@ -24,8 +24,6 @@ import java.util.concurrent.Future;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import module.InjectorMgr;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,6 +33,9 @@ import util.file.FileOperationUtil;
 import util.file.NameUtil;
 import book.webapi.BookInfo;
 import book.webapi.BookInfoFromWeb;
+
+import com.google.inject.Inject;
+
 import conf.ConfConst;
 import static util.file.FileNameUtil.createPath;
 import static util.file.FileNameUtil.getFileName;
@@ -95,8 +96,8 @@ public class BookNameUtil implements NameUtil {
 
 	}
 
-	private static BarcodeReader4Book barcodeReader = InjectorMgr.get()
-			.getInstance(BarcodeReader4Book.class);
+	@Inject
+	private BarcodeReader4Book barcodeReader;
 
 	/**
 	 * 日本語のみの名称に変換します。
@@ -515,6 +516,14 @@ public class BookNameUtil implements NameUtil {
 
 		return sb.toString();
 
+	}
+
+	public BarcodeReader4Book getBarcodeReader() {
+		return barcodeReader;
+	}
+
+	public void setBarcodeReader(BarcodeReader4Book barcodeReader) {
+		this.barcodeReader = barcodeReader;
 	}
 
 }

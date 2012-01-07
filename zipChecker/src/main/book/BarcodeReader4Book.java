@@ -17,7 +17,6 @@ import java.util.concurrent.Callable;
 import javax.imageio.ImageIO;
 
 import log.Log;
-import module.InjectorMgr;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +26,7 @@ import util.file.filter.FileNameFilter;
 import util.file.filter.FileNameFilter.MODE;
 import collection.MapList;
 
+import com.google.inject.Inject;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.BinaryBitmap;
 import com.google.zxing.ChecksumException;
@@ -60,6 +60,9 @@ public class BarcodeReader4Book {
 			.getInt(ConfConst.THREAD_BARCODE);
 	private static final int THREAD_BARCODE_DERAY = ConfConst.MAIN_CONF
 			.getInt(ConfConst.THREAD_BARCODE_DERAY);
+
+	@Inject
+	private SmillaEnlargerWrapper wrapper;
 
 	public String autoReadDir(File dir) {
 
@@ -451,9 +454,6 @@ public class BarcodeReader4Book {
 		return null;
 	}
 
-	private SmillaEnlargerWrapper wrapper = InjectorMgr.get().getInstance(
-			SmillaEnlargerWrapper.class);
-
 	protected String readImpl(boolean retry, File file, int i) {
 		String barcord = null;
 		try {
@@ -518,5 +518,13 @@ public class BarcodeReader4Book {
 			log.warn("バーコード読み取り時にエラー:{}", file.getAbsoluteFile(), e);
 		}
 		return barcord;
+	}
+
+	public SmillaEnlargerWrapper getWrapper() {
+		return wrapper;
+	}
+
+	public void setWrapper(SmillaEnlargerWrapper wrapper) {
+		this.wrapper = wrapper;
 	}
 }
