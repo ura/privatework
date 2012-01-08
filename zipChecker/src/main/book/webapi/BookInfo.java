@@ -342,7 +342,7 @@ public class BookInfo implements Comparable<BookInfo>, Serializable {
 	}
 
 	public void setSeriesName(String seriesName) {
-		this.seriesName = seriesName;
+		this.seriesName = Normalizer.normalizer(seriesName);
 	}
 
 	public String getPublisherName() {
@@ -350,7 +350,7 @@ public class BookInfo implements Comparable<BookInfo>, Serializable {
 	}
 
 	public void setPublisherName(String publisherName) {
-		this.publisherName = publisherName;
+		this.publisherName = Normalizer.normalizer(publisherName);
 	}
 
 	public String getAuthor() {
@@ -358,7 +358,7 @@ public class BookInfo implements Comparable<BookInfo>, Serializable {
 	}
 
 	public void setAuthor(String author) {
-		this.author = author;
+		this.author = Normalizer.normalizer(author);
 	}
 
 	public String getNo() {
@@ -386,7 +386,7 @@ public class BookInfo implements Comparable<BookInfo>, Serializable {
 	}
 
 	public void setTitleStr(String titleStr) {
-		this.titleStr = titleStr;
+		this.titleStr = Normalizer.normalizer(titleStr);
 	}
 
 	public void setRowTitle(String rowTitle) {

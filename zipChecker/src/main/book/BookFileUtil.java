@@ -132,6 +132,13 @@ public class BookFileUtil {
 	public static void decodeAll(File workDir, File arcFile, boolean del)
 			throws IOException, InterruptedException {
 
+		if (getFileName(arcFile).contains(".part")
+				&& !getFileName(arcFile).contains(".part1")) {
+			log.warn("分割圧縮ファイルと思われます。解凍対象外にします。{}", arcFile);
+			return;
+
+		}
+
 		File newWorkDir = createPath(workDir, getFileName(arcFile));
 
 		try {

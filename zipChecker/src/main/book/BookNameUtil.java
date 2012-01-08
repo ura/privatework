@@ -31,6 +31,7 @@ import util.WinRARWrapper;
 import util.file.DirCollector;
 import util.file.FileOperationUtil;
 import util.file.NameUtil;
+import book.BookNameUtil.K.TYPE;
 import book.webapi.BookInfo;
 import book.webapi.BookInfoFromWeb;
 
@@ -366,6 +367,8 @@ public class BookNameUtil implements NameUtil {
 
 	}
 
+	private final static int MAX_REBIULD = 25;
+
 	/**
 	 * ファイルをまとめ直し、リビルドする。
 	 * @param baseDir
@@ -376,44 +379,23 @@ public class BookNameUtil implements NameUtil {
 	public void createCominName(File baseDir, SortedMap<BookInfo, File> map)
 			throws IOException, InterruptedException {
 
-		//コミックの名称（巻を除く）ごとに分別
-		SortedMap<String, SortedMap<BookInfo, File>> m = new TreeMap<String, SortedMap<BookInfo, File>>() {
-			@Override
-			public SortedMap<BookInfo, File> get(Object key) {
-				if (!this.containsKey(key)) {
-					TreeMap<BookInfo, File> treeMap = new TreeMap<BookInfo, File>();
-					this.put((String) key, treeMap);
-				}
-				return super.get(key);
-			}
-
-		};
-
-		for (BookInfo bookInfo : map.keySet()) {
-			String baseInfo;
-			if (bookInfo.isRowdateOnly()) {
-				baseInfo = bookInfo.getRowTitle();
-			} else {
-				baseInfo = bookInfo.getAuthor() + "_" + bookInfo.getTitleStr();
-			}
-			log.info("分類しています。{} >>  {}", baseInfo, bookInfo.getInfo());
-			m.get(baseInfo).put(bookInfo, map.get(bookInfo));
-		}
+		SortedMap<K, SortedMap<BookInfo, File>> m = classfy(map);
 
 		File temp1 = FileOperationUtil.createTempDir(baseDir, "1ファイル");
 		File tempMany = FileOperationUtil.createTempDir(baseDir, "完成");
 
-		for (Entry<String, SortedMap<BookInfo, File>> e : m.entrySet()) {
+		for (Entry<K, SortedMap<BookInfo, File>> e : m.entrySet()) {
 			SortedMap<BookInfo, File> value = e.getValue();
 			Set<BookInfo> keySet = value.keySet();
 			List<BookInfo> list = new ArrayList<BookInfo>(keySet);
 
 			log.warn("基礎名の分類結果です。{} : data数 {}", e.getKey(), keySet.size());
 			int size = list.size();
-			for (int i = 0; i < 20; i++) {
+			for (int i = 0; i < MAX_REBIULD; i++) {
 
-				if ((i + 1) * 20 < size) {
-					List<BookInfo> subList = list.subList(i * 10, (i + 1) * 10);
+				if ((i + 1) * MAX_REBIULD < size) {
+					List<BookInfo> subList = list.subList(i * MAX_REBIULD,
+							(i + 1) * MAX_REBIULD);
 					String folderName = createCominName(subList);
 					File path = createPath(baseDir, folderName);
 					path.delete();
@@ -460,6 +442,146 @@ public class BookNameUtil implements NameUtil {
 
 		}
 
+	}
+
+	static class K {
+		public K(String key, TYPE type) {
+			super();
+			this.key = key;
+			this.type = type;
+		}
+
+		String key;
+		TYPE type;
+
+		enum TYPE {
+			ROW, KAN, ONE
+		}
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + ((key == null) ? 0 : key.hashCode());
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			K other = (K) obj;
+			if (key == null) {
+				if (other.key != null)
+					return false;
+			} else if (!key.equals(other.key))
+				return false;
+			return true;
+		}
+
+		@Override
+		public String toString() {
+			return key + ", " + type;
+		};
+	}
+
+	/**
+	 * 分類のロジックです。
+	 * 現在の実装は、著者名-タイトル
+	 * による分類で一切のゆらぎを許しません。
+	 * @param map
+	 * @return
+	 */
+	protected SortedMap<K, SortedMap<BookInfo, File>> classfy(
+			SortedMap<BookInfo, File> map) {
+		//コミックの名称（巻を除く）ごとに分別
+		SortedMap<K, SortedMap<BookInfo, File>> m = new TreeMap<K, SortedMap<BookInfo, File>>() {
+			@Override
+			public SortedMap<BookInfo, File> get(Object key) {
+				if (!this.containsKey(key)) {
+					TreeMap<BookInfo, File> treeMap = new TreeMap<BookInfo, File>();
+					this.put((K) key, treeMap);
+				}
+				return super.get(key);
+			}
+
+		};
+
+		for (BookInfo bookInfo : map.keySet()) {
+			K baseInfo;
+			if (bookInfo.isRowdateOnly()) {
+				baseInfo = new K(bookInfo.getRowTitle(), TYPE.ROW);
+			} else {
+				//巻子がないものは巻数がない物同士でまとめる。
+				if (bookInfo.getNo().equals("")) {
+					baseInfo = new K(bookInfo.getAuthor(), TYPE.ONE);
+				} else {
+					baseInfo = new K(bookInfo.getAuthor() + "_"
+							+ bookInfo.getTitleStr(), TYPE.KAN);
+				}
+			}
+
+			log.info("１次分類しています。{} >>  {}", baseInfo, bookInfo.getInfo());
+			m.get(baseInfo).put(bookInfo, map.get(bookInfo));
+		}
+
+		for (Entry<K, SortedMap<BookInfo, File>> e1 : m.entrySet()) {
+			String k1 = e1.getKey().key;
+			TYPE k2 = e1.getKey().type;
+
+			for (Entry<K, SortedMap<BookInfo, File>> e2 : m.entrySet()) {
+				String k3 = e2.getKey().key;
+				TYPE k4 = e2.getKey().type;
+
+				if (k2 == TYPE.ONE && k4 == TYPE.ONE) {
+					if (new Distance().ld(k1, k3) <= 1 || k1.contains(k3)
+							|| k3.contains(k1)) {
+
+						SortedMap<BookInfo, File> value1 = e1.getValue();
+						SortedMap<BookInfo, File> value2 = e2.getValue();
+
+						if (value1.size() > value2.size()) {
+							value1.putAll(value2);
+							log.info("2次分類しています。{} >>  {}", k3, k1);
+						} else {
+							value2.putAll(value1);
+							log.info("2次分類しています。{} >>  {}", k1, k3);
+						}
+
+					}
+				} else if (k2 == TYPE.KAN && k4 == TYPE.KAN) {
+					SortedMap<BookInfo, File> value1 = e1.getValue();
+					SortedMap<BookInfo, File> value2 = e2.getValue();
+
+					if ((new Distance().ld(k1, k3) <= 1 || k1.contains(k3) || k3
+							.contains(k1))
+							&& new Distance().ld(value1.firstKey()
+									.getTitleStr(), value1.firstKey()
+									.getTitleStr()) <= 1
+
+					) {
+
+						if (value1.size() > value2.size()) {
+							value1.putAll(value2);
+							log.info("2次分類しています。{} >>  {}", k3, k1);
+						} else {
+							value2.putAll(value1);
+							log.info("2次分類しています。{} >>  {}", k1, k3);
+						}
+
+					}
+
+				}
+
+			}
+
+		}
+
+		return m;
 	}
 
 	/**
