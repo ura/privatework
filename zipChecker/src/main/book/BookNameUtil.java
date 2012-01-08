@@ -388,8 +388,12 @@ public class BookNameUtil implements NameUtil {
 		};
 
 		for (BookInfo bookInfo : map.keySet()) {
-			String baseInfo = bookInfo.getAuthor() + "_"
-					+ bookInfo.getTitleStr();
+			String baseInfo;
+			if (bookInfo.isRowdateOnly()) {
+				baseInfo = bookInfo.getRowTitle();
+			} else {
+				baseInfo = bookInfo.getAuthor() + "_" + bookInfo.getTitleStr();
+			}
 			log.info("分類しています。{} >>  {}", baseInfo, bookInfo.getInfo());
 			m.get(baseInfo).put(bookInfo, map.get(bookInfo));
 		}
@@ -493,28 +497,23 @@ public class BookNameUtil implements NameUtil {
 	 */
 	private String createComicNoStr(List<BookInfo> list) {
 
-		int size = list.size();
 		SortedSet<String> set = new TreeSet<String>();
 		SortedSet<String> setNG = new TreeSet<String>();
 		int noCount = Integer.parseInt(list.get(0).getNo());
 		int noCountLast = Integer.parseInt(list.get(list.size() - 1).getNo());
 
-		for (int i = 0; i < size; i++) {
-			String noStr = list.get(i).getNo();
-			int no = Integer.parseInt(noStr);
-			for (int increment = 0; increment < 5; increment++) {
-				if (no == noCount) {
-					set.add(no_XX(noCount));
-					noCount++;
-					break;
-				} else {
-					setNG.add(no_XX(noCount));
-					noCount++;
+		for (int i = noCount; i <= noCountLast; i++) {
+			String noStr = no_XX(i);
+			for (BookInfo bookinfo : list) {
+				if (bookinfo.getNo().equals(noStr)) {
+					set.add(noStr);
 				}
-				if (noCount > noCountLast) {
-					break;
-				}
+
 			}
+			if (set.contains(noStr)) {
+				setNG.add(noStr);
+			}
+
 		}
 
 		String first = set.first();
