@@ -38,6 +38,7 @@ import com.google.inject.Inject;
 
 import conf.ConfConst;
 import static util.file.FileNameUtil.createPath;
+import static util.file.FileNameUtil.getExt;
 import static util.file.FileNameUtil.getFileName;
 
 public class BookNameUtil implements NameUtil {
@@ -111,10 +112,11 @@ public class BookNameUtil implements NameUtil {
 
 		//元が十分に短い場合は変更しない
 		if (getFileName(f).length() < 3) {
-			return getFileName(f);
+			return getFileName(f) + "." + getExt(f);
 		}
 
-		String replaceAll = getFileName(f).replaceAll(reg, "_");
+		String replaceAll = getFileName(f).replaceAll(reg, "_") + "."
+				+ getExt(f);
 
 		return replaceAll.replace("_{2,20}", "_");
 
@@ -499,8 +501,18 @@ public class BookNameUtil implements NameUtil {
 
 		SortedSet<String> set = new TreeSet<String>();
 		SortedSet<String> setNG = new TreeSet<String>();
-		int noCount = Integer.parseInt(list.get(0).getNo());
-		int noCountLast = Integer.parseInt(list.get(list.size() - 1).getNo());
+
+		//ベース名がソロていないので、
+		//出版社名の違い等に対応するために
+		SortedSet<String> setNO = new TreeSet<String>();
+		for (BookInfo b : list) {
+			if (!b.getNo().equals("")) {
+				setNO.add(b.getNo());
+			}
+		}
+
+		int noCount = Integer.parseInt(setNO.first());
+		int noCountLast = Integer.parseInt(setNO.last());
 
 		for (int i = noCount; i <= noCountLast; i++) {
 			String noStr = no_XX(i);
@@ -510,7 +522,7 @@ public class BookNameUtil implements NameUtil {
 				}
 
 			}
-			if (set.contains(noStr)) {
+			if (!set.contains(noStr)) {
 				setNG.add(noStr);
 			}
 

@@ -27,6 +27,7 @@ import util.file.ObjectUtil;
 import book.webapi.BookInfo;
 import book.webapi.BookInfoFromWeb;
 import static util.file.FileNameUtil.getExt;
+import static util.file.FileNameUtil.getFileName;
 
 /**
  * 新刊の探査をつける。
@@ -284,6 +285,13 @@ public class BookInfoRepo implements Serializable {
 			for (File f : dir2.fileSet) {
 				String ext = getExt(f);
 				if ("zip".equals(ext)) {
+
+					if (BookInfo.isBookInfoName(getFileName(f))) {
+						BookInfo bookInfo = BookInfo
+								.createBookInfo(getFileName(f));
+						addHave(bookInfo);
+					}
+
 					Set<String> name = getName(f);
 
 					for (String string : name) {
@@ -301,6 +309,11 @@ public class BookInfoRepo implements Serializable {
 
 	}
 
+	/**
+	 * ZIP内のエントリ、フォルダ名を抜き取る。
+	 * @param file
+	 * @return
+	 */
 	public Set<String> getName(File file) {
 		org.apache.tools.zip.ZipFile zip = null;
 		Set<String> set = new HashSet<>();

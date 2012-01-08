@@ -49,7 +49,7 @@ public class FileNameUtil {
 	 */
 	public static String getFileName(String str) {
 
-		if (haveExt(str)) {
+		if (!haveExt(str)) {
 			return str;
 		}
 

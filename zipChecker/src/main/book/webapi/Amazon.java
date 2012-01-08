@@ -13,6 +13,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -174,47 +177,79 @@ public class Amazon {
 
 	}
 
-	public static void getImage(String asin, String url) {
-		try (InputStream openStream = new URL(
-				"http://www.amazon.co.jp/dp/images/" + asin).openStream();
-				BufferedReader br = new BufferedReader(new InputStreamReader(
-						openStream, "UTF-8"));) {
+	static class GetImage<Void> implements Callable<Void> {
 
-			String line;
-			StringBuilder sb = new StringBuilder();
-			while ((line = br.readLine()) != null) {
-				sb.append(line);
-			}
+		public GetImage(String asin, String url) {
+			super();
+			this.asin = asin;
+			this.url = url;
 
-			String string = sb.toString();
-			Pattern compile = Pattern
-					.compile("(http://ec2.images-amazon.com/images[^\"]*\\.jpg)\"");
-			Matcher matcher = compile.matcher(string);
-			if (matcher.find()) {
-				log.warn("イメージ取得のURLを取得しました。{} : {}", matcher.group(1),
-						"http://www.amazon.co.jp/dp/images/" + asin);
-				writeImage(new File("image/" + asin + ".jpg"), matcher.group(1));
-			} else {
-				log.warn("イメージ取得ができませんでした。{}",
-						"http://www.amazon.co.jp/dp/images/" + asin);
-			}
-
-		} catch (IOException e) {
-			e.printStackTrace();
 		}
+
+		private String asin;
+		private String url;
+
+		@Override
+		public Void call() throws Exception {
+
+			try (InputStream openStream = new URL(
+					"http://www.amazon.co.jp/dp/images/" + asin).openStream();
+					BufferedReader br = new BufferedReader(
+							new InputStreamReader(openStream, "UTF-8"));) {
+
+				String line;
+				StringBuilder sb = new StringBuilder();
+				while ((line = br.readLine()) != null) {
+					sb.append(line);
+				}
+
+				String string = sb.toString();
+				Pattern compile = Pattern
+						.compile("(http://ec2.images-amazon.com/images[^\"]*\\.jpg)\"");
+				Matcher matcher = compile.matcher(string);
+				if (matcher.find()) {
+					log.info("イメージ取得のURLを取得しました。{} : {}", matcher.group(1),
+							"http://www.amazon.co.jp/dp/images/" + asin);
+					writeImage(new File("image/" + asin + ".jpg"),
+							matcher.group(1));
+				} else {
+					log.info("イメージ取得ができませんでした。{}",
+							"http://www.amazon.co.jp/dp/images/" + asin);
+				}
+
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+
+			return null;
+		}
+
+	}
+
+	private static ExecutorService ex = Executors.newFixedThreadPool(3);
+
+	public static void getImage(String asin, String url) {
+
+		GetImage<Void> getImage = new GetImage<Void>(asin, url);
+		ex.submit(getImage);
+
 	}
 
 	private static void writeImage(File f, String url) {
-		OutputSupplier<FileOutputStream> newOutputStreamSupplier = Files
-				.newOutputStreamSupplier(f);
-		try (InputStream openStream = new URL(url).openStream();
-				BufferedInputStream br = new BufferedInputStream(openStream);
-				FileOutputStream output = newOutputStreamSupplier.getOutput();) {
 
-			CopyUtils.copy(br, output);
+		if (!f.exists()) {
+			OutputSupplier<FileOutputStream> newOutputStreamSupplier = Files
+					.newOutputStreamSupplier(f);
+			try (InputStream openStream = new URL(url).openStream();
+					BufferedInputStream br = new BufferedInputStream(openStream);
+					FileOutputStream output = newOutputStreamSupplier
+							.getOutput();) {
 
-		} catch (IOException e) {
-			e.printStackTrace();
+				CopyUtils.copy(br, output);
+
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
