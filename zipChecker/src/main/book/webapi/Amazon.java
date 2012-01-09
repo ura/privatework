@@ -135,6 +135,19 @@ public class Amazon {
 		return Amazon.getInfo(new Amazon.TitleAutherQuery(title, auther));
 	}
 
+	//TODO あとで組み込む
+	public static SortedSet<BookInfo> validate(SortedSet<BookInfo> set) {
+		SortedSet<BookInfo> set2 = new TreeSet<>();
+		for (BookInfo bookInfo : set) {
+			BookInfo info = getInfo(bookInfo.getIsbn());
+			if (info != null) {
+				set2.add(info);
+			}
+		}
+		return set2;
+
+	}
+
 	/**
 	 * 結果が取れなかった場合、NULLを返します。
 	 * 結果を取れない原因としては、限定版だとか、古い書籍だとか、
@@ -226,7 +239,7 @@ public class Amazon {
 
 	}
 
-	private static ExecutorService ex = Executors.newFixedThreadPool(3);
+	private static ExecutorService ex = Executors.newFixedThreadPool(5);
 
 	public static void getImage(String asin, String url) {
 

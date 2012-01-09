@@ -1,6 +1,7 @@
 package util.file;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -246,13 +247,19 @@ public class FileOperationUtil {
 		return true;
 	}
 
+	public static boolean moveFolderToRoot(File src) {
+		return moveFolderToRoot(src, null);
+
+	}
+
 	/**
-	 * 下位にあるフォルダをすべてSRC直下に移動する
+	 * 下位にあるフォルダをすべてSRC直下に移動する。
+	 * ただし、フィルターの条件に合っているのみ移動。
 	 *
 	 * @param src
 	 * @return
 	 */
-	public static boolean moveFolderToParent(File src) {
+	public static boolean moveFolderToRoot(File src, FileFilter f) {
 
 		DirCollector srcDir = new DirCollector();
 		new FileWalker().walk(src, srcDir);
@@ -263,19 +270,23 @@ public class FileOperationUtil {
 			log.info(dir.dir.getPath());
 
 			File srcPath = dir.dir;
-			File destPath = FileNameUtil.createNewPath(src, dir.dir);
+			if (f == null || f.accept(srcPath)) {
+				File destPath = FileNameUtil.createNewPath(src, dir.dir);
 
-			log.info(srcPath.getAbsolutePath() + ">> "
-					+ destPath.getAbsolutePath());
+				log.info(srcPath.getAbsolutePath() + ">> "
+						+ destPath.getAbsolutePath());
 
-			if (srcPath.exists()) {
-				try {
-					Files.move(srcPath.toPath(), destPath.toPath(),
-							StandardCopyOption.ATOMIC_MOVE);
-				} catch (IOException e) {
-					log.error("COPYに失敗", e);
-					throw new IllegalStateException();
+				if (srcPath.exists()) {
+					try {
+						Files.move(srcPath.toPath(), destPath.toPath(),
+								StandardCopyOption.ATOMIC_MOVE);
+					} catch (IOException e) {
+						log.error("COPYに失敗", e);
+						throw new IllegalStateException();
+					}
 				}
+			} else {
+				log.info("条件に一致しなかったため、移動しません。{}", src.getAbsolutePath());
 			}
 
 		}

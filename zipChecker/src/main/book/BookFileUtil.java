@@ -2,6 +2,7 @@ package book;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -317,7 +318,16 @@ public class BookFileUtil {
 		if (true) {
 			//workF = new File("G:\\arkwork\\_1_1325925926356");
 			FileOperationUtil.moveFewFile(workF);
-			FileOperationUtil.moveFolderToParent(workF);
+
+			//親フォルダがBOOKINFO形式だったら無視する。
+			FileOperationUtil.moveFolderToRoot(workF, new FileFilter() {
+				@Override
+				public boolean accept(File pathname) {
+
+					return !BookInfo.isBookInfoName(pathname.getParentFile());
+				}
+			});
+
 			jpgCheck(workF);
 			FileOperationUtil.deleteEmptyDir(workF, "jpeg", "jpg", "png");
 

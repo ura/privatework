@@ -1,5 +1,11 @@
 package book;
 
+/**
+ * String間の距離を測ります。
+ * レーベンシュタイン距離です。
+ * @author name
+ *
+ */
 public class Distance {
 
 	private int minimum(int a, int b, int c) {

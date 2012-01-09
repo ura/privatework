@@ -54,7 +54,7 @@ public class BookInfoRepo implements Serializable {
 		/**
 		 * 検索用ダミーキー
 		 */
-		DUMMY, ANY
+		DUMMY, ANY, FOLDERNAME
 	};
 
 	public BookInfoRepo() {
@@ -103,7 +103,11 @@ public class BookInfoRepo implements Serializable {
 	}
 
 	public void addHave(BookInfo info) {
-		map.put(new Key(info.getIsbn(), State.HAVE), info);
+		if (info.isRowdateOnly()) {
+			map.put(new Key(info.getIsbn(), State.FOLDERNAME), info);
+		} else {
+			map.put(new Key(info.getIsbn(), State.HAVE), info);
+		}
 	}
 
 	/**
@@ -286,13 +290,14 @@ public class BookInfoRepo implements Serializable {
 				String ext = getExt(f);
 				if ("zip".equals(ext)) {
 
+					//一冊用のロジック
 					if (BookInfo.isBookInfoName(getFileName(f))) {
 						BookInfo bookInfo = BookInfo
 								.createBookInfo(getFileName(f));
 						addHave(bookInfo);
 					}
 
-					Set<String> name = getName(f);
+					Set<String> name = getNameFromZip(f);
 
 					for (String string : name) {
 
@@ -314,7 +319,7 @@ public class BookInfoRepo implements Serializable {
 	 * @param file
 	 * @return
 	 */
-	public Set<String> getName(File file) {
+	public Set<String> getNameFromZip(File file) {
 		org.apache.tools.zip.ZipFile zip = null;
 		Set<String> set = new HashSet<>();
 		try {
@@ -328,7 +333,12 @@ public class BookInfoRepo implements Serializable {
 
 				if (ze.isDirectory()) {
 
-					set.add(ze.getName().replace("/", ""));
+					String name = ze.getName();
+					//２重ディレクトリになっているエントリは無視する。
+					if (!name.substring(0, name.length() - 1).contains("/")) {
+
+						set.add(ze.getName().replace("/", ""));
+					}
 					continue;
 				}
 

@@ -60,7 +60,6 @@ public class ZipCheckHandler implements ZipUtilHandler {
 
 	@Override
 	public void start(ZipUtil util, ZipFile zip) throws ZipCheckException {
-		// TODO 自動生成されたメソッド・スタブ
 
 	}
 }

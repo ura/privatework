@@ -18,7 +18,6 @@ public class MapList<K, V> {
 
 		@Override
 		public List<V> put(K key, List<V> value) {
-			// TODO 自動生成されたメソッド・スタブ
 			return super.put(key, value);
 		}
 
