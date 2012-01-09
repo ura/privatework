@@ -541,40 +541,33 @@ public class BookNameUtil implements NameUtil {
 					if (new Distance().ld(k1, k3) <= 1 || k1.contains(k3)
 							|| k3.contains(k1)) {
 
-						SortedMap<BookInfo, File> value1 = e1.getValue();
-						SortedMap<BookInfo, File> value2 = e2.getValue();
-
-						if (value1.size() > value2.size()) {
-							value1.putAll(value2);
-							log.info("2次分類しています。{} >>  {}", k3, k1);
-						} else {
-							value2.putAll(value1);
-							log.info("2次分類しています。{} >>  {}", k1, k3);
-						}
+						move(e1, k1, e2, k3);
 
 					}
 				} else if (k2 == TYPE.KAN && k4 == TYPE.KAN) {
 					SortedMap<BookInfo, File> value1 = e1.getValue();
 					SortedMap<BookInfo, File> value2 = e2.getValue();
 
-					if ((new Distance().ld(k1, k3) <= 1 || k1.contains(k3) || k3
-							.contains(k1))
-							&& new Distance().ld(value1.firstKey()
-									.getTitleStr(), value1.firstKey()
-									.getTitleStr()) <= 1
+					String author1 = value1.firstKey().getAuthor();
+					String author2 = value2.firstKey().getAuthor();
+
+					String t1 = value1.firstKey().getTitleStr();
+					String t2 = value2.firstKey().getTitleStr();
+
+					if ((new Distance().ld(author1, author2) <= 1
+							|| author1.contains(author2) || author2
+								.contains(author1))
+							&& new Distance().ld(t1, t1) <= 1
 
 					) {
 
-						if (value1.size() > value2.size()) {
-							value1.putAll(value2);
-							log.info("2次分類しています。{} >>  {}", k3, k1);
-						} else {
-							value2.putAll(value1);
-							log.info("2次分類しています。{} >>  {}", k1, k3);
-						}
-
+						move(e1, k1, e2, k3);
 					}
 
+				} else if (k2 == TYPE.ROW && k4 == TYPE.ROW) {
+					if (score(k1, k3) > 90) {
+						move(e1, k1, e2, k3);
+					}
 				}
 
 			}
@@ -582,6 +575,97 @@ public class BookNameUtil implements NameUtil {
 		}
 
 		return m;
+	}
+
+	/**
+	 * 多い方のネーミングに移動する。
+	 * @param e1
+	 * @param k1
+	 * @param e2
+	 * @param k3
+	 */
+	private void move(Entry<K, SortedMap<BookInfo, File>> e1, String k1,
+			Entry<K, SortedMap<BookInfo, File>> e2, String k3) {
+		SortedMap<BookInfo, File> value1 = e1.getValue();
+		SortedMap<BookInfo, File> value2 = e2.getValue();
+
+		if (value1.size() > value2.size()) {
+			value1.putAll(value2);
+			log.info("2次分類しています。{} >>  {}", k3, k1);
+		} else {
+			value2.putAll(value1);
+			log.info("2次分類しています。{} >>  {}", k1, k3);
+		}
+	}
+
+	public static Collection<String> score(String s1, Collection<String> list) {
+
+		Set<String> reList = new HashSet<>();
+		for (String s2 : list) {
+			if (score(s1, s2) > 90) {
+				reList.add(s2);
+			}
+
+		}
+
+		return reList;
+
+	}
+
+	/**
+	 * カッコつきノ表現があるか判別している。
+	 * ただし、日付は除く。
+	 * @param name
+	 * @return
+	 */
+	private static boolean x(String name) {
+
+		Pattern pattern = Pattern.compile("\\[.*[^0-9]{3,20}.*\\]");
+		if (name.contains("]") && pattern.matcher(name).find()) {
+			return true;
+		} else {
+			return false;
+		}
+
+	}
+
+	/**
+	 * 単純な比較と[・・・]部分の比較の２パターンで類似チェック。
+	 * なお、数字はすべて比較対象にいれにない。
+	 * @param s1
+	 * @param s2
+	 * @return
+	 */
+	public static int score(String s1, String s2) {
+		int r1 = scoreCore(s1, s2);
+		int r2 = 0;
+		if (x(s1) && x(s2)) {
+			r2 = scoreCore(s1.replaceAll("[^]]*$", ""),
+					s2.replaceAll("[^]]*$", ""));
+		}
+
+		return r1 > r2 ? r1 : r2;
+	}
+
+	/**
+	 * 90超ならほぼ類似
+	 * @param s1
+	 * @param s2
+	 * @return
+	 */
+	public static int scoreCore(String s1, String s2) {
+
+		try {
+			String r1 = s1.replaceAll("[0-9]", "");
+			String r2 = s2.replaceAll("[0-9]", "");
+
+			int ld = new Distance().ld(r1, r2);
+			int max = r1.length() > r2.length() ? r1.length() : r2.length();
+			return (max - ld) * 100 / max;
+		} catch (Exception e) {
+			return 0;
+		}
+
 	}
 
 	/**
