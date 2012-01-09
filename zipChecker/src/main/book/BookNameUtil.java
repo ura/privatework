@@ -367,6 +367,64 @@ public class BookNameUtil implements NameUtil {
 
 	}
 
+	/**
+	 * 巻数情報をまとめ直す。
+	 * 1,2,5,6,7,10,12が入力だった場合、
+	 * 1-2
+	 * 5-7
+	 * 10
+	 * 12
+	 * とする。
+	 *
+	 * @param sortedSet
+	 * @return
+	 */
+	public Set<String> getNO(SortedSet<BookInfo> sortedSet) {
+		SortedSet<String> set = new TreeSet<>();
+		for (BookInfo bookInfo : sortedSet) {
+
+			if (!bookInfo.getNo().equals("")) {
+				set.add(bookInfo.getNo());
+			}
+		}
+
+		int first = Integer.parseInt(set.first());
+		int last = Integer.parseInt(set.last());
+
+		int start = -1;
+		int end = -1;
+
+		SortedSet<String> result = new TreeSet<>();
+		for (int i = first; i <= last; i++) {
+
+			if (set.contains(no_XX(i))) {
+				if (start == -1) {
+					start = i;
+				}
+				end = i;
+
+			} else if (start != -1) {
+
+				if (start == end) {
+					result.add(no_XX(start));
+				} else {
+					result.add(no_XX(start) + "-" + no_XX(end));
+				}
+				start = -1;
+
+			}
+		}
+
+		if (start == end) {
+			result.add(no_XX(start));
+		} else {
+			result.add(no_XX(start) + "-" + no_XX(end));
+		}
+
+		return result;
+
+	}
+
 	private final static int MAX_REBIULD = 25;
 
 	/**
@@ -598,7 +656,7 @@ public class BookNameUtil implements NameUtil {
 		}
 	}
 
-	public static Collection<String> score(String s1, Collection<String> list) {
+	public Collection<String> score(String s1, Collection<String> list) {
 
 		Set<String> reList = new HashSet<>();
 		for (String s2 : list) {
@@ -618,7 +676,7 @@ public class BookNameUtil implements NameUtil {
 	 * @param name
 	 * @return
 	 */
-	private static boolean x(String name) {
+	private boolean x(String name) {
 
 		Pattern pattern = Pattern.compile("\\[.*[^0-9]{3,20}.*\\]");
 		if (name.contains("]") && pattern.matcher(name).find()) {
@@ -636,7 +694,7 @@ public class BookNameUtil implements NameUtil {
 	 * @param s2
 	 * @return
 	 */
-	public static int score(String s1, String s2) {
+	public int score(String s1, String s2) {
 		int r1 = scoreCore(s1, s2);
 		int r2 = 0;
 		if (x(s1) && x(s2)) {
@@ -653,7 +711,7 @@ public class BookNameUtil implements NameUtil {
 	 * @param s2
 	 * @return
 	 */
-	public static int scoreCore(String s1, String s2) {
+	public int scoreCore(String s1, String s2) {
 
 		try {
 			String r1 = s1.replaceAll("[0-9]", "");

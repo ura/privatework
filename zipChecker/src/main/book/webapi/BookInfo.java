@@ -236,6 +236,19 @@ public class BookInfo implements Comparable<BookInfo>, Serializable {
 		return this.isbn.startsWith("978");
 	}
 
+	/**
+	 * 著者名とタイトルのみ
+	 * @return
+	 */
+	public String getSimpleInfo() {
+		if (rowdateOnly) {
+			return rowTitle;
+		}
+
+		return "[" + author + "]" + "[" + titleStr + "]";
+
+	}
+
 	public String getBaseInfo() {
 		if (rowdateOnly) {
 			return rowTitle;
