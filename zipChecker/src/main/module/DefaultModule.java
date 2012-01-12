@@ -33,7 +33,7 @@ public class DefaultModule extends AbstractModule {
 		//	bind(BookNameUtil.class).to(BookNameUtil.class);
 
 		//bindInterceptor(any(), any(), new LoggingInterceptor());
-		interceptorStopWatch();
+		//interceptorStopWatch();
 	}
 
 	protected void interceptorStopWatch() {

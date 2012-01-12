@@ -270,7 +270,12 @@ public class FileOperationUtil {
 			log.info(dir.dir.getPath());
 
 			File srcPath = dir.dir;
-			if (f == null || f.accept(srcPath)) {
+
+			//TODO 移動の時に、りねーむだけではなくてフォルダ比較を検討する。
+			//あとで、雑誌でテスト
+			boolean b = !srcPath.getParentFile().equals(src);
+			if ((!srcPath.getParentFile().equals(src))
+					&& (f == null || f.accept(srcPath))) {
 				File destPath = FileNameUtil.createNewPath(src, dir.dir);
 
 				log.info(srcPath.getAbsolutePath() + ">> "

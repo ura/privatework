@@ -7,6 +7,11 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+/**
+ * @deprecated GUAVA使え
+ * @author name
+ *
+ */
 public class MapList<K, V> {
 
 	private Map<K, Collection<V>> innerMap = new HashMap<K, Collection<V>>();

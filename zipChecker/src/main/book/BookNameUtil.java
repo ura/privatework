@@ -6,6 +6,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -24,6 +25,8 @@ import java.util.concurrent.Future;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,6 +38,12 @@ import book.BookNameUtil.K.TYPE;
 import book.webapi.BookInfo;
 import book.webapi.BookInfoFromWeb;
 
+import com.google.common.base.Function;
+import com.google.common.base.Joiner;
+import com.google.common.base.Predicate;
+import com.google.common.collect.Collections2;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 
 import conf.ConfConst;
@@ -380,12 +389,16 @@ public class BookNameUtil implements NameUtil {
 	 * @return
 	 */
 	public Set<String> getNO(SortedSet<BookInfo> sortedSet) {
+
 		SortedSet<String> set = new TreeSet<>();
 		for (BookInfo bookInfo : sortedSet) {
 
 			if (!bookInfo.getNo().equals("")) {
 				set.add(bookInfo.getNo());
 			}
+		}
+		if (set.size() == 0) {
+			return set;
 		}
 
 		int first = Integer.parseInt(set.first());
@@ -448,61 +461,29 @@ public class BookNameUtil implements NameUtil {
 			List<BookInfo> list = new ArrayList<BookInfo>(keySet);
 
 			log.warn("基礎名の分類結果です。{} : data数 {}", e.getKey(), keySet.size());
-			int size = list.size();
-			for (int i = 0; i < MAX_REBIULD; i++) {
 
-				if ((i + 1) * MAX_REBIULD < size) {
-					List<BookInfo> subList = list.subList(i * MAX_REBIULD,
-							(i + 1) * MAX_REBIULD);
-					String folderName = createCominName(subList);
-					File path = createPath(baseDir, folderName);
-					path.delete();
-					path.mkdir();
-					for (BookInfo bookInfo : subList) {
-						File file = value.get(bookInfo);
-						file.renameTo(createPath(path, file));
+			File path = createPath(baseDir, e.getKey().key);
+			path.delete();
+			path.mkdir();
+			for (BookInfo bookInfo : list) {
+				File file = value.get(bookInfo);
+				file.renameTo(createPath(path, file));
 
-					}
-					WinRARWrapper.encode(path, path);
-					path.renameTo(createPath(tempMany, path.getName()));
-				} else {
-					List<BookInfo> subList = list.subList(i * 10, size);
-					File path;
+			}
+			WinRARWrapper.encode(path, path);
+			path.renameTo(createPath(tempMany, path.getName()));
 
-					if (subList.size() == 1) {
-						File file = value.get(subList.get(0));
-						path = createPath(baseDir, file);
-						file.renameTo(path);
-					} else {
-						String folderName = createCominName(subList);
-						path = createPath(baseDir, folderName);
-						path.delete();
-						path.mkdir();
-						for (BookInfo bookInfo : subList) {
-							File file = value.get(bookInfo);
-							file.renameTo(createPath(path, file));
-
-						}
-					}
-
-					WinRARWrapper.encode(path, path);
-
-					if (i == 0 && subList.size() == 1) {
-						path.renameTo(createPath(temp1, path.getName()));
-					} else {
-						path.renameTo(createPath(tempMany, path.getName()));
-					}
-
-					break;
-
-				}
+			if (list.size() == 1) {
+				path.renameTo(createPath(temp1, path.getName()));
+			} else {
+				path.renameTo(createPath(tempMany, path.getName()));
 			}
 
 		}
 
 	}
 
-	static class K {
+	static class K implements Comparable<K> {
 		public K(String key, TYPE type) {
 			super();
 			this.key = key;
@@ -510,6 +491,10 @@ public class BookNameUtil implements NameUtil {
 		}
 
 		String key;
+
+		/**
+		 * TODO BOOKINFOで持つべき情報
+		 */
 		TYPE type;
 
 		enum TYPE {
@@ -544,6 +529,12 @@ public class BookNameUtil implements NameUtil {
 		@Override
 		public String toString() {
 			return key + ", " + type;
+		}
+
+		@Override
+		public int compareTo(K o) {
+
+			return key.compareTo(o.key);
 		};
 	}
 
@@ -568,6 +559,17 @@ public class BookNameUtil implements NameUtil {
 			}
 
 		};
+		SortedMap<K, SortedMap<BookInfo, File>> result = new TreeMap<K, SortedMap<BookInfo, File>>() {
+			@Override
+			public SortedMap<BookInfo, File> get(Object key) {
+				if (!this.containsKey(key)) {
+					TreeMap<BookInfo, File> treeMap = new TreeMap<BookInfo, File>();
+					this.put((K) key, treeMap);
+				}
+				return super.get(key);
+			}
+
+		};
 
 		for (BookInfo bookInfo : map.keySet()) {
 			K baseInfo;
@@ -578,8 +580,7 @@ public class BookNameUtil implements NameUtil {
 				if (bookInfo.getNo().equals("")) {
 					baseInfo = new K(bookInfo.getAuthor(), TYPE.ONE);
 				} else {
-					baseInfo = new K(bookInfo.getAuthor() + "_"
-							+ bookInfo.getTitleStr(), TYPE.KAN);
+					baseInfo = new K(bookInfo.getSimpleInfo(), TYPE.KAN);
 				}
 			}
 
@@ -595,6 +596,10 @@ public class BookNameUtil implements NameUtil {
 				String k3 = e2.getKey().key;
 				TYPE k4 = e2.getKey().type;
 
+				if (e1.equals(e2)) {
+					continue;
+				}
+
 				if (k2 == TYPE.ONE && k4 == TYPE.ONE) {
 					if (new Distance().ld(k1, k3) <= 1 || k1.contains(k3)
 							|| k3.contains(k1)) {
@@ -606,6 +611,10 @@ public class BookNameUtil implements NameUtil {
 					SortedMap<BookInfo, File> value1 = e1.getValue();
 					SortedMap<BookInfo, File> value2 = e2.getValue();
 
+					if (value1.isEmpty() || value2.isEmpty()) {
+						continue;
+					}
+
 					String author1 = value1.firstKey().getAuthor();
 					String author2 = value2.firstKey().getAuthor();
 
@@ -615,7 +624,7 @@ public class BookNameUtil implements NameUtil {
 					if ((new Distance().ld(author1, author2) <= 1
 							|| author1.contains(author2) || author2
 								.contains(author1))
-							&& new Distance().ld(t1, t1) <= 1
+							&& new Distance().ld(t1, t2) <= 1
 
 					) {
 
@@ -631,8 +640,106 @@ public class BookNameUtil implements NameUtil {
 			}
 
 		}
+		renameKey(m, result);
+		return result;
+	}
 
-		return m;
+	private void renameKey(SortedMap<K, SortedMap<BookInfo, File>> src,
+			SortedMap<K, SortedMap<BookInfo, File>> result) {
+
+		for (Entry<K, SortedMap<BookInfo, File>> e : src.entrySet()) {
+
+			if (e.getValue().size() == 0) {
+				continue;
+			}
+
+			switch (e.getKey().type) {
+			case ROW:
+
+				Set<BookInfo> keySet = e.getValue().keySet();
+				Collection<String> names = Collections2.transform(keySet,
+						new Function<BookInfo, String>() {
+							@Override
+							public String apply(BookInfo input) {
+
+								return input.getRowTitle()
+										.replaceAll("[\\.\\[0-9\\-\\]*]", "")
+										.trim();
+							}
+						});
+
+				String prefix = StringUtils.getCommonPrefix(names
+						.toArray(new String[0]));
+				if (prefix.length() > 1) {
+					log.info("下記に名称を変更します。{} {}", prefix, names.size());
+
+					result.put(new K(prefix, TYPE.ROW), e.getValue());
+				} else {
+					log.info("下記に名称変更できませんでした。{} \n{}",
+							Joiner.on("\n").join(names), names.size());
+				}
+				break;
+
+			case KAN:
+				SortedMap<BookInfo, File> value = e.getValue();
+				SortedMap<BookInfo, File> reSort = Maps
+						.newTreeMap(new Comparator<BookInfo>() {
+
+							@Override
+							public int compare(BookInfo o1, BookInfo o2) {
+
+								return new CompareToBuilder()
+										.append(o1.getNo(), o2.getNo())
+										.append(o1.getTitleStr(),
+												o2.getTitleStr())
+										.toComparison();
+							}
+						});
+				reSort.putAll(value);
+
+				List<List<BookInfo>> partition = Lists.partition(
+						new ArrayList<>(reSort.keySet()), MAX_REBIULD);
+
+				for (final List<BookInfo> subList : partition) {
+					String folderName;
+					if (subList.size() != 1) {
+						folderName = createCominName(subList);
+					} else {
+						folderName = subList.get(0).getBaseInfo();
+					}
+					SortedMap<BookInfo, File> filterMap = Maps.filterKeys(
+							reSort, new Predicate<BookInfo>() {
+								@Override
+								public boolean apply(BookInfo input) {
+									return subList.contains(input);
+								}
+							});
+					result.put(new K(folderName, TYPE.KAN), filterMap);
+
+				}
+
+				break;
+			case ONE:
+				result.put(new K("[一般コミック][" + e.getKey().key + "]", TYPE.ONE),
+						e.getValue());
+				break;
+			default:
+				throw new IllegalArgumentException();
+
+			}
+
+		}
+
+		return;
+	}
+
+	private <K, V> SortedMap<K, V> partition(SortedMap<K, V> map,
+			Collection<K> keyList) {
+
+		TreeMap<K, V> treeMap = new TreeMap<>();
+
+		return map;
+
 	}
 
 	/**
@@ -647,11 +754,17 @@ public class BookNameUtil implements NameUtil {
 		SortedMap<BookInfo, File> value1 = e1.getValue();
 		SortedMap<BookInfo, File> value2 = e2.getValue();
 
+		if (value1.size() == 0 || value2.size() == 0) {
+			return;
+		}
+
 		if (value1.size() > value2.size()) {
 			value1.putAll(value2);
+			value2.clear();
 			log.info("2次分類しています。{} >>  {}", k3, k1);
 		} else {
 			value2.putAll(value1);
+			value1.clear();
 			log.info("2次分類しています。{} >>  {}", k1, k3);
 		}
 	}
@@ -676,7 +789,7 @@ public class BookNameUtil implements NameUtil {
 	 * @param name
 	 * @return
 	 */
-	private boolean x(String name) {
+	private boolean haveDateStr(String name) {
 
 		Pattern pattern = Pattern.compile("\\[.*[^0-9]{3,20}.*\\]");
 		if (name.contains("]") && pattern.matcher(name).find()) {
@@ -697,7 +810,7 @@ public class BookNameUtil implements NameUtil {
 	public int score(String s1, String s2) {
 		int r1 = scoreCore(s1, s2);
 		int r2 = 0;
-		if (x(s1) && x(s2)) {
+		if (haveDateStr(s1) && haveDateStr(s2)) {
 			r2 = scoreCore(s1.replaceAll("[^]]*$", ""),
 					s2.replaceAll("[^]]*$", ""));
 		}

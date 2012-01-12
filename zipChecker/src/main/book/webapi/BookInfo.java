@@ -98,6 +98,9 @@ public class BookInfo implements Comparable<BookInfo>, Serializable {
 			bookInfo.setTitleStr(matcher.group(3));
 			bookInfo.setNo(matcher.group(4));
 			bookInfo.setIsbn(matcher.group(5));
+
+			bookInfo.repalre();
+
 			return bookInfo;
 		}
 		Matcher matcher2 = bookInfoReg2.matcher(name);
@@ -107,6 +110,8 @@ public class BookInfo implements Comparable<BookInfo>, Serializable {
 			bookInfo.setTitleStr(matcher2.group(3));
 
 			bookInfo.setIsbn(matcher2.group(4));
+			bookInfo.repalre();
+
 			return bookInfo;
 		}
 
@@ -233,7 +238,18 @@ public class BookInfo implements Comparable<BookInfo>, Serializable {
 	}
 
 	public boolean isTrueISBN() {
-		return this.isbn.startsWith("978");
+		return this.isbn.startsWith("978") && ISBNConv.check(isbn);
+	}
+
+	public boolean repalre() {
+		String isbnOld = isbn;
+		isbn = ISBNConv.to13From13(isbn);
+		if (!isbnOld.equals(isbn)) {
+			log.warn("ISBNを更生しました。 {} >> {}", isbnOld, isbn);
+		}
+
+		return isbnOld.equals(isbn);
+
 	}
 
 	/**

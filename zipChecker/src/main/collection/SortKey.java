@@ -1,5 +1,10 @@
 package collection;
 
+/**
+ * @deprecated GUAVA使え
+ * @author name
+ *
+ */
 public class SortKey<K1 extends Comparable, K2> implements
 		Comparable<SortKey<K1, K2>> {
 

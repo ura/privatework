@@ -6,6 +6,11 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.SortedSet;
 
+/**
+ * @deprecated GUAVA使え
+ * @author name
+ *
+ */
 public class $C {
 
 	public static abstract class Filter<V> {

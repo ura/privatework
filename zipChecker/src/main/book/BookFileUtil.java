@@ -316,7 +316,7 @@ public class BookFileUtil {
 			decodeAll(workF, newList);
 		}
 		if (true) {
-			//workF = new File("G:\\arkwork\\_1_1325925926356");
+			//workF = new File("G:\\arkwork\\_1_1326047201240");
 			FileOperationUtil.moveFewFile(workF);
 
 			//親フォルダがBOOKINFO形式だったら無視する。

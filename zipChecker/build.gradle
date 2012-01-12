@@ -51,6 +51,8 @@ dependencies {
 
 	compile 'javax.mail:mail:1.4.4'
 
+	compile 'org.apache.commons:commons-lang3:3.1'
+
 
 	compile 'net.sourceforge.javacsv:javacsv:2.0'
 	compile 'abaron:abaron:0.9.8'

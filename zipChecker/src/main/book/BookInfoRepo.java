@@ -26,6 +26,7 @@ import util.file.DirCollector;
 import util.file.ObjectUtil;
 import book.webapi.BookInfo;
 import book.webapi.BookInfoFromWeb;
+import book.webapi.ISBNConv;
 import static util.file.FileNameUtil.getExt;
 import static util.file.FileNameUtil.getFileName;
 
@@ -39,6 +40,7 @@ import static util.file.FileNameUtil.getFileName;
  *
  */
 public class BookInfoRepo implements Serializable {
+
 	/**
 	 *
 	 */
@@ -142,6 +144,36 @@ public class BookInfoRepo implements Serializable {
 	public void update(Set<BookInfo> infos, State state) {
 		for (BookInfo info : infos) {
 			map.put(new Key(info.getIsbn(), state), info);
+		}
+
+	}
+
+	/**
+	 * 不正なISBNを補正する。
+	 * @return
+	 */
+	public void repalreISBN() {
+		Set<BookInfo> result = new HashSet<>();
+
+		Set<BookInfo> set = get(State.ANY);
+
+		for (BookInfo bookInfo : set) {
+
+			//フォルダのやつは無視する。
+			if (!bookInfo.isRowdateOnly()) {
+
+				if (!ISBNConv.check(bookInfo.getIsbn())) {
+					result.add(bookInfo);
+					log.warn("不正な書籍情報です。:{}", bookInfo.getInfo());
+				}
+			}
+		}
+
+		for (BookInfo bookInfo : result) {
+			remove(bookInfo);
+			bookInfo.repalre();
+			addHave(bookInfo);
+
 		}
 
 	}
@@ -264,6 +296,11 @@ public class BookInfoRepo implements Serializable {
 
 	}
 
+	public void remove(BookInfo info) {
+		map.remove(new Key(info.getIsbn(), State.DUMMY));
+
+	}
+
 	/**
 	 * バッチ。
 	 * @param info
@@ -371,7 +408,12 @@ public class BookInfoRepo implements Serializable {
 		try {
 			Object load = ObjectUtil.load("isbn.data");
 			map = (Map<Key, BookInfo>) load;
+
+			repalreISBN();
+
+			save();
 		} catch (Exception e) {
+			e.printStackTrace();
 			log.warn("loadに失敗しました");
 		}
 	}
