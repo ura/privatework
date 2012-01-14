@@ -23,9 +23,6 @@ public class BookInfo implements Comparable<BookInfo>, Serializable {
 
 	private static Logger log = LoggerFactory.getLogger(BookInfo.class);
 
-	private static final Pattern titleSReg = Pattern
-			.compile("(.*)[\\s　]+([0-9]+)$");
-
 	private static final Pattern titleReg0 = Pattern
 			.compile("([^0-9０-９(（]*)[ 　][(（]第([0-9０-９]+)巻.*");
 
@@ -63,7 +60,6 @@ public class BookInfo implements Comparable<BookInfo>, Serializable {
 	static {
 		ArrayList<Pattern> list = new ArrayList<Pattern>();
 		list.add(titleReg0);
-		list.add(titleSReg);
 		list.add(titleReg1);
 		list.add(titleReg2);
 		list.add(titleReg7);
@@ -201,6 +197,12 @@ public class BookInfo implements Comparable<BookInfo>, Serializable {
 		nf.setMinimumIntegerDigits(2);
 		return nf.format(x);
 
+	}
+
+	private TYPE type;
+
+	public enum TYPE {
+		ROW, KAN, ONE
 	}
 
 	private String seriesName;
@@ -430,4 +432,16 @@ public class BookInfo implements Comparable<BookInfo>, Serializable {
 		this.no = no;
 	}
 
+	public TYPE getType() {
+		if (this.isRowdateOnly()) {
+			return TYPE.ROW;
+		} else {
+			//巻子がないものは巻数がない物同士でまとめる。
+			if (this.getNo().equals("")) {
+				return TYPE.ONE;
+			} else {
+				return TYPE.KAN;
+			}
+		}
+	}
 }
