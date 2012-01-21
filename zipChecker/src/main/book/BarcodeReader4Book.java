@@ -25,6 +25,7 @@ import util.ThreadPoolExecutorSync;
 import util.file.filter.FileNameFilter;
 import util.file.filter.FileNameFilter.MODE;
 import collection.MapList;
+import collection.Tuple;
 
 import com.google.inject.Inject;
 import com.google.zxing.BarcodeFormat;
@@ -245,7 +246,7 @@ public class BarcodeReader4Book {
 
 			List<Rect> createRect = createRect(bitmap, div);
 
-			String decode = decode(bitmap, createRect);
+			String decode = decode(Tuple.newT(bitmap, src), createRect);
 
 			return decode;
 
@@ -372,7 +373,7 @@ public class BarcodeReader4Book {
 
 	}
 
-	protected String decode(BinaryBitmap basemap, List<Rect> set) {
+	protected String decode(Tuple<BinaryBitmap, String> img, List<Rect> set) {
 
 		//Reader reader = new MultiFormatReader();
 
@@ -383,7 +384,7 @@ public class BarcodeReader4Book {
 
 		for (Rect rect : set) {
 
-			String r = x(basemap, reader, rect);
+			String r = x(img, reader, rect);
 			if (r != null && r.startsWith("978")) {
 				return r;
 			}
@@ -395,8 +396,8 @@ public class BarcodeReader4Book {
 		return temp;
 	}
 
-	protected String x(BinaryBitmap basemap, Reader reader, Rect rect) {
-		BinaryBitmap bitmap = crop(basemap, rect);
+	protected String x(Tuple<BinaryBitmap, String> img, Reader reader, Rect rect) {
+		BinaryBitmap bitmap = crop(img.val1, rect);
 
 		// デコードを実行
 		Result result;
@@ -424,7 +425,8 @@ public class BarcodeReader4Book {
 			} else {
 				ResultPoint[] points = result.getResultPoints();
 
-				log.info(Log.STATIC, "OK:RECT:{}[{}]", rect.getStaticInfo());
+				log.info(Log.STATIC, "OK:RECT:{}[{}]", rect.getStaticInfo(),
+						img.val2);
 
 				log.debug("位置検出パターン／アライメントパターンの座標: ");
 				for (int i = 0; i < points.length; i++) {

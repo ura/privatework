@@ -30,13 +30,15 @@ import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import util.Normalizer;
 import util.WinRARWrapper;
 import util.file.DirCollector;
 import util.file.FileOperationUtil;
 import util.file.NameUtil;
-import book.BookNameUtil.K.TYPE;
 import book.webapi.BookInfo;
+import book.webapi.BookInfo.TYPE;
 import book.webapi.BookInfoFromWeb;
+import collection.Tuple;
 
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
@@ -125,8 +127,9 @@ public class BookNameUtil implements NameUtil {
 			return getFileName(f) + "." + getExt(f);
 		}
 
-		String replaceAll = getFileName(f).replaceAll(reg, "_") + "."
-				+ getExt(f);
+		String replaceAll = Normalizer.normalizer(getFileName(f)).replaceAll(
+				reg, "_")
+				+ "." + getExt(f);
 
 		return replaceAll.replace("_{2,20}", "_");
 
@@ -157,7 +160,12 @@ public class BookNameUtil implements NameUtil {
 				File dest = createPath(file.getValue().getParentFile(),
 						createSimpleName);
 				map.put(file.getKey(), dest);
+				if (set.contains(dest.getName())) {
+					log.warn("重複しています。{} >>  {}", file.getKey(), dest);
+
+				}
 				set.add(dest.getName());
+
 			}
 
 			if (fList.size() == set.size()) {
@@ -233,7 +241,9 @@ public class BookNameUtil implements NameUtil {
 			BookInfo bookNo = getBookInfo(dir);
 
 			HashMap<File, BookInfo> hashMap = new HashMap<File, BookInfo>();
-			hashMap.put(dir, bookNo);
+			if (bookNo != null) {
+				hashMap.put(dir, bookNo);
+			}
 			return hashMap;
 		}
 
@@ -269,7 +279,7 @@ public class BookNameUtil implements NameUtil {
 	 * @param dir
 	 * @return
 	 */
-	public BookInfo bookInfoFromFolder(File dir) {
+	public BookInfo bookInfoFromFolderName(File dir) {
 		Matcher matcher = FOLDER_REG.matcher(dir.getName());
 		//期待できそう
 		if (matcher.find()) {
@@ -301,17 +311,25 @@ public class BookNameUtil implements NameUtil {
 	 */
 	public BookInfo getBookInfo(File dir) {
 
-		if (BookInfo.isBookInfoName(dir)) {
+		if ((BookInfo.isBookInfoName(dir.getParentFile()) || BookInfo
+				.isBookInfoName(dir.getParentFile().getParentFile()))) {
+			log.warn("親フォルダが書籍情報のため、スキップします。。{}", dir);
+			return null;
+		}
+
+		if (true && BookInfo.isBookInfoName(dir)) {
 			log.warn("フォルダ名より、処理済みのフォルダと認識したため、そのまま情報を使用します。{}",
 					dir.getAbsolutePath());
 			BookInfo bookInfo = BookInfo.createBookInfo(dir);
 			bookInfoRepo.addHave(bookInfo);
 			return bookInfo;
 		}
-		BookInfo bookInfoFromFolder = bookInfoFromFolder(dir);
-		if (bookInfoFromFolder != null) {
-			bookInfoRepo.addHave(bookInfoFromFolder);
-			return bookInfoFromFolder;
+		if (true) {
+			BookInfo bookInfoFromFolder = bookInfoFromFolderName(dir);
+			if (bookInfoFromFolder != null) {
+				bookInfoRepo.addHave(bookInfoFromFolder);
+				return bookInfoFromFolder;
+			}
 		}
 
 		String barcode = getISBNFromFolderName(dir);
@@ -450,19 +468,20 @@ public class BookNameUtil implements NameUtil {
 	public void createCominName(File baseDir, SortedMap<BookInfo, File> map)
 			throws IOException, InterruptedException {
 
-		SortedMap<K, SortedMap<BookInfo, File>> m = classfy(map);
+		SortedMap<Tuple<String, TYPE>, SortedMap<BookInfo, File>> m = classfy(map);
 
 		File temp1 = FileOperationUtil.createTempDir(baseDir, "1ファイル");
 		File tempMany = FileOperationUtil.createTempDir(baseDir, "完成");
 
-		for (Entry<K, SortedMap<BookInfo, File>> e : m.entrySet()) {
+		for (Entry<Tuple<String, TYPE>, SortedMap<BookInfo, File>> e : m
+				.entrySet()) {
 			SortedMap<BookInfo, File> value = e.getValue();
 			Set<BookInfo> keySet = value.keySet();
 			List<BookInfo> list = new ArrayList<BookInfo>(keySet);
 
 			log.warn("基礎名の分類結果です。{} : data数 {}", e.getKey(), keySet.size());
 
-			File path = createPath(baseDir, e.getKey().key);
+			File path = createPath(baseDir, e.getKey().val1);
 			path.delete();
 			path.mkdir();
 			for (BookInfo bookInfo : list) {
@@ -483,61 +502,6 @@ public class BookNameUtil implements NameUtil {
 
 	}
 
-	static class K implements Comparable<K> {
-		public K(String key, TYPE type) {
-			super();
-			this.key = key;
-			this.type = type;
-		}
-
-		String key;
-
-		/**
-		 * TODO BOOKINFOで持つべき情報
-		 */
-		TYPE type;
-
-		enum TYPE {
-			ROW, KAN, ONE
-		}
-
-		@Override
-		public int hashCode() {
-			final int prime = 31;
-			int result = 1;
-			result = prime * result + ((key == null) ? 0 : key.hashCode());
-			return result;
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj)
-				return true;
-			if (obj == null)
-				return false;
-			if (getClass() != obj.getClass())
-				return false;
-			K other = (K) obj;
-			if (key == null) {
-				if (other.key != null)
-					return false;
-			} else if (!key.equals(other.key))
-				return false;
-			return true;
-		}
-
-		@Override
-		public String toString() {
-			return key + ", " + type;
-		}
-
-		@Override
-		public int compareTo(K o) {
-
-			return key.compareTo(o.key);
-		};
-	}
-
 	/**
 	 * 分類のロジックです。
 	 * 現在の実装は、著者名-タイトル
@@ -545,26 +509,26 @@ public class BookNameUtil implements NameUtil {
 	 * @param map
 	 * @return
 	 */
-	protected SortedMap<K, SortedMap<BookInfo, File>> classfy(
+	protected SortedMap<Tuple<String, TYPE>, SortedMap<BookInfo, File>> classfy(
 			SortedMap<BookInfo, File> map) {
 		//コミックの名称（巻を除く）ごとに分別
-		SortedMap<K, SortedMap<BookInfo, File>> m = new TreeMap<K, SortedMap<BookInfo, File>>() {
+		SortedMap<Tuple<String, TYPE>, SortedMap<BookInfo, File>> m = new TreeMap<Tuple<String, TYPE>, SortedMap<BookInfo, File>>() {
 			@Override
 			public SortedMap<BookInfo, File> get(Object key) {
 				if (!this.containsKey(key)) {
 					TreeMap<BookInfo, File> treeMap = new TreeMap<BookInfo, File>();
-					this.put((K) key, treeMap);
+					this.put((Tuple<String, TYPE>) key, treeMap);
 				}
 				return super.get(key);
 			}
 
 		};
-		SortedMap<K, SortedMap<BookInfo, File>> result = new TreeMap<K, SortedMap<BookInfo, File>>() {
+		SortedMap<Tuple<String, TYPE>, SortedMap<BookInfo, File>> result = new TreeMap<Tuple<String, TYPE>, SortedMap<BookInfo, File>>() {
 			@Override
 			public SortedMap<BookInfo, File> get(Object key) {
 				if (!this.containsKey(key)) {
 					TreeMap<BookInfo, File> treeMap = new TreeMap<BookInfo, File>();
-					this.put((K) key, treeMap);
+					this.put((Tuple<String, TYPE>) key, treeMap);
 				}
 				return super.get(key);
 			}
@@ -572,15 +536,15 @@ public class BookNameUtil implements NameUtil {
 		};
 
 		for (BookInfo bookInfo : map.keySet()) {
-			K baseInfo;
+			Tuple<String, TYPE> baseInfo;
 			if (bookInfo.isRowdateOnly()) {
-				baseInfo = new K(bookInfo.getRowTitle(), TYPE.ROW);
+				baseInfo = Tuple.newT(bookInfo.getRowTitle(), TYPE.ROW);
 			} else {
 				//巻子がないものは巻数がない物同士でまとめる。
 				if (bookInfo.getNo().equals("")) {
-					baseInfo = new K(bookInfo.getAuthor(), TYPE.ONE);
+					baseInfo = Tuple.newT(bookInfo.getAuthor(), TYPE.ONE);
 				} else {
-					baseInfo = new K(bookInfo.getSimpleInfo(), TYPE.KAN);
+					baseInfo = Tuple.newT(bookInfo.getTitleStr(), TYPE.KAN);
 				}
 			}
 
@@ -588,13 +552,15 @@ public class BookNameUtil implements NameUtil {
 			m.get(baseInfo).put(bookInfo, map.get(bookInfo));
 		}
 
-		for (Entry<K, SortedMap<BookInfo, File>> e1 : m.entrySet()) {
-			String k1 = e1.getKey().key;
-			TYPE k2 = e1.getKey().type;
+		for (Entry<Tuple<String, TYPE>, SortedMap<BookInfo, File>> e1 : m
+				.entrySet()) {
+			String k1 = e1.getKey().val1;
+			TYPE k2 = e1.getKey().val2;
 
-			for (Entry<K, SortedMap<BookInfo, File>> e2 : m.entrySet()) {
-				String k3 = e2.getKey().key;
-				TYPE k4 = e2.getKey().type;
+			for (Entry<Tuple<String, TYPE>, SortedMap<BookInfo, File>> e2 : m
+					.entrySet()) {
+				String k3 = e2.getKey().val1;
+				TYPE k4 = e2.getKey().val2;
 
 				if (e1.equals(e2)) {
 					continue;
@@ -644,16 +610,18 @@ public class BookNameUtil implements NameUtil {
 		return result;
 	}
 
-	private void renameKey(SortedMap<K, SortedMap<BookInfo, File>> src,
-			SortedMap<K, SortedMap<BookInfo, File>> result) {
+	private void renameKey(
+			SortedMap<Tuple<String, TYPE>, SortedMap<BookInfo, File>> src,
+			SortedMap<Tuple<String, TYPE>, SortedMap<BookInfo, File>> result) {
 
-		for (Entry<K, SortedMap<BookInfo, File>> e : src.entrySet()) {
+		for (Entry<Tuple<String, TYPE>, SortedMap<BookInfo, File>> e : src
+				.entrySet()) {
 
 			if (e.getValue().size() == 0) {
 				continue;
 			}
 
-			switch (e.getKey().type) {
+			switch (e.getKey().val2) {
 			case ROW:
 
 				Set<BookInfo> keySet = e.getValue().keySet();
@@ -668,12 +636,12 @@ public class BookNameUtil implements NameUtil {
 							}
 						});
 
-				String prefix = StringUtils.getCommonPrefix(names
-						.toArray(new String[0]));
+				String prefix = StringUtils.getCommonPrefix(
+						names.toArray(new String[0])).trim();
 				if (prefix.length() > 1) {
 					log.info("下記に名称を変更します。{} {}", prefix, names.size());
 
-					result.put(new K(prefix, TYPE.ROW), e.getValue());
+					result.put(Tuple.newT(prefix, TYPE.ROW), e.getValue());
 				} else {
 					log.info("下記に名称変更できませんでした。{} \n{}",
 							Joiner.on("\n").join(names), names.size());
@@ -714,14 +682,14 @@ public class BookNameUtil implements NameUtil {
 									return subList.contains(input);
 								}
 							});
-					result.put(new K(folderName, TYPE.KAN), filterMap);
+					result.put(Tuple.newT(folderName, TYPE.KAN), filterMap);
 
 				}
 
 				break;
 			case ONE:
-				result.put(new K("[一般コミック][" + e.getKey().key + "]", TYPE.ONE),
-						e.getValue());
+				result.put(Tuple.newT("[一般コミック][" + e.getKey().val1 + "]",
+						TYPE.ONE), e.getValue());
 				break;
 			default:
 				throw new IllegalArgumentException();
@@ -733,15 +701,6 @@ public class BookNameUtil implements NameUtil {
 		return;
 	}
 
-	private <K, V> SortedMap<K, V> partition(SortedMap<K, V> map,
-			Collection<K> keyList) {
-
-		TreeMap<K, V> treeMap = new TreeMap<>();
-
-		return map;
-
-	}
-
 	/**
 	 * 多い方のネーミングに移動する。
 	 * @param e1
@@ -749,8 +708,9 @@ public class BookNameUtil implements NameUtil {
 	 * @param e2
 	 * @param k3
 	 */
-	private void move(Entry<K, SortedMap<BookInfo, File>> e1, String k1,
-			Entry<K, SortedMap<BookInfo, File>> e2, String k3) {
+	private void move(Entry<Tuple<String, TYPE>, SortedMap<BookInfo, File>> e1,
+			String k1,
+			Entry<Tuple<String, TYPE>, SortedMap<BookInfo, File>> e2, String k3) {
 		SortedMap<BookInfo, File> value1 = e1.getValue();
 		SortedMap<BookInfo, File> value2 = e2.getValue();
 

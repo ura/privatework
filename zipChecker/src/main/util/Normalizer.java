@@ -157,6 +157,16 @@ public class Normalizer {
 		hmCharTbl.put("ﾍﾟ", "ペ");
 		hmCharTbl.put("ﾎﾟ", "ポ");
 
+		hmCharTbl.put("①", "1");
+		hmCharTbl.put("②", "2");
+		hmCharTbl.put("③", "3");
+		hmCharTbl.put("④", "4");
+		hmCharTbl.put("⑤", "5");
+		hmCharTbl.put("⑥", "6");
+		hmCharTbl.put("⑦", "7");
+		hmCharTbl.put("⑧", "8");
+		hmCharTbl.put("⑨", "9");
+
 		hmCharTbl.put("　", " ");
 		hmCharTbl.put("\t", "  ");
 		hmCharTbl.put("（", "(");

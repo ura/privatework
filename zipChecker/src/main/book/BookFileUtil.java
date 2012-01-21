@@ -215,6 +215,71 @@ public class BookFileUtil {
 
 	}
 
+	public static void rebuildArc(String name, Collection<File> newList)
+			throws IOException, InterruptedException {
+		File workF = null;
+		if (true) {
+			workF = FileOperationUtil.createTempDir(WORK_DIR);
+
+			decodeAll(workF, newList);
+		}
+		if (true) {
+			//workF = new File("G:\\arkwork\\_1_1326929190708");
+			FileOperationUtil.moveFewFile(workF);
+
+			//親フォルダがBOOKINFO形式だったら無視する。
+			FileOperationUtil.moveFolderToRoot(workF, new FileFilter() {
+				@Override
+				public boolean accept(File pathname) {
+
+					return !(BookInfo.isBookInfoName(pathname.getParentFile()) || BookInfo
+							.isBookInfoName(pathname.getParentFile()
+									.getParentFile()));
+				}
+			});
+
+			jpgCheck(workF);
+			FileOperationUtil.deleteEmptyDir(workF, "jpeg", "jpg", "png");
+
+			FileOperationUtil.removeFile(workF, new String[] { "^.*\\.html$",
+					"^.*\\.url$", "^.*\\.txt$", "^Thumbs\\.db", "^[^.]*$",
+					"spot\\.com\\.jpg" });
+			FileOperationUtil.renameToSimpleFileName(workF);
+
+			Map<File, BookInfo> allbookInfo = bookName.getAllbookInfo(workF);
+
+			SortedMap<BookInfo, File> s = new TreeMap<BookInfo, File>();
+
+			File tempDest1 = FileOperationUtil.createTempDir(WORK_DIR, "名称重複");
+			File tempDest2 = FileOperationUtil.createTempDir(WORK_DIR, "完全一致");
+
+			boolean flag = false;
+			for (Entry<File, BookInfo> e : allbookInfo.entrySet()) {
+				File src = e.getKey();
+				BookInfo bookNo = e.getValue();
+
+				File newDir = createPath(workF, bookNo.getInfo());
+
+				s.put(bookNo, newDir);
+
+				try {
+					moveDir(src, newDir, bookNo, tempDest1, tempDest2);
+				} catch (Exception e1) {
+					log.error("ファイル移動時にエラーが発生しました", e);
+					flag = true;
+				}
+			}
+			//TODO
+			if (false) {
+				return;
+			}
+
+			bookName.createCominName(new File(WORK_DIR), s);
+			bookName.getBookInfoRepo().save();
+		}
+
+	}
+
 	public static void decodeAll(File workDir, Collection<File> newList)
 			throws IOException {
 
@@ -305,67 +370,6 @@ public class BookFileUtil {
 			throw new IllegalArgumentException(
 					"想定外です。画像でない場合はNULLが返りECEPTIONは発生しません。");
 		}
-	}
-
-	public static void rebuildArc(String name, Collection<File> newList)
-			throws IOException, InterruptedException {
-		File workF = null;
-		if (true) {
-			workF = FileOperationUtil.createTempDir(WORK_DIR);
-
-			decodeAll(workF, newList);
-		}
-		if (true) {
-			//workF = new File("G:\\arkwork\\_1_1326047201240");
-			FileOperationUtil.moveFewFile(workF);
-
-			//親フォルダがBOOKINFO形式だったら無視する。
-			FileOperationUtil.moveFolderToRoot(workF, new FileFilter() {
-				@Override
-				public boolean accept(File pathname) {
-
-					return !BookInfo.isBookInfoName(pathname.getParentFile());
-				}
-			});
-
-			jpgCheck(workF);
-			FileOperationUtil.deleteEmptyDir(workF, "jpeg", "jpg", "png");
-
-			FileOperationUtil.removeFile(workF, new String[] { "^.*\\.html$",
-					"^.*\\.url$", "^.*\\.txt$", "^Thumbs\\.db", "^[^.]*$",
-					"spot\\.com\\.jpg" });
-			FileOperationUtil.renameToSimpleFileName(workF);
-
-			Map<File, BookInfo> allbookInfo = bookName.getAllbookInfo(workF);
-
-			SortedMap<BookInfo, File> s = new TreeMap<BookInfo, File>();
-
-			File tempDest1 = FileOperationUtil.createTempDir(WORK_DIR, "名称重複");
-			File tempDest2 = FileOperationUtil.createTempDir(WORK_DIR, "完全一致");
-
-			boolean flag = false;
-			for (Entry<File, BookInfo> e : allbookInfo.entrySet()) {
-				File src = e.getKey();
-				BookInfo bookNo = e.getValue();
-
-				File newDir = createPath(workF, bookNo.getInfo());
-
-				s.put(bookNo, newDir);
-
-				try {
-					moveDir(src, newDir, bookNo, tempDest1, tempDest2);
-				} catch (Exception e1) {
-					flag = true;
-				}
-			}
-			if (flag) {
-				return;
-			}
-
-			bookName.createCominName(new File(WORK_DIR), s);
-			bookName.getBookInfoRepo().save();
-		}
-
 	}
 
 	/**

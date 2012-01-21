@@ -23,27 +23,34 @@ public class BookInfo implements Comparable<BookInfo>, Serializable {
 
 	private static Logger log = LoggerFactory.getLogger(BookInfo.class);
 
-	private static final Pattern titleReg0 = Pattern
-			.compile("([^0-9０-９(（]*)[ 　][(（]第([0-9０-９]+)巻.*");
-
 	private static final Pattern titleReg1 = Pattern
-			.compile("(.*)[\\(（]{1}([    ([0-9]]+)[）\\)]{1}$");
+			.compile("^([^()\\n\\r]+)[(（〈][巻集]*([0-9０-９]+)[）)〉]");
 
 	private static final Pattern titleReg2 = Pattern
-			.compile("(.*[^0-9(（])[(（]*([0-9]{1,2})([^0-9]+.*) [\\(\\(（].*[\\)）\\)]$");
-	private static final Pattern titleReg7 = Pattern
-			.compile("([^()（）]*)[()（）]([0-9０-９]+)[()（）]");
+			.compile("^([^()\\n\\r]+)[(（]第([0-9０-９]+)[巻集][）)]");
 
 	private static final Pattern titleReg3 = Pattern
-			.compile("(.*[^0-9()])([0-9０-９]+)(.*[^0-9]) [\\(\\(（].*[\\)）\\)]$");
+			.compile("^([^()\\n\\r]+)[ 　]*第([0-9０-９]+)[巻集]");
+
 	private static final Pattern titleReg4 = Pattern
-			.compile("(.*[^0-9])[(（]第([0-9]*)巻[）)]$");
+			.compile("^([^()\\n\\r]+)[ 　]+([0-9０-９]+)");
 	private static final Pattern titleReg5 = Pattern
-			.compile("(.*)[\\(（]{1}([    ([0-9]]+)[）\\)]{1}");
-	private static final Pattern titleReg8 = Pattern
-			.compile("([^0-9０-９(（]*)[ 　]([0-9０-９]+) [(（].*");
+			.compile("^([^()\\n\\r]+)[ 　]*([0-9０-９]+)[巻集]");
+
 	private static final Pattern titleReg6 = Pattern
-			.compile("(.*[^0-9(（])[(（ ]*([0-9]+)[^0-9]*$");
+			.compile("^([^()\\n\\r]+)([0-9０-９]+)[ 　(（〈]+");
+	private static final Pattern titleReg6_1 = Pattern
+			.compile("^([^()\\n\\r]+)[(（]Volume:([0-9０-９]+)[巻集]*[）)]");
+
+	/**
+	 * 巻数対応なし
+	 */
+	private static final Pattern titleReg7 = Pattern
+			.compile("^([^\\n\\r]+)[(（〈][^()\\n\\r]{4,30}[）)〉]+()");
+	/**
+	 * 巻数対応なし
+	 */
+	private static final Pattern titleReg8 = Pattern.compile("(.+)()");
 
 	/**
 	 * 巻数取得あり
@@ -56,19 +63,18 @@ public class BookInfo implements Comparable<BookInfo>, Serializable {
 	private static final Pattern bookInfoReg2 = Pattern
 			.compile("\\[(.*)\\]\\[(.*)\\]\\[(.*)\\]\\[ISBN([0-9A-Za-z ]*)\\]");
 
-	private static final List<Pattern> regList;
+	protected static final List<Pattern> regList;
 	static {
 		ArrayList<Pattern> list = new ArrayList<Pattern>();
-		list.add(titleReg0);
 		list.add(titleReg1);
 		list.add(titleReg2);
-		list.add(titleReg7);
-
-		list.add(titleReg8);
 		list.add(titleReg3);
 		list.add(titleReg4);
 		list.add(titleReg5);
 		list.add(titleReg6);
+		list.add(titleReg6_1);
+		list.add(titleReg7);
+		list.add(titleReg8);
 
 		regList = Collections.unmodifiableList(list);
 
@@ -168,7 +174,7 @@ public class BookInfo implements Comparable<BookInfo>, Serializable {
 
 			if (result) {
 
-				this.titleStr = Normalizer.normalizer(matcher.group(1));
+				this.titleStr = Normalizer.normalizer(matcher.group(1)).trim();
 				this.no = no_XX(matcher.group(2));
 
 				log.info("base:{}  title:{}  NO:{}  REG:{}  ISBN:{}",
@@ -188,7 +194,11 @@ public class BookInfo implements Comparable<BookInfo>, Serializable {
 
 	private static String no_XX(String xx) {
 
-		return no_XX(Integer.parseInt(xx));
+		try {
+			return no_XX(Integer.parseInt(xx));
+		} catch (NumberFormatException e) {
+			return "";
+		}
 
 	}
 

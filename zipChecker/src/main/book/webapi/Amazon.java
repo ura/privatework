@@ -9,8 +9,12 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.net.URL;
+import java.text.DecimalFormat;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.concurrent.Callable;
@@ -33,13 +37,19 @@ import org.apache.commons.io.CopyUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import collection.Tuple;
+
+import com.google.common.collect.LinkedListMultimap;
+import com.google.common.collect.ListMultimap;
 import com.google.common.io.Files;
 import com.google.common.io.OutputSupplier;
 
 import conf.ConfConst;
+import static util.StaticUtil.sleep;
 
 public class Amazon {
 
@@ -98,7 +108,10 @@ public class Amazon {
 		@Override
 		public void setCustomQuery(Map<String, String> params) {
 			params.put("Operation", "ItemSearch");
-			params.put("Keywords", title + " " + author);
+			//params.put("Keywords", title + " " + author);
+			params.put("Title", title);
+			params.put("Author", author);
+
 			params.put("SearchIndex", "Books");
 
 			params.put("ItemPage", page + "");
@@ -277,45 +290,71 @@ public class Amazon {
 			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 			DocumentBuilder db = dbf.newDocumentBuilder();
 			Document doc = db.parse(query);
-			xmlStr = document2String(doc);
-			NodeList isbnNode = doc.getElementsByTagName("ASIN");
-			NodeList titleNode = doc.getElementsByTagName("Title");
-			NodeList authorNode = doc.getElementsByTagName("Author");
-			NodeList manufacturerNode = doc
-					.getElementsByTagName("Manufacturer");
-			NodeList detailPageURLNode = doc
-					.getElementsByTagName("DetailPageURL");
+			xmlStr = document2String(doc.getDocumentElement());
 
-			for (int i = 0; i < titleNode.getLength(); i++) {
+			NodeList item = doc.getElementsByTagName("Item");
 
-				String url = detailPageURLNode.item(i).getTextContent();
+			int record = 10;
+			for (int i = 0; i < item.getLength(); i++) {
+				try {
+					Element elm = (Element) item.item(i);
+					NodeList isbnNode = elm.getElementsByTagName("ASIN");
+					NodeList titleNode = elm.getElementsByTagName("Title");
+					NodeList authorNode = elm.getElementsByTagName("Author");
+					NodeList manufacturerNode = elm
+							.getElementsByTagName("Manufacturer");
+					NodeList detailPageURLNode = elm
+							.getElementsByTagName("DetailPageURL");
 
-				//TODO 古い書籍だと、この形ではない・・・・。
-				String isbn = ISBNConv.to13(isbnNode.item(i).getTextContent());
+					String url = detailPageURLNode.item(0).getTextContent();
 
-				getImage(isbnNode.item(i).getTextContent(), url);
+					//TODO 古い書籍だと、この形ではない・・・・。
+					String isbn = ISBNConv.to13(isbnNode.item(0)
+							.getTextContent());
+					getImage(isbnNode.item(0).getTextContent(), url);
+					String title = titleNode.item(0).getTextContent();
 
-				String title = titleNode.item(i).getTextContent();
-				String author = authorNode.item(i).getTextContent();
-				String pub = manufacturerNode.item(i).getTextContent();
-				log.info(title + "  " + author + "  " + pub);
+					if (isbn == null) {
+						log.info("書籍ではありません。雑誌等の可能性が高いです。{} {}",
+								isbnNode.item(0).getTextContent(), title);
+						record--;
+						continue;
 
-				BookInfo bookInfo = new BookInfo(pub, "", author, title, isbn);
-				set.add(bookInfo);
+					}
+
+					String author = authorNode.item(0).getTextContent();
+					String pub = manufacturerNode.item(0).getTextContent();
+					log.info(title + "  " + author + "  " + pub);
+
+					BookInfo bookInfo = new BookInfo(pub, "", author, title,
+							isbn);
+					set.add(bookInfo);
+				} catch (NullPointerException e) {
+					Element elm = (Element) item.item(i);
+					record--;
+					log.error(
+							"想定外のエラーです。タイトルがない、出版社がない等だと思われます。基本無視してください。\n{},\n{}",
+							document2String(elm).replaceAll("><", ">\n<"), e);
+				}
 
 			}
 
-			if (set.size() == 10) {
-				log.info("データ件数がMAXに達したので、次ページに移動します。", q.page);
-				SortedSet<BookInfo> info = getInfo(q);
-				set.addAll(info);
-			}
+			paging(q, set, record);
 
 			if (log.isDebugEnabled()) {
-				log.debug(document2String(doc).replaceAll("><", ">\n<"));
+				log.debug(document2String(doc.getDocumentElement()).replaceAll(
+						"><", ">\n<"));
 			}
-		} catch (ParserConfigurationException | SAXException | IOException
-				| RuntimeException e) {
+		} catch (IOException e) {
+			log.error("リクエストエラーの可能性があります。リトライを検討します。\n{},\n{}", xmlStr, e);
+			if (e.getMessage().contains("503")) {
+				log.error("リクエストエラーの可能性があります。リトライを検討します。\n{},\n{}", xmlStr, e);
+				sleep(3000l);
+				q.page--;
+				set = getInfo(q);
+			}
+
+		} catch (ParserConfigurationException | SAXException | RuntimeException e) {
 
 			log.error("想定外のエラーです。タイトルがない、出版社がない等だと思われます。基本無視してください。\n{},\n{}",
 					xmlStr, e);
@@ -325,7 +364,80 @@ public class Amazon {
 		return set;
 	}
 
-	public static String document2String(Document doc) {
+	/**
+	 * ページング、および、多量の検索時の条件分岐ロジックです。
+	 * @param q
+	 * @param set
+	 * @param record
+	 */
+	protected static void paging(Query q, SortedSet<BookInfo> set, int record) {
+		if (set.size() == record) {
+			log.info("データ件数がMAXに達したので、次ページに移動します。{}", q.page);
+
+			//普通のページング
+			if (q.page < 11) {
+				SortedSet<BookInfo> info = getInfo(q);
+
+				set.addAll(info);
+			} else {
+				log.info("ページング限界に達しました。{}", q.page);
+			}
+			q.page--;
+
+			if (set.size() > 80 && q instanceof TitleQuery && q.page == 1) {
+				log.info("データ件数が100件に収まらない可能性があるため検索条件詳細化を検討します。{}", q.page);
+
+				ListMultimap<Tuple<String, String>, BookInfo> map = LinkedListMultimap
+						.create();
+
+				for (BookInfo bookInfo : set) {
+					map.put(Tuple.newT(bookInfo.getTitleStr(),
+							bookInfo.getAuthor()), bookInfo);
+
+				}
+
+				for (Entry<Tuple<String, String>, Collection<BookInfo>> e : map
+						.asMap().entrySet()) {
+
+					if (e.getValue().size() > 10) {
+						//60巻まで書籍に対応
+						Set<String> noset = no_XX(1, 60);
+						for (BookInfo info2 : e.getValue()) {
+							noset.remove(info2.getNo());
+						}
+
+						for (String no : noset) {
+							SortedSet<BookInfo> set2 = getInfoByTitleAuther(
+									e.getKey().val1 + " " + no, e.getKey().val2);
+							set.addAll(set2);
+
+						}
+
+					}
+
+				}
+
+			}
+		}
+	}
+
+	private static Set<String> no_XX(int x, int y) {
+
+		Set<String> set = new TreeSet<>();
+		for (int i = x; i <= y; i++) {
+			set.add(no_XX(i));
+		}
+		return set;
+	}
+
+	private static String no_XX(int x) {
+		DecimalFormat nf = new DecimalFormat("##");
+		nf.setMinimumIntegerDigits(2);
+		return nf.format(x);
+
+	}
+
+	public static String document2String(Element elm) {
 		String string = null;
 		StringWriter writer = new StringWriter();
 		StreamResult result = new StreamResult(writer);
@@ -334,7 +446,7 @@ public class Amazon {
 		Transformer former;
 		try {
 			former = factory.newTransformer();
-			former.transform(new DOMSource(doc.getDocumentElement()), result);
+			former.transform(new DOMSource(elm), result);
 			string = result.getWriter().toString();
 		} catch (TransformerConfigurationException e) {
 			log.error("", e);
