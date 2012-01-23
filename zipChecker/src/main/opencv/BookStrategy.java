@@ -1,12 +1,6 @@
 package opencv;
 
-import com.googlecode.javacv.jna.cxcore.IplImage;
-import com.googlecode.javacv.jna.cxcore.CvSize.ByValue;
-
-import static com.googlecode.javacv.jna.cxcore.*;
-import static com.googlecode.javacv.jna.cv.*;
-import static com.googlecode.javacv.jna.highgui.*;
-import static com.googlecode.javacv.jna.cvaux.*;
+import com.googlecode.javacv.cpp.opencv_core.IplImage;
 
 /**
  *
@@ -24,8 +18,8 @@ public class BookStrategy implements CutStrategy {
 
 		// 縦幅はフルのサイズのはず。横は裏表紙まで取り込み等の可能性あり
 		// 縦のスケールを正としてサイズあわせ。
-		int height = image.height;
-		int height2 = template.height;
+		int height = image.height();
+		int height2 = template.height();
 
 		if (height > height2) {
 
@@ -38,13 +32,13 @@ public class BookStrategy implements CutStrategy {
 
 		template = OpenCVUtil.cut(template, 0.7, 0.7, 0.5, 0.4);
 
-		OpenCVUtil.showImg(image, 5000, "IMG CHECK");
-		OpenCVUtil.showImg(template, 5000, "IMG CHECK");
+		OpenCVUtil.myShowImg(image, 1000, "変換元");
+		OpenCVUtil.myShowImg(template, 1000, "切り出し後");
 
-		int h3 = image.getCvSize().height;
-		int w3 = image.getCvSize().width;
-		int h4 = template.getCvSize().height;
-		int w4 = template.getCvSize().width;
+		int h3 = image.height();
+		int w3 = image.width();
+		int h4 = template.height();
+		int w4 = template.width();
 
 		System.out.println("size:" + h3 + "_" + w3 + " :" + h4 + "_" + w4);
 
