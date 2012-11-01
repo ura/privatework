@@ -311,6 +311,9 @@ public class BookNameUtil implements NameUtil {
 	 */
 	public BookInfo getBookInfo(File dir) {
 
+		//TODO INFOにする
+		log.warn("書籍名取得処理を開始します{}", dir.getAbsolutePath());
+
 		if ((BookInfo.isBookInfoName(dir.getParentFile()) || BookInfo
 				.isBookInfoName(dir.getParentFile().getParentFile()))) {
 			log.warn("親フォルダが書籍情報のため、スキップします。。{}", dir);

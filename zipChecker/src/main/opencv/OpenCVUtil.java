@@ -1,6 +1,14 @@
 package opencv;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.googlecode.javacpp.Pointer;
 import com.googlecode.javacv.CanvasFrame;
+import com.googlecode.javacv.cpp.opencv_core.CvArr;
+import com.googlecode.javacv.cpp.opencv_core.CvFileStorage;
+import com.googlecode.javacv.cpp.opencv_core.CvMat;
+import com.googlecode.javacv.cpp.opencv_core.CvMatND;
 import com.googlecode.javacv.cpp.opencv_core.CvPoint;
 import com.googlecode.javacv.cpp.opencv_core.CvPoint2D32f;
 import com.googlecode.javacv.cpp.opencv_core.CvSize;
@@ -8,15 +16,22 @@ import com.googlecode.javacv.cpp.opencv_core.IplImage;
 import com.googlecode.javacv.cpp.opencv_imgproc.CvHistogram;
 
 import static com.googlecode.javacv.cpp.opencv_core.CV_RGB;
+import static com.googlecode.javacv.cpp.opencv_core.CV_STORAGE_READ;
+import static com.googlecode.javacv.cpp.opencv_core.CV_STORAGE_WRITE;
 import static com.googlecode.javacv.cpp.opencv_core.IPL_DEPTH_32F;
 import static com.googlecode.javacv.cpp.opencv_core.IPL_DEPTH_8U;
+import static com.googlecode.javacv.cpp.opencv_core.cvAttrList;
 import static com.googlecode.javacv.cpp.opencv_core.cvCreateImage;
 import static com.googlecode.javacv.cpp.opencv_core.cvGetSize;
 import static com.googlecode.javacv.cpp.opencv_core.cvMinMaxLoc;
+import static com.googlecode.javacv.cpp.opencv_core.cvOpenFileStorage;
 import static com.googlecode.javacv.cpp.opencv_core.cvPoint;
+import static com.googlecode.javacv.cpp.opencv_core.cvReadByName;
 import static com.googlecode.javacv.cpp.opencv_core.cvRectangle;
+import static com.googlecode.javacv.cpp.opencv_core.cvReleaseFileStorage;
 import static com.googlecode.javacv.cpp.opencv_core.cvSize;
 import static com.googlecode.javacv.cpp.opencv_core.cvSplit;
+import static com.googlecode.javacv.cpp.opencv_core.cvWrite;
 import static com.googlecode.javacv.cpp.opencv_highgui.cvLoadImage;
 import static com.googlecode.javacv.cpp.opencv_imgproc.CV_BGR2HSV;
 import static com.googlecode.javacv.cpp.opencv_imgproc.CV_COMP_CORREL;
@@ -38,6 +53,7 @@ import static com.googlecode.javacv.cpp.opencv_objdetect.*;
 */
 
 public class OpenCVUtil {
+	private static Logger log = LoggerFactory.getLogger(OpenCVUtil.class);
 
 	//	public static IplImage loadImage(String path) {
 	//		IplImage image = cvLoadImage("G:\\バーコドテスト\\CP1_CP1_CP7_第04巻\\1174_2.jpg");
@@ -155,6 +171,52 @@ public class OpenCVUtil {
 	//		return clone;
 	//	}
 	//
+	private static CvHistogram loadTrainingData() {
+		log.info("loading training data");
+
+		CvMat pTrainPersonNumMat = null; // the person numbers during training
+		CvFileStorage fileStorage;
+		int i;
+
+		// create a file-storage interface
+		fileStorage = cvOpenFileStorage("facedata.xml", // filename
+				null, // memstorage
+				CV_STORAGE_READ, // flags
+				null); // encoding
+		if (fileStorage == null) {
+			log.error("Can't open training database file 'data/facedata.xml'.");
+			return null;
+		}
+
+		Pointer pointer = cvReadByName(fileStorage, // fs
+				null, // map
+				"avgTrainImg", // name
+				cvAttrList()); // attributes
+		return new CvHistogram(pointer);
+
+	}
+
+	private static void storeTrainingData(CvHistogram hist) {
+		CvFileStorage fileStorage;
+		int i;
+
+		log.info("writing data/facedata.xml");
+
+		// create a file-storage interface
+		fileStorage = cvOpenFileStorage("facedata.xml", // filename
+				null, // memstorage
+				CV_STORAGE_WRITE, // flags
+				null); // encoding
+
+		cvWrite(fileStorage, // fs
+				"avgTrainImg", // name
+				hist, // value
+				cvAttrList()); // attributes
+
+		// release the file-storage interface
+		cvReleaseFileStorage(fileStorage);
+	}
+
 	public static IplImage matchTemplateAndRectangle2(IplImage image,
 			IplImage template, CutStrategy strategy) {
 
@@ -203,6 +265,9 @@ public class OpenCVUtil {
 		cvSplit(src_hsv, src_planes[0], src_planes[1], src_planes[2], null);
 		cvSplit(tmp_hsv, tmp_planes[0], tmp_planes[1], tmp_planes[2], null);
 
+		//		 int i, hist_size = 90;
+		//		  float h_ranges[] = { 0, 180 };
+		//		  float *ranges[] = { h_ranges };
 		//		  // (4)テンプレート画像の色相平面のヒストグラムを計算します．
 		//		  hist = cvCreateHist (1, &hist_size, CV_HIST_ARRAY, ranges, 1);
 		//		  cvCalcHist (&tmp_planes[0], hist, 0, 0);
@@ -211,6 +276,12 @@ public class OpenCVUtil {
 				new float[][] { { 0, 180 } }, 1);
 
 		cvCalcHist(tmp_planes, hist, 0, null);
+
+		CvArr bins = hist.bins();
+		CvMatND mat = hist.mat();
+
+		storeTrainingData(hist);
+		CvHistogram hist2 = loadTrainingData();
 
 		//		  // (5)探索画像全体に対して，テンプレートのヒストグラムとの距離（手法に依存）を計算します．
 		//		  dst_size =
@@ -228,7 +299,7 @@ public class OpenCVUtil {
 
 		IplImage dest_img = cvCreateImage(cvSize2, IPL_DEPTH_32F, 1);
 		cvCalcBackProjectPatch(new IplImage[] { src_planes[0] }, dest_img,
-				cvGetSize(template), hist, CV_COMP_CORREL, 1.0);
+				cvGetSize(template), hist2, CV_COMP_CORREL, 1.0);
 
 		double[] maxVal = new double[1];
 		double[] minVal = new double[1];
@@ -289,8 +360,8 @@ public class OpenCVUtil {
 					IplImage yotuImg = cvLoadImage(yotu);
 					IplImage yotuAmaImg = cvLoadImage(yotu_ama[i]);
 
-					myShowImg(yotuImg, 5000, "元");
-					myShowImg(yotuAmaImg, 5000, "比較対象");
+					myShowImg(yotuImg, 1000, "元");
+					myShowImg(yotuAmaImg, 1000, "比較対象");
 
 					IplImage cutImg = matchTemplateAndRectangle2(yotuImg,
 							yotuAmaImg, new BookStrategy());

@@ -134,6 +134,7 @@ public class Rakuten {
 
 		// Webサービスを呼び出す
 		AbaronResultNode result = stub.doRequest();
+
 		return result;
 	}
 
@@ -245,7 +246,7 @@ public class Rakuten {
 		} catch (XPathExpressionException | ParserConfigurationException
 				| SAXException | IOException | RuntimeException e) {
 
-			log.error("検索結果に該当するものがなかったと思われます。{}", q);
+			log.error("検索結果に該当するものがなかったと思われます。{}:{}", q);
 			log.info("エラーが発生したXMLを示します。\n{}", result.getXmlString());
 		}
 		return set;

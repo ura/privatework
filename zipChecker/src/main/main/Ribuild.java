@@ -2,9 +2,8 @@ package main;
 
 import java.util.List;
 
-import book.BookFileUtil;
-
 import util.UserInput;
+import book.BookFileUtil;
 
 public class Ribuild {
 
@@ -19,10 +18,9 @@ public class Ribuild {
 			i1.add("L:\\DATA\\COMIC");
 		}
 
-		List<String> i2 = UserInput.getUserInputsSwing("正式名を入力", 1);
 		List<String> i3 = UserInput.getUserInputsSwing("ファイル名を入力", 5);
 
-		BookFileUtil.rebuildArcWithUI(i1.get(0), i2.get(0),
+		BookFileUtil.rebuildArcWithUI(i1.get(0),
 				i3.toArray(new String[i3.size()]));
 		System.exit(0);
 

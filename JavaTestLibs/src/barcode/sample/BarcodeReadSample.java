@@ -210,14 +210,9 @@ public class BarcodeReadSample {
 				}
 
 			} catch (NotFoundException e) {
-				// TODO 自動生成された catch ブロック
-				// e.printStackTrace();
+
 			} catch (ChecksumException e) {
-				// TODO 自動生成された catch ブロック
-				// e.printStackTrace();
 			} catch (FormatException e) {
-				// TODO 自動生成された catch ブロック
-				// e.printStackTrace();
 			}
 
 		}

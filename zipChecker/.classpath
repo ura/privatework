@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="test"/>
-	<classpathentry kind="src" path="opencv"/>
 	<classpathentry kind="src" path="conf"/>
 	<classpathentry kind="src" path="src/main"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
@@ -27,6 +26,7 @@
 	<classpathentry kind="lib" path="C:/Users/poti/.gradle/caches/artifacts-4/org.aspectj/aspectjrt/c12498cf18507aa6433a94eb7d3e77d5/jars/aspectjrt-1.6.1.jar" exported="true"/>
 	<classpathentry kind="lib" path="C:/Users/poti/.gradle/caches/artifacts-4/commons-jexl/commons-jexl/c12498cf18507aa6433a94eb7d3e77d5/jars/commons-jexl-1.1.jar" exported="true"/>
 	<classpathentry sourcepath="C:/Users/poti/.gradle/caches/artifacts-4/org.springframework/spring/c12498cf18507aa6433a94eb7d3e77d5/sources/spring-2.0.6-sources.jar" kind="lib" path="C:/Users/poti/.gradle/caches/artifacts-4/org.springframework/spring/c12498cf18507aa6433a94eb7d3e77d5/jars/spring-2.0.6.jar" exported="true"/>
+	<classpathentry kind="lib" path="C:/Users/poti/flatjar/jtidy-r938.jar" exported="true"/>
 	<classpathentry sourcepath="C:/Users/poti/.gradle/caches/artifacts-4/cglib/cglib/c12498cf18507aa6433a94eb7d3e77d5/sources/cglib-2.2-sources.jar" kind="lib" path="C:/Users/poti/.gradle/caches/artifacts-4/cglib/cglib/c12498cf18507aa6433a94eb7d3e77d5/jars/cglib-2.2.jar" exported="true"/>
 	<classpathentry sourcepath="C:/Users/poti/.gradle/caches/artifacts-4/ch.qos.logback/logback-core/c12498cf18507aa6433a94eb7d3e77d5/sources/logback-core-0.9.15-sources.jar" kind="lib" path="C:/Users/poti/.gradle/caches/artifacts-4/ch.qos.logback/logback-core/c12498cf18507aa6433a94eb7d3e77d5/jars/logback-core-0.9.15.jar" exported="true"/>
 	<classpathentry sourcepath="C:/Users/poti/.gradle/caches/artifacts-4/javax.inject/javax.inject/c12498cf18507aa6433a94eb7d3e77d5/sources/javax.inject-1-sources.jar" kind="lib" path="C:/Users/poti/.gradle/caches/artifacts-4/javax.inject/javax.inject/c12498cf18507aa6433a94eb7d3e77d5/jars/javax.inject-1.jar" exported="true"/>

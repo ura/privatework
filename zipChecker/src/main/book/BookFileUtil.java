@@ -173,8 +173,7 @@ public class BookFileUtil {
 	 *
 	 *
 	 */
-	public static void rebuildArcWithUI(String base, String name,
-			String... keword) {
+	public static void rebuildArcWithUI(String base, String... keword) {
 
 		KeywordFileCollector coll = new KeywordFileCollector(keword);
 		new FileWalker().walk(new File(base), coll);
@@ -188,7 +187,7 @@ public class BookFileUtil {
 				log.info("rebuildArc target {}", file.toString());
 			}
 
-			rebuildArc(name, newList);
+			rebuildArc(newList);
 
 			for (File zipFile : files) {
 				FileOperationUtil.move(zipFile, "L:\\tmp");
@@ -204,19 +203,19 @@ public class BookFileUtil {
 
 	}
 
-	public static void rebuildArc(String name, File[] array)
-			throws IOException, InterruptedException {
+	public static void rebuildArc(File[] array) throws IOException,
+			InterruptedException {
 		ArrayList<File> l = new ArrayList<File>();
 		for (File file : array) {
 			l.add(file);
 
 		}
-		rebuildArc(name, l);
+		rebuildArc(l);
 
 	}
 
-	public static void rebuildArc(String name, Collection<File> newList)
-			throws IOException, InterruptedException {
+	public static void rebuildArc(Collection<File> newList) throws IOException,
+			InterruptedException {
 		File workF = null;
 		if (true) {
 			workF = FileOperationUtil.createTempDir(WORK_DIR);
@@ -224,7 +223,8 @@ public class BookFileUtil {
 			decodeAll(workF, newList);
 		}
 		if (true) {
-			//workF = new File("G:\\arkwork\\_1_1326929190708");
+			//
+			//workF = new File("G:\\arkwork\\_1_1350861232593");
 			FileOperationUtil.moveFewFile(workF);
 
 			//親フォルダがBOOKINFO形式だったら無視する。

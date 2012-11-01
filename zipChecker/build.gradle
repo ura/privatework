@@ -75,6 +75,7 @@ dependencies {
 	compile 'cglib:cglib:2.1_3'
 
 
+	compile 'jtidy:jtidy:r938'
 
 
 
@@ -89,6 +90,9 @@ repositories {
 	flatDir {
 		dirs 'C:/Users/poti/flatjar'
 	}
+
+
+
 }
 
 eclipse.classpath.file {

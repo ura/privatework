@@ -3,10 +3,10 @@ package util;
 import java.io.File;
 
 import junit.framework.TestCase;
+import util.file.DirCollector;
 import util.file.FileOperationUtil;
-import util.file.FileUtilExt;
 import util.file.FileWalker;
-import dir.DirCollector;
+import book.BookFileUtil;
 
 public class FileUtilTest extends TestCase {
 	private static final String BASE = "";
@@ -15,15 +15,9 @@ public class FileUtilTest extends TestCase {
 	private static final String REMOTE_BASE = "";
 	private static final String REMOTE_BASE_TEST = "";
 
-	public void _testDeleteSameFile() {
-
-		FileUtilExt.deleteSameFile(REMOTE_TOP);
-
-	}
-
 	public void _testCreateDir() {
 
-		FileUtilExt.createDir(REMOTE_TOP);
+		BookFileUtil.createDir(REMOTE_TOP);
 
 	}
 
@@ -46,8 +40,8 @@ public class FileUtilTest extends TestCase {
 		DirCollector test = new DirCollector();
 		new FileWalker().walk(new File(REMOTE_BASE_TEST), test);
 
-		FileUtilExt
-				.classifyAll(dirs.dirSet.values(), test.getAllFileFullPath());
+		//	BookFileUtil
+		//			.classifyAll(dirs.dirSet.values(), test.getAllFileFullPath());
 	}
 
 	public void testConvertArc() {
@@ -59,7 +53,7 @@ public class FileUtilTest extends TestCase {
 		for (String s : args) {
 			UserInput.getUserInputsSwing("�p�X����", 1);
 			if (!s.trim().equals("")) {
-				FileUtilExt.rebuildArcWithUI("L:\\DATA\\COMIC", "�L���O�_��",
+				BookFileUtil.rebuildArcWithUI("L:\\DATA\\COMIC", "�L���O�_��",
 						"�L���O�_��", "Kingdom");
 			}
 		}

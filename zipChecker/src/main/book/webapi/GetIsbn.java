@@ -25,8 +25,7 @@ public class GetIsbn {
 	public static void main(String[] args) {
 
 		//hoge(new File("G:\\arkwork"));
-		hoge(new File(
-				"G:\\arkwork\\完成_1_1327071866421\\[一般コミック][北条司][集英社][シティーハンター] 第01-35巻"));
+		hoge(new File("G:\\arkwork\\完成_1_1351433910204\\[古味直志][集英社][ニセコイ]"));
 
 	}
 

@@ -3,6 +3,8 @@ package dir;
 import java.io.File;
 
 import junit.framework.TestCase;
+import util.file.Dir;
+import util.file.DirCollector;
 import util.file.FileWalker;
 
 public class DirCollectorTest extends TestCase {
@@ -25,7 +27,7 @@ public class DirCollectorTest extends TestCase {
 			System.out.println();
 			System.out.println("DIR:" + sb);
 
-			for (String s : dir.fileNameSet) {
+			for (File s : dir.fileSet) {
 				System.out.println(s);
 			}
 

@@ -252,7 +252,7 @@ public class Amazon {
 
 	}
 
-	private static ExecutorService ex = Executors.newFixedThreadPool(5);
+	private static ExecutorService ex = Executors.newFixedThreadPool(20);
 
 	public static void getImage(String asin, String url) {
 
