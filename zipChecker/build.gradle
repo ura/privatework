@@ -41,17 +41,21 @@ dependencies {
     //compile group: 'org.slf4j', name: 'slf4j-api', version: '1.6.4'
 	//compile group: 'ch.qos.logback', name: 'logback-core', version: '1.0.0'
 	//compile 'ch.qos.logback:logback-classic:1.0.0'
-	compile 'org.perf4j:perf4j:0.9.16'
-	compile 'org.slf4j:slf4j-api:1.5.6'
-	compile 'ch.qos.logback:logback-classic:0.9.15'
+
+	compile 'org.perf4j:perf4j:latest.integration'
+
+	//compile 'org.slf4j:slf4j-api:latest.integration' { transitive = false }
+
+	compile('org.slf4j:slf4j-api:latest.integration') { transitive = false }
+	compile 'ch.qos.logback:logback-classic:latest.integration'
 
 	compile 'com.jolira:guice:3.0.0'
-	compile 'com.google.guava:guava:11.0'
+	compile 'com.google.guava:guava:latest.integration'
 
 
-	compile 'javax.mail:mail:1.4.4'
+	compile 'javax.mail:mail:latest.integration'
 
-	compile 'org.apache.commons:commons-lang3:3.1'
+	compile 'org.apache.commons:commons-lang3:latest.integration'
 
 
 	compile 'net.sourceforge.javacsv:javacsv:2.0'
@@ -59,10 +63,17 @@ dependencies {
 	compile 'org.apache.commons:commons-io:1.4'
 	compile 'org.apache.commons:commons-codec:1.6'
 	compile 'org.apache.ant:ant:1.8.2'
-	compile 'ZXing:ZXing-javacv:1.7'
-	compile 'ZXing:ZXing-core:1.7'
-	compile 'com.sun.jna:jna:3.2.7'
-	compile 'javacv:javacv:20101001'
+
+	//バーコード
+	compile 'ZXing:ZXing-core:2.1'
+	compile 'ZXing:ZXing-javase:2.1'
+
+
+	//OpenCV,JavaCV
+	//compile 'ZXing:ZXing-javacv:1.7'
+
+	//compile 'com.sun.jna:jna:3.2.7'
+	//compile 'javacv:javacv:20101001'
 
 	compile 'unrar:unrar:0.9'
 
@@ -83,6 +94,11 @@ dependencies {
 }
 
 repositories {
+
+	mavenCentral()                                                       // Maven セントラル
+	mavenLocal()
+
+
 	ivy {
 		// URL can refer to a local directory
 		url "../local-repo"
@@ -90,6 +106,7 @@ repositories {
 	flatDir {
 		dirs 'C:/Users/poti/flatjar'
 	}
+
 
 
 
