@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory;
 public class ISBNConv {
 	private static Logger log = LoggerFactory.getLogger(ISBNConv.class);
 
-	public static String to13(String str) {
+	public static String to13From10(String str) {
 
 		try {
 			String s12 = "978" + str.substring(0, 9);
@@ -20,6 +20,38 @@ public class ISBNConv {
 		} catch (NumberFormatException e) {
 			return null;
 		}
+
+	}
+
+	public static String to10From13(String str) {
+
+		try {
+
+			String s9 = str.substring(3, 12);
+
+			int check_digit = 0;
+			for (int i = 0; i < 9; i++) {
+				check_digit += Integer.parseInt(s9.substring(i, i + 1))
+						* (10 - i);
+			}
+			String c = "";
+
+			check_digit = 11 - (check_digit % 11);
+			if (check_digit == 11) {
+				c = "0";
+			} else if (check_digit == 10) {
+				c = "X";
+			} else {
+				c = Integer.toString(check_digit);
+			}
+
+			return s9 + c;
+
+		} catch (NumberFormatException
+				| java.lang.StringIndexOutOfBoundsException e) {
+			log.warn("不正なISBNが存在します。[{}]", str);
+		}
+		return "";
 
 	}
 

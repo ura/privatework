@@ -1,6 +1,13 @@
 package util;
 
+import java.io.StringWriter;
 import java.util.regex.Pattern;
+
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 /**
  * 文字列操作系のユーティル
@@ -18,6 +25,21 @@ public class StringUtil {
 
 	private static String[] _parse(String s) {
 		return parterm.split(s);
+	}
+
+	public static String toString(org.w3c.dom.Document doc) {
+
+		try {
+			StringWriter sw = new StringWriter();
+			TransformerFactory tfac = TransformerFactory.newInstance();
+			Transformer transformer = tfac.newTransformer();
+
+			transformer.transform(new DOMSource(doc), new StreamResult(sw));
+			return sw.toString();
+		} catch (TransformerException e) {
+			throw new IllegalStateException("DOMからStringへの変換でエラーは生じない想定です。");
+		}
+
 	}
 
 	/**

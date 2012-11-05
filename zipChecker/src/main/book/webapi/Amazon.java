@@ -309,7 +309,7 @@ public class Amazon {
 					String url = detailPageURLNode.item(0).getTextContent();
 
 					//TODO 古い書籍だと、この形ではない・・・・。
-					String isbn = ISBNConv.to13(isbnNode.item(0)
+					String isbn = ISBNConv.to13From10(isbnNode.item(0)
 							.getTextContent());
 					getImage(isbnNode.item(0).getTextContent(), url);
 					String title = titleNode.item(0).getTextContent();

@@ -171,7 +171,7 @@ public class BookInfoRepo implements Serializable {
 
 		for (BookInfo bookInfo : result) {
 			remove(bookInfo);
-			bookInfo.repalre();
+			bookInfo.repalreISBN();
 			addHave(bookInfo);
 
 		}

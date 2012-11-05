@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -101,7 +102,7 @@ public class BookInfo implements Comparable<BookInfo>, Serializable {
 			bookInfo.setNo(matcher.group(4));
 			bookInfo.setIsbn(matcher.group(5));
 
-			bookInfo.repalre();
+			bookInfo.repalreISBN();
 
 			return bookInfo;
 		}
@@ -112,7 +113,7 @@ public class BookInfo implements Comparable<BookInfo>, Serializable {
 			bookInfo.setTitleStr(matcher2.group(3));
 
 			bookInfo.setIsbn(matcher2.group(4));
-			bookInfo.repalre();
+			bookInfo.repalreISBN();
 
 			return bookInfo;
 		}
@@ -180,7 +181,7 @@ public class BookInfo implements Comparable<BookInfo>, Serializable {
 				log.info("base:{}  title:{}  NO:{}  REG:{}  ISBN:{}",
 						new String[] { this.rowTitle, this.titleStr, this.no,
 								reg.pattern(), this.isbn });
-
+				repalreISBN();
 				break;
 
 			}
@@ -253,10 +254,18 @@ public class BookInfo implements Comparable<BookInfo>, Serializable {
 		return this.isbn.startsWith("978") && ISBNConv.check(isbn);
 	}
 
-	public boolean repalre() {
+	public boolean repalreISBN() {
 		String isbnOld = isbn;
-		isbn = ISBNConv.to13From13(isbn);
-		if (!isbnOld.equals(isbn)) {
+
+		if (isbn.length() == 13) {
+			isbn = ISBNConv.to13From13(isbn);
+		} else if (isbn.length() == 10) {
+			isbn = ISBNConv.to13From10(isbn);
+		}
+
+		if (StringUtils.isEmpty(isbnOld)) {
+			log.warn("ISBNが設定されていません。");
+		} else if (!isbnOld.equals(isbn)) {
 			log.warn("ISBNを更生しました。 {} >> {}", isbnOld, isbn);
 		}
 
@@ -420,6 +429,7 @@ public class BookInfo implements Comparable<BookInfo>, Serializable {
 
 	public void setIsbn(String isbn) {
 		this.isbn = isbn;
+		repalreISBN();
 	}
 
 	public String getTitleStr() {

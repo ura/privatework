@@ -1,13 +1,13 @@
 package book.webapi;
 
-import java.io.CharArrayReader;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
@@ -19,24 +19,17 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
+import org.w3c.tidy.Tidy;
 
-import com.web2driver.abaron.client.AbaronRESTClient;
-import com.web2driver.abaron.client.AbaronResultNode;
+import util.StringUtil;
 
 public class Library {
 
 	private static Logger log = LoggerFactory.getLogger(Library.class);
 
 	static abstract class Query {
-		int page = 1;
 
-		public abstract void setCustomQuery(AbaronRESTClient stub);
-
-		public void increment() {
-			page++;
-		}
+		public abstract void setCustomQuery(QueryBuilder stub);
 
 	}
 
@@ -49,7 +42,7 @@ public class Library {
 		}
 
 		@Override
-		public void setCustomQuery(AbaronRESTClient stub) {
+		public void setCustomQuery(QueryBuilder stub) {
 
 			stub.setParameter("rft.isbn", isbn);
 		}
@@ -61,31 +54,52 @@ public class Library {
 		}
 	}
 
-	private static AbaronResultNode getWebInfo(Query q) {
-		AbaronRESTClient stub = new AbaronRESTClient();
+	static class QueryBuilder {
 
-		// Amazon WebサービスのエンドポイントURL
-		stub.setEndpointUrl("http://iss.ndl.go.jp/books");
+		private StringBuilder sb = new StringBuilder();
 
-		stub.setParameter("search_mode", "advanced");
+		public QueryBuilder(String baseQuery) {
+			sb.append(baseQuery);
 
-		q.setCustomQuery(stub);
+		}
 
-		// Webサービスを呼び出す
-		AbaronResultNode result = stub.doRequest();
+		public void setParameter(String key, String val) {
 
-		return result;
+			sb.append(key).append("=").append(val).append("&");
+		}
+
+		@Override
+		public String toString() {
+
+			return sb.toString();
+		}
+
 	}
 
-	private static Document createDoc(String xmlString) throws SAXException,
-			IOException, ParserConfigurationException {
+	private static Document getWebInfo(Query q) throws IOException {
 
-		DocumentBuilderFactory domFactory = DocumentBuilderFactory
-				.newInstance();
-		domFactory.setNamespaceAware(true); // never forget this!
-		DocumentBuilder builder = domFactory.newDocumentBuilder();
-		Document doc = builder.parse(new InputSource(new CharArrayReader(
-				xmlString.toCharArray())));
+		QueryBuilder queryBuilder = new QueryBuilder(
+				"http://iss.ndl.go.jp/books?");
+		queryBuilder.setParameter("search_mode", "advanced");
+		q.setCustomQuery(queryBuilder);
+
+		Document doc = null;
+
+		URL url = new URL(queryBuilder.toString());
+
+		URLConnection con = url.openConnection();
+		Tidy tidy = new Tidy();
+
+		tidy.setShowWarnings(true);
+		tidy.setQuiet(true);
+
+		doc = tidy.parseDOM(
+				new BufferedReader(new InputStreamReader(con.getInputStream(),
+						"UTF-8")), null);
+
+		if (log.isDebugEnabled()) {
+			log.debug(StringUtil.toString(doc));
+		}
 
 		return doc;
 	}
@@ -98,24 +112,63 @@ public class Library {
 	 * @return
 	 */
 	public static BookInfo getInfo(String isbn) {
+		BookInfo getInfo = _getInfo(isbn);
+
+		if (getInfo != null) {
+			return getInfo;
+
+		} else {
+
+			String isbn2 = "";
+
+			if (isbn.length() == 13) {
+				isbn2 = ISBNConv.to10From13(isbn);
+
+			} else if (isbn.length() == 10) {
+				isbn2 = ISBNConv.to13From10(isbn);
+
+			}
+			log.warn("蔵書が見つからなかったのでISBNの変換をしました。{} > {}", new Object[] { isbn,
+					isbn2 });
+
+			BookInfo info = _getInfo(isbn2);
+
+			if (info != null) {
+				return info;
+			} else {
+				log.warn("国会図書館にデータがありません。ISBN：{}", isbn);
+				return null;
+			}
+
+		}
+	}
+
+	private static BookInfo _getInfo(String isbn) {
 		SortedSet<BookInfo> set = Library.getInfo(new Library.IsbnQuery(isbn));
 
 		if (set.size() == 1) {
+			//ISBNをここでSET
+			set.first().setIsbn(isbn);
 			return set.first();
 		} else {
+
 			return null;
 		}
 	}
 
+	/**
+	 * このメソッドで作るISBN値はダミーを突っ込む。
+	 * 取得しているHTMLにISBNが含まれないため。
+	 * @param q
+	 * @return
+	 */
 	private static SortedSet<BookInfo> getInfo(Query q) {
 
 		SortedSet<BookInfo> set = new TreeSet<BookInfo>();
-		AbaronResultNode result = getWebInfo(q);
+		Document doc = null;
 
 		try {
-			String xmlString = result.getXmlString();
-			Document doc = createDoc(xmlString);
-
+			doc = getWebInfo(q);
 			{
 
 				/*
@@ -140,13 +193,15 @@ public class Library {
 				XPathFactory factory = XPathFactory.newInstance();
 				XPath xpath = factory.newXPath();
 				XPathExpression expr = xpath
-						.compile("//div@class=item_summarywrapper");
+						.compile("//div[@class='item_summarywrapper']");
 
-				XPathExpression expr2 = xpath.compile("p/text()");
-				XPathExpression expr3 = xpath.compile("p/text()");
-				XPathExpression expr4 = xpath.compile("p/text()");
-				XPathExpression expr5 = xpath.compile("h3/a/text()");
-				XPathExpression expr6 = xpath.compile("p/text()");
+				XPathExpression authorExp = xpath.compile("p/text()");
+
+				XPathExpression publisherNameexp = xpath
+						.compile("p/span/text()");
+
+				XPathExpression tExp = xpath.compile("h3/a/text()");
+				XPathExpression tExpKan = xpath.compile("h3/span/text()");
 
 				Object results = expr.evaluate(doc, XPathConstants.NODESET);
 				NodeList nodes = (NodeList) results;
@@ -154,31 +209,41 @@ public class Library {
 
 					Node item = nodes.item(i);
 
-					String seriesName = (String) expr2.evaluate(item,
-							XPathConstants.STRING);
-					String author = (String) expr3.evaluate(item,
-							XPathConstants.STRING);
-					String publisherName = (String) expr4.evaluate(item,
-							XPathConstants.STRING);
-					String t = (String) expr5.evaluate(item,
-							XPathConstants.STRING);
-					String isbn = (String) expr6.evaluate(item,
-							XPathConstants.STRING);
+					String author = ((String) authorExp.evaluate(item,
+							XPathConstants.STRING)).replace("著", "");
 
+					String publisher_year_serises = (String) publisherNameexp
+							.evaluate(item, XPathConstants.STRING);
+
+					String[] split = publisher_year_serises
+							.split("[\n \\(\\)]");
+
+					String publisherName = split[0];
+					String seriesName = split[2];
+
+					String t = (String) tExp.evaluate(item,
+							XPathConstants.STRING)
+							+ " "
+							+ (String) tExpKan.evaluate(item,
+									XPathConstants.STRING);
+
+					System.out.println((String) tExpKan.evaluate(item,
+							XPathConstants.STRING));
+
+					//ISBNがないので、から文字。
 					set.add(new BookInfo(publisherName, seriesName, author, t,
-							isbn));
+							""));
 
 				}
 
 			}
 
-		} catch (XPathExpressionException | ParserConfigurationException
-				| SAXException | IOException | RuntimeException e) {
+		} catch (XPathExpressionException | IOException | RuntimeException e) {
 
+			e.printStackTrace();
 			log.error("検索結果に該当するものがなかったと思われます。{}:{}", q);
-			log.info("エラーが発生したXMLを示します。\n{}", result.getXmlString());
+			log.info("エラーが発生したXMLを示します。\n{}", doc);
 		}
 		return set;
 	}
-
 }

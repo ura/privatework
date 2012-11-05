@@ -162,6 +162,13 @@
 	</logger>
 
 
+
+	<logger name="book.webapi.Library">
+		<level value="DEBUG" />
+	</logger>
+
+
+
 	<logger name="barcode.BarcodeReader">
 		<level value="INFO" />
 	</logger>
