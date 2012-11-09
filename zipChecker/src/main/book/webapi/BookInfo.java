@@ -43,6 +43,9 @@ public class BookInfo implements Comparable<BookInfo>, Serializable {
 	private static final Pattern titleReg6_1 = Pattern
 			.compile("^([^()\\n\\r]+)[(（]Volume:([0-9０-９]+)[巻集]*[）)]");
 
+	private static final Pattern titleReg9 = Pattern
+			.compile("^([^\\n\\r]+)[ 　]*第([0-9０-９]+)[巻集]");
+
 	/**
 	 * 巻数対応なし
 	 */
@@ -74,6 +77,7 @@ public class BookInfo implements Comparable<BookInfo>, Serializable {
 		list.add(titleReg5);
 		list.add(titleReg6);
 		list.add(titleReg6_1);
+		list.add(titleReg9);
 		list.add(titleReg7);
 		list.add(titleReg8);
 
@@ -188,7 +192,7 @@ public class BookInfo implements Comparable<BookInfo>, Serializable {
 
 		}
 		if (no.equals("")) {
-			log.warn("パース用正規表現が見つかりませんでした。{}", rowTitle);
+			log.warn("パース用正規表現が見つかりませんでした。[{}]", rowTitle);
 		}
 
 	}

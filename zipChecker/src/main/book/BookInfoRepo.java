@@ -32,7 +32,6 @@ import static util.file.FileNameUtil.getFileName;
 
 /**
  *
- * TODO ISBNが汚染されている感じなので、チェックのロジックを作り込む。
  * TODO 検索のまとめ機能を作る
  * TODO 不正規データの登録を検討する。
  *

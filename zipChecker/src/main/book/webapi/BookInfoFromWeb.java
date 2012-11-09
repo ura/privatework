@@ -1,13 +1,17 @@
 package book.webapi;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.WeakHashMap;
 
+import org.apache.commons.beanutils.PropertyUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -164,50 +168,118 @@ public class BookInfoFromWeb {
 
 	public static BookInfo getBookInfo(String isbn) {
 
+		BookInfo info0 = Library.getInfo(isbn);
 		BookInfo info1 = Amazon.getInfo(isbn);
 		BookInfo info2 = Rakuten.getInfo(isbn);
 
-		BookInfo info = marge(info1, info2);
+		LinkedHashMap<String, BookInfo> map = new LinkedHashMap<>();
+		map.put("国会", info0);
+		map.put("aws", info1);
+		map.put("楽天", info2);
+
+		BookInfo info = marge(map);
 
 		return info;
 	}
 
+	private static void filterNull(LinkedHashMap<String, BookInfo> map) {
+
+		for (String site : map.keySet().toArray(new String[0])) {
+
+			if (map.get(site) == null) {
+				map.remove(site);
+
+			}
+
+		}
+
+	}
+
+	/**
+	 * MAPの中のBEANで一番短い名前で更新する。
+	 * @param r
+	 * @param map
+	 * @param name
+	 */
+	private static void setShorName(BookInfo r,
+			LinkedHashMap<String, BookInfo> map, String name) {
+
+		for (BookInfo i : map.values()) {
+
+			try {
+				String base = (String) PropertyUtils.getProperty(r, name);
+				String nextVal = (String) PropertyUtils.getProperty(i, name);
+
+				if (base.length() > nextVal.length()) {
+
+					PropertyUtils.setProperty(r, name, nextVal);
+				}
+
+			} catch (IllegalAccessException | InvocationTargetException
+					| NoSuchMethodException e) {
+
+				throw new IllegalStateException(name, e);
+
+			}
+
+		}
+
+	}
+
+	private static void setShorName(BookInfo r,
+			LinkedHashMap<String, BookInfo> map) {
+
+		String[] names = { "titleStr", "author", "publisherName" };
+
+		for (String n : names) {
+			setShorName(r, map, n);
+
+		}
+
+	}
+
+	/**
+	 *
+	 * @param b1
+	 * @param b2
+	 * @return
+	 */
 	private static BookInfo marge(BookInfo b1, BookInfo b2) {
+		LinkedHashMap<String, BookInfo> map = new LinkedHashMap<>();
+		map.put("aws", b1);
+		map.put("楽天", b2);
 
-		if (b1 == null) {
-			return b2;
-		}
-		if (b2 == null) {
-			return b1;
+		return marge(map);
+
+	}
+
+	private static BookInfo marge(LinkedHashMap<String, BookInfo> map) {
+
+		filterNull(map);
+
+		SortedSet<BookInfo> set = new TreeSet<>();
+		for (BookInfo info : map.values()) {
+			set.add(info);
 		}
 
-		if (b1.getInfo().equals(b2.getInfo())) {
-			return b1;
+		if (set.size() == 1) {
+			return set.first();
 		} else {
-			log.warn("書籍情報に差異があります。AWS   {}", b1.getInfo());
-			log.warn("書籍情報に差異があります。楽天  {}", b2.getInfo());
 
-			BookInfo r = b1;
+			for (Entry<String, BookInfo> e : map.entrySet()) {
 
-			if (b1.getTitleStr().length() > b2.getTitleStr().length()) {
-				r.setTitleStr(b2.getTitleStr());
-			} else {
-				r.setTitleStr(b1.getTitleStr());
+				log.warn("書籍情報に差異があります。{} : {}", e.getKey(), e.getValue()
+						.getInfo());
+
 			}
 
-			if (b1.getAuthor().length() > b2.getAuthor().length()) {
-				r.setAuthor(b2.getAuthor());
-			} else {
-				r.setAuthor(b1.getAuthor());
-			}
+			BookInfo r = null;
 
-			if (b1.getPublisherName().length() > b2.getPublisherName().length()) {
-				r.setPublisherName(b2.getPublisherName());
-			} else {
-				r.setPublisherName(b1.getPublisherName());
+			if (set.size() > 1) {
+				r = set.first();
+				setShorName(r, map);
+				log.warn("書籍情報を更新しました。　　　  {}", r.getInfo());
 			}
-
-			log.warn("書籍情報を更新しました。　　　  {}", r.getInfo());
 
 			return r;
 

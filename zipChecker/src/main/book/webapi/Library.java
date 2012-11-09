@@ -223,9 +223,9 @@ public class Library {
 
 					String t = (String) tExp.evaluate(item,
 							XPathConstants.STRING)
-							+ " "
-							+ (String) tExpKan.evaluate(item,
-									XPathConstants.STRING);
+							+ " 第"
+							+ getKan((String) tExpKan.evaluate(item,
+									XPathConstants.STRING)) + "巻";
 
 					System.out.println((String) tExpKan.evaluate(item,
 							XPathConstants.STRING));
@@ -245,5 +245,18 @@ public class Library {
 			log.info("エラーが発生したXMLを示します。\n{}", doc);
 		}
 		return set;
+	}
+
+	private static String getKan(String s) {
+		String result = s;
+
+		if (s.matches(".*[第巻]+.*")) {
+			log.info("巻数に修飾子がついていたので削除します。{}", s);
+
+			result = s.replaceAll("[第巻]", "");
+		}
+
+		return result;
+
 	}
 }
