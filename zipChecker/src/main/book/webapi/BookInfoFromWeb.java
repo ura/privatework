@@ -80,6 +80,12 @@ public class BookInfoFromWeb {
 
 		}
 
+		return getBookInfoByNo(title, no, restrict, margeSet);
+
+	}
+
+	protected static BookInfo getBookInfoByNo(String title, String no,
+			boolean restrict, SortedSet<BookInfo> margeSet) {
 		SortedSet<BookInfo> result = new TreeSet<>();
 		for (BookInfo bookInfo : margeSet) {
 			if (bookInfo.getNo().equals(no)) {
@@ -111,10 +117,18 @@ public class BookInfoFromWeb {
 
 			return null;
 		}
+	}
+
+	public static BookInfo getBookInfoFromTitleAuther(String title,
+			String auther, String no, boolean restrict) {
+
+		SortedSet<BookInfo> bookInfoFromTitleAuther = getBookInfoFromTitleAuther(
+				title, auther);
+		return getBookInfoByNo(title, no, restrict, bookInfoFromTitleAuther);
 
 	}
 
-	public static Set<BookInfo> getBookInfoFromTitleAuther(String title,
+	public static SortedSet<BookInfo> getBookInfoFromTitleAuther(String title,
 			String auther) {
 
 		String titleString = title.trim();

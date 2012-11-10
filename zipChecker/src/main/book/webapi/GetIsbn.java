@@ -25,7 +25,7 @@ public class GetIsbn {
 	public static void main(String[] args) {
 
 		//hoge(new File("G:\\arkwork"));
-		hoge(new File("G:\\arkwork\\完成_1_1351433910204\\[古味直志][集英社][ニセコイ]"));
+		hoge(new File("G:\\arkwork\\完成_1_1352555553082"));
 
 	}
 
@@ -45,8 +45,9 @@ public class GetIsbn {
 					log.warn("ISBNが不正なフォルダを見つけました。{}", d.dir.getAbsolutePath());
 
 					BookInfo infoByTitle = BookInfoFromWeb
-							.getBookInfoFromTitle(bookInfo.getTitleStr(),
-									bookInfo.getNo(), true);
+							.getBookInfoFromTitleAuther(bookInfo.getTitleStr(),
+									bookInfo.getAuthor(), bookInfo.getNo(),
+									true);
 
 					if (infoByTitle != null) {
 						log.warn("ISBNの更新を行います。{}", d.dir.getAbsolutePath());

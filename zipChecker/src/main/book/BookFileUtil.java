@@ -190,6 +190,7 @@ public class BookFileUtil {
 			rebuildArc(newList);
 
 			for (File zipFile : files) {
+				//TODO 固定パスの削除、および、処理後の移動可否
 				FileOperationUtil.move(zipFile, "L:\\tmp");
 			}
 
@@ -223,8 +224,7 @@ public class BookFileUtil {
 			decodeAll(workF, newList);
 		}
 		if (true) {
-			//
-			//workF = new File("G:\\arkwork\\_1_1350861232593");
+
 			FileOperationUtil.moveFewFile(workF);
 
 			//親フォルダがBOOKINFO形式だったら無視する。

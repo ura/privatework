@@ -61,6 +61,9 @@ public class Amazon {
 	private static final String AWS_SECRET_KEY = ConfConst.MAIN_CONF
 			.getVal(ConfConst.AWS_SECRET_KEY);
 
+	private static final String AssociateTag = ConfConst.MAIN_CONF
+			.getVal(ConfConst.AssociateTag);
+
 	private static final String ENDPOINT = "ecs.amazonaws.jp";
 
 	static abstract class Query {
@@ -91,6 +94,12 @@ public class Amazon {
 			params.put("ItemPage", page + "");
 
 			increment();
+		}
+
+		@Override
+		public String toString() {
+
+			return "検索ワード　タイトル:" + title;
 		}
 	}
 
@@ -136,6 +145,8 @@ public class Amazon {
 			params.put("ItemId", isbn);
 			params.put("SearchIndex", "Books");
 			params.put("Operation", "ItemLookup");
+			params.put("AssociateTag", AssociateTag);
+
 		}
 	}
 
@@ -346,10 +357,12 @@ public class Amazon {
 						"><", ">\n<"));
 			}
 		} catch (IOException e) {
-			log.error("リクエストエラーの可能性があります。リトライを検討します。\n{},\n{}", xmlStr, e);
+			log.error("リクエストエラーの可能性があります。リトライを検討します。\n{},\n{}\n{}", xmlStr, e,
+					q);
 			if (e.getMessage().contains("503")) {
-				log.error("リクエストエラーの可能性があります。リトライを検討します。\n{},\n{}", xmlStr, e);
-				sleep(3000l);
+				log.error("リクエストエラーの可能性があります。リトライを検討します。\n{},\n{}\n{}", xmlStr,
+						e, q);
+				sleep(10000l);
 				q.page--;
 				set = getInfo(q);
 			}
