@@ -25,7 +25,7 @@ public class GetIsbn {
 	public static void main(String[] args) {
 
 		//hoge(new File("G:\\arkwork"));
-		hoge(new File("G:\\arkwork\\完成_1_1352555553082"));
+		hoge(new File(args[0]));
 
 	}
 

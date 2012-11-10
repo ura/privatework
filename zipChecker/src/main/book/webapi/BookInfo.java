@@ -20,7 +20,11 @@ public class BookInfo implements Comparable<BookInfo>, Serializable {
 	/**
 	 *
 	 */
-	private static final long serialVersionUID = 311214406048533356L;
+	private static final long serialVersionUID = 6503719363492529920L;
+
+	/**
+	 *
+	 */
 
 	private static Logger log = LoggerFactory.getLogger(BookInfo.class);
 
@@ -66,6 +70,16 @@ public class BookInfo implements Comparable<BookInfo>, Serializable {
 	 */
 	private static final Pattern bookInfoReg2 = Pattern
 			.compile("\\[(.*)\\]\\[(.*)\\]\\[(.*)\\]\\[ISBN([0-9A-Za-z ]*)\\]");
+	/**
+	 * 巻数取得あり
+	 */
+	private static final Pattern bookInfoReg1WithComment = Pattern
+			.compile("\\[(.*)\\]\\[(.*)\\]\\[(.*) 第([0-9]+)巻\\]\\[ISBN([0-9A-Za-z ]*)\\]\\[(.+)\\]");
+	/**
+	 * 巻数なし
+	 */
+	private static final Pattern bookInfoReg2WithComment = Pattern
+			.compile("\\[(.*)\\]\\[(.*)\\]\\[(.*)\\]\\[ISBN([0-9A-Za-z ]*)\\]\\[(.+)\\]");
 
 	protected static final List<Pattern> regList;
 	static {
@@ -89,7 +103,11 @@ public class BookInfo implements Comparable<BookInfo>, Serializable {
 
 		Matcher matcher = bookInfoReg1.matcher(name);
 		Matcher matcher2 = bookInfoReg2.matcher(name);
-		return matcher.find() || matcher2.find();
+		Matcher matcher3 = bookInfoReg1WithComment.matcher(name);
+		Matcher matcher4 = bookInfoReg2WithComment.matcher(name);
+
+		return matcher.find() || matcher2.find() || matcher3.find()
+				|| matcher4.find();
 
 	}
 
@@ -97,6 +115,32 @@ public class BookInfo implements Comparable<BookInfo>, Serializable {
 		//[別天荒人][集英社][明日泥棒 第04巻][ISBN9784088776453][抜けあり]
 
 		BookInfo bookInfo = new BookInfo();
+
+		Matcher matcher3 = bookInfoReg1WithComment.matcher(name);
+		if (matcher3.find()) {
+			bookInfo.setAuthor(matcher3.group(1));
+			bookInfo.setPublisherName(matcher3.group(2));
+			bookInfo.setTitleStr(matcher3.group(3));
+			bookInfo.setNo(matcher3.group(4));
+			bookInfo.setIsbn(matcher3.group(5));
+			bookInfo.setComment(matcher3.group(6));
+
+			bookInfo.repalreISBN();
+
+			return bookInfo;
+		}
+		Matcher matcher4 = bookInfoReg2WithComment.matcher(name);
+		if (matcher4.find()) {
+			bookInfo.setAuthor(matcher4.group(1));
+			bookInfo.setPublisherName(matcher4.group(2));
+			bookInfo.setTitleStr(matcher4.group(3));
+			bookInfo.setIsbn(matcher4.group(4));
+			bookInfo.setComment(matcher4.group(5));
+
+			bookInfo.repalreISBN();
+
+			return bookInfo;
+		}
 
 		Matcher matcher = bookInfoReg1.matcher(name);
 		if (matcher.find()) {
@@ -149,6 +193,7 @@ public class BookInfo implements Comparable<BookInfo>, Serializable {
 		this.rowTitle = title;
 		this.isbn = "";
 		this.no = "";
+		this.comment = "";
 		this.titleStr = "";
 		this.rowdateOnly = true;
 
@@ -162,6 +207,7 @@ public class BookInfo implements Comparable<BookInfo>, Serializable {
 		this.author = Normalizer.normalizer(author);
 		this.rowTitle = title;
 		this.isbn = isbn;
+		this.comment = "";
 
 		init();
 	}
@@ -236,6 +282,11 @@ public class BookInfo implements Comparable<BookInfo>, Serializable {
 	 */
 	private String no;
 
+	/**
+	 *
+	 */
+	private String comment = "";
+
 	public String getInfo() {
 		if (rowdateOnly) {
 			return rowTitle;
@@ -245,11 +296,13 @@ public class BookInfo implements Comparable<BookInfo>, Serializable {
 
 			return "[" + author + "]" + "[" + publisherName + "]" + "["
 					+ titleStr + (haveNo() ? " 第" + no + "巻" : "") + "]"
-					+ "[ISBN" + isbn + "]";
+					+ "[ISBN" + isbn + "]"
+					+ (haveComment() ? "[" + comment + "]" : "");
 		} else {
 			return "[" + author + "]" + "[" + publisherName + "]" + "["
 					+ titleStr + (haveNo() ? " 第" + no + "巻" : "") + "]"
-					+ "[ISBN" + isbn + "]";
+					+ "[ISBN" + isbn + "]"
+					+ (haveComment() ? "[" + comment + "]" : "");
 
 		}
 	}
@@ -308,6 +361,10 @@ public class BookInfo implements Comparable<BookInfo>, Serializable {
 
 	public boolean haveNo() {
 		return !no.equals("");
+	}
+
+	public boolean haveComment() {
+		return !comment.equals("");
 	}
 
 	@Override
@@ -467,5 +524,13 @@ public class BookInfo implements Comparable<BookInfo>, Serializable {
 				return TYPE.KAN;
 			}
 		}
+	}
+
+	public String getComment() {
+		return comment;
+	}
+
+	public void setComment(String comment) {
+		this.comment = comment;
 	}
 }
