@@ -20,7 +20,7 @@ public class BookInfo implements Comparable<BookInfo>, Serializable {
 	/**
 	 *
 	 */
-	private static final long serialVersionUID = 6503719363492529920L;
+	private static final long serialVersionUID = 311214406048533356L;
 
 	/**
 	 *
@@ -364,6 +364,10 @@ public class BookInfo implements Comparable<BookInfo>, Serializable {
 	}
 
 	public boolean haveComment() {
+		if (comment == null) {
+			comment = "";
+		}
+
 		return !comment.equals("");
 	}
 
