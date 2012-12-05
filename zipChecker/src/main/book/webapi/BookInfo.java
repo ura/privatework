@@ -51,14 +51,26 @@ public class BookInfo implements Comparable<BookInfo>, Serializable {
 			.compile("^([^\\n\\r]+)[ 　]*第([0-9０-９]+)[巻集]");
 
 	/**
+	 * タイトルにカッコ入り用の対応
+	 */
+	private static final Pattern titleReg10 = Pattern
+			.compile("(.+)[(（〈][巻集]*([0-9０-９]+)[）)〉]");
+
+	/**
+	 * タイトルにカッコ入り用の対応
+	 */
+	private static final Pattern titleReg11 = Pattern
+			.compile("(.+)[ 　]([0-9]{1,2})[ 　]");
+
+	/**
 	 * 巻数対応なし
 	 */
-	private static final Pattern titleReg7 = Pattern
+	private static final Pattern nonNoReg1 = Pattern
 			.compile("^([^\\n\\r]+)[(（〈][^()\\n\\r]{4,30}[）)〉]+()");
 	/**
 	 * 巻数対応なし
 	 */
-	private static final Pattern titleReg8 = Pattern.compile("(.+)()");
+	private static final Pattern nonNoReg2 = Pattern.compile("(.+)()");
 
 	/**
 	 * 巻数取得あり
@@ -92,8 +104,12 @@ public class BookInfo implements Comparable<BookInfo>, Serializable {
 		list.add(titleReg6);
 		list.add(titleReg6_1);
 		list.add(titleReg9);
-		list.add(titleReg7);
-		list.add(titleReg8);
+
+		list.add(titleReg10);
+		list.add(titleReg11);
+
+		list.add(nonNoReg1);
+		list.add(nonNoReg2);
 
 		regList = Collections.unmodifiableList(list);
 

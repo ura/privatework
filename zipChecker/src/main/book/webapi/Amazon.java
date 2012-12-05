@@ -128,6 +128,12 @@ public class Amazon {
 			increment();
 
 		}
+
+		@Override
+		public String toString() {
+
+			return "検索ワード　タイトル:" + title + "   著者:" + author;
+		}
 	}
 
 	public static class IsbnQuery extends Query {
@@ -359,10 +365,11 @@ public class Amazon {
 		} catch (IOException e) {
 			log.error("リクエストエラーの可能性があります。リトライを検討します。\n{},\n{}\n{}", xmlStr, e,
 					q);
+			sleep(120 * 1000l);
 			if (e.getMessage().contains("503")) {
 				log.error("リクエストエラーの可能性があります。リトライを検討します。\n{},\n{}\n{}", xmlStr,
 						e, q);
-				sleep(120 * 1000l);
+
 				q.page--;
 				set = getInfo(q);
 			}

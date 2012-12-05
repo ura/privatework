@@ -23,11 +23,16 @@ public class Ribuild {
 		}
 
 		List<String> i3 = UserInput.getUserInputsSwing("ファイル名を入力", 5);
+		if (i3.size() == 0) {
+
+			i3.add("rar");
+			i3.add("zip");
+
+		}
 
 		BookFileUtil.rebuildArcWithUI(i1.get(0),
 				i3.toArray(new String[i3.size()]));
 		System.exit(0);
 
 	}
-
 }

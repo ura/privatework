@@ -217,6 +217,7 @@ public class Normalizer {
 			normalize = normalize.replaceAll(e.getKey(), e.getValue());
 
 		}
+		normalize = normalize.replaceAll(":", " ");
 
 		return normalize.toLowerCase();
 

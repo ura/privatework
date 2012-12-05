@@ -31,12 +31,17 @@ public class BookInfoFromWeb {
 	 * @param title
 	 * @param no
 	 * @param restrict
-	 * @return
+	 * @return 該当結果がない場合NULL
 	 */
 	public static BookInfo getBookInfoFromTitle(String title, String no,
 			boolean restrict) {
 
 		String titleString = title.trim();
+
+		if (titleString.length() < 3) {
+			log.warn("クエリが短すぎるため、タイトルでの検索をしません。[{}]", titleString);
+			return null;
+		}
 
 		SortedSet<BookInfo> infoByTitle1 = cacheMap1.get(titleString);
 		if (infoByTitle1 == null) {
@@ -48,9 +53,11 @@ public class BookInfoFromWeb {
 		SortedSet<BookInfo> infoByTitle2 = cacheMap2.get(titleString);
 		if (infoByTitle2 == null) {
 			infoByTitle2 = Amazon.getInfoByTitle(titleString);
+			log.info("タイトル検索のAmazonキャッシュをしました。{}:size_{}", titleString,
+					infoByTitle2.size());
 			cacheMap2.put(titleString, infoByTitle2);
 		} else {
-			log.info("Amazonキャッシュより結果を取得しました。{}", titleString);
+			log.info("タイトル検索のAmazonキャッシュより結果を取得しました。{}", titleString);
 		}
 
 		SortedSet<BookInfo> margeSet = margeMap.get(titleString);

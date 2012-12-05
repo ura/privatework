@@ -241,9 +241,10 @@ public class BookFileUtil {
 			jpgCheck(workF);
 			FileOperationUtil.deleteEmptyDir(workF, "jpeg", "jpg", "png");
 
-			FileOperationUtil.removeFile(workF, new String[] { "^.*\\.html$",
-					"^.*\\.url$", "^.*\\.txt$", "^Thumbs\\.db", "^[^.]*$",
-					"spot\\.com\\.jpg" });
+			FileOperationUtil.removeFile(workF,
+					new String[] { "^.*\\.html$", "^.*\\.url$", "^.*\\.txt$",
+							"^Thumbs\\.db", "^[^.]*$", "spot\\.com\\.jpg",
+							"downloadmanga\\.vnsharing\\.net\\.jpg" });
 			FileOperationUtil.renameToSimpleFileName(workF);
 
 			Map<File, BookInfo> allbookInfo = bookName.getAllbookInfo(workF);
@@ -276,6 +277,12 @@ public class BookFileUtil {
 
 			bookName.createCominName(new File(WORK_DIR), s);
 			bookName.getBookInfoRepo().save();
+
+			//使わなかったフォルダを消去。
+			FileOperationUtil.deleteEmptyDir(tempDest1);
+			FileOperationUtil.deleteEmptyDir(tempDest2);
+			FileOperationUtil.deleteEmptyDir(workF);
+
 		}
 
 	}

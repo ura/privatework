@@ -240,8 +240,8 @@ public class Library {
 
 		} catch (XPathExpressionException | IOException | RuntimeException e) {
 
-			e.printStackTrace();
 			log.error("検索結果に該当するものがなかったと思われます。{}:{}", q);
+			log.error("", e);
 			log.info("エラーが発生したXMLを示します。\n{}", doc);
 		}
 		return set;

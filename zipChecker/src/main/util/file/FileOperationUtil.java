@@ -86,7 +86,7 @@ public class FileOperationUtil {
 	}
 
 	/**
-	 * 空フォルダを再帰的に消す
+	 * 空フォルダを再帰的に消す。引数のフォルダから消える。
 	 */
 	public static void deleteEmptyDir(File dir) {
 
@@ -102,6 +102,8 @@ public class FileOperationUtil {
 				dir2.delete();
 			}
 		}
+		//空だったら消える。
+		dir.delete();
 
 	}
 
