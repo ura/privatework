@@ -29,7 +29,6 @@ import util.MapList;
 import util.StaticUtil;
 import util.file.filter.FileNameFilter;
 import util.file.filter.FileNameFilter.MODE;
-import book.BookNameUtil;
 import static util.StaticUtil.sleep;
 import static util.file.FileNameUtil.createPath;
 import static util.file.FileNameUtil.getExt;
@@ -45,9 +44,6 @@ import static util.file.FileNameUtil.getFileName;
  */
 public class FileOperationUtil {
 	static Pattern fileNoPattern = Pattern.compile("(\\d*)_(.*)");
-
-	private static NameUtil nameUitl = InjectorMgr.get().getInstance(
-			BookNameUtil.class);
 
 	private static Logger log = LoggerFactory
 			.getLogger(FileOperationUtil.class);
@@ -446,7 +442,7 @@ public class FileOperationUtil {
 	 * 指定されたフォルダを再帰して、チェックしファイル名を単純化（アルファベット、数値のみ）します。
 	 * @param dir
 	 */
-	public static void renameToSimpleFileName(File dir) {
+	public static void renameToSimpleFileName(File dir, NameUtil nameUitl) {
 
 		DirCollector srcDir = new DirCollector();
 		new FileWalker().walk(dir, srcDir);

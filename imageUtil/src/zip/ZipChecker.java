@@ -5,12 +5,9 @@ import java.io.File;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import book.BookFileUtil;
-
-
 public class ZipChecker {
 
-	private static Logger log = LoggerFactory.getLogger(BookFileUtil.class);
+	private static Logger log = LoggerFactory.getLogger(ZipChecker.class);
 
 	/**
 	 * ある程度OKだったらスルーする。 Zipの中に複数ZIPが入っていても、1つ解凍できれば、後ものは
