@@ -241,11 +241,12 @@ public class BookInfo implements Comparable<BookInfo>, Serializable {
 
 			if (result) {
 
-				this.titleStr = Normalizer.normalizer(matcher.group(1)).trim();
+				//TODO TRIME削除状態
+				this.titleStr = Normalizer.normalizer(matcher.group(1));
 				this.no = no_XX(matcher.group(2));
 
 				log.info("base:{}  title:{}  NO:{}  REG:{}  ISBN:{}",
-						new String[] { this.rowTitle, this.titleStr, this.no,
+						new Object[] { this.rowTitle, this.titleStr, this.no,
 								reg.pattern(), this.isbn });
 				repalreISBN();
 				break;
