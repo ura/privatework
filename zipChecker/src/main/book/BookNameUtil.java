@@ -43,6 +43,7 @@ import collection.Tuple;
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
 import com.google.common.base.Predicate;
+import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -150,6 +151,121 @@ public class BookNameUtil implements NameUtil {
 		}
 
 		Map<File, File> result = null;
+		result = patarnBaseRename(fList, baseMap, result);
+		//result = regBaseRename(fList, baseMap, result);
+
+		if (result != null) {
+			return result;
+
+		}
+
+		log.error("他のファイルと重複しないファイル名を作成することができませんでした。{}",
+				sample.getAbsolutePath());
+		throw new IllegalStateException("他のファイルと重複しないファイル名を作成することができませんでした。"
+				+ sample.getAbsolutePath());
+
+	}
+
+	/**
+	 * 重複部分をシンプルに置き換える。
+	 * 欠点として、長さが違う場合ずれる。ヘッダーが一緒なら長さが違ってもOK
+	 * @param fList
+	 * @param baseMap
+	 * @param result
+	 * @return
+	 */
+	protected Map<File, File> patarnBaseRename(Collection<File> fList,
+			Map<File, File> baseMap, Map<File, File> result) {
+
+		ArrayListMultimap<Integer, File> x = ArrayListMultimap.create();
+		ArrayListMultimap<String, File> headerMap = ArrayListMultimap.create();
+
+		for (File file : fList) {
+			x.put(file.getName().length(), file);
+		}
+		for (Integer i : x.keys()) {
+			List<File> list = x.get(i);
+			if (list.size() > 1) {
+				File first = list.get(0);
+				String nameBase = first.getName();
+				String header = base(list, nameBase);
+				headerMap.putAll(header == null ? "" : header.toUpperCase(),
+						list);
+
+			} else {
+				headerMap.putAll("", list);
+			}
+
+		}
+
+		TreeSet<String> sortHeader = new TreeSet<String>(headerMap.keySet());
+		int group = 1;
+		for (String h : sortHeader) {
+			List<File> list = headerMap.get(h);
+
+			if (!"".equals(h)) {
+
+				for (File file : list) {
+
+					String parent = file.getParent();
+					String name = file.getName().toUpperCase();
+					String rName = name.replace(h, "g" + group + "_");
+
+					baseMap.put(file, new File(parent + File.separator + rName));
+					log.info("{} >> {}", name, rName);
+				}
+			} else {
+				for (File file : list) {
+					baseMap.put(file, file);
+					log.info("変更なし：{} ", file.getName());
+				}
+
+			}
+			group++;
+
+		}
+
+		return baseMap;
+
+	}
+
+	/**
+	 * すべてのファイルで共通的なヘッダーを切りだす。
+	 * 全体的に共通部分がない場合は、NULLを返す。
+	 * @param list
+	 * @param nameBase
+	 */
+	protected String base(List<File> list, String nameBase) {
+		String headStr = null;
+		;
+		for (int idx = nameBase.length() - 6; idx > 3; idx--) {
+			headStr = nameBase.substring(0, idx);
+
+			for (File file : list) {
+				if (!file.getName().contains(headStr)) {
+					headStr = null;
+					break;
+				}
+			}
+			if (headStr != null) {
+				break;
+			}
+
+		}
+
+		return headStr;
+	}
+
+	/**
+	 * 正規表現ベースでリネームします。
+	 * いまいちうまく行ってないです。
+	 * @param fList
+	 * @param baseMap
+	 * @param result
+	 * @return
+	 */
+	protected Map<File, File> regBaseRename(Collection<File> fList,
+			Map<File, File> baseMap, Map<File, File> result) {
 		for (String rep : REPLASE_LIST) {
 
 			Set<String> set = new HashSet<>();
@@ -174,17 +290,7 @@ public class BookNameUtil implements NameUtil {
 				break;
 			}
 		}
-
-		if (result != null) {
-			return result;
-
-		}
-
-		log.error("他のファイルと重複しないファイル名を作成することができませんでした。{}",
-				sample.getAbsolutePath());
-		throw new IllegalStateException("他のファイルと重複しないファイル名を作成することができませんでした。"
-				+ sample.getAbsolutePath());
-
+		return result;
 	}
 
 	/**

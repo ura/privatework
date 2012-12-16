@@ -9,7 +9,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -24,9 +23,9 @@ import org.slf4j.LoggerFactory;
 import util.ThreadPoolExecutorSync;
 import util.file.filter.FileNameFilter;
 import util.file.filter.FileNameFilter.MODE;
-import collection.MapList;
 import collection.Tuple;
 
+import com.google.common.collect.ArrayListMultimap;
 import com.google.inject.Inject;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.BinaryBitmap;
@@ -99,22 +98,25 @@ public class BarcodeReader4Book {
 	}
 
 	/**
-	 * ファイル名であまりないファイル名のファイルを返す。
+	 * ファイル名であまりない長さのファイル名のファイルを返す。
+	 * ファイル名が規則性を持っている場合、イリーガルなファイル名を抜き出す。
+	 * （表紙、おまけなど。）
+	 * 初期値は８で、8以下の数しか無いファイルを返す。
 	 * @param asList
 	 * @return
 	 */
 	private List<File> fewLengthFile(List<File> asList) {
 
-		MapList<Integer, File> map = new MapList<>();
+		ArrayListMultimap<Integer, File> map = ArrayListMultimap.create();
 		for (File file : asList) {
 			int length = file.getName().length();
 			map.put(length, file);
 		}
 
 		ArrayList<File> arrayList = new ArrayList<>();
-		for (Collection<File> col : map.valuse()) {
-			if (col.size() < 8) {
-				arrayList.addAll(col);
+		for (Integer key : map.keys()) {
+			if (map.get(key).size() < 8) {
+				arrayList.addAll(map.get(key));
 			}
 
 		}

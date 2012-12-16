@@ -245,7 +245,7 @@ public class BookFileUtil {
 					new String[] { "^.*\\.html$", "^.*\\.url$", "^.*\\.txt$",
 							"^Thumbs\\.db", "^[^.]*$", "spot\\.com\\.jpg",
 							"downloadmanga\\.vnsharing\\.net\\.jpg" });
-			FileOperationUtil.renameToSimpleFileName(workF);
+			FileOperationUtil.renameToSimpleFileName(workF, bookName);
 
 			Map<File, BookInfo> allbookInfo = bookName.getAllbookInfo(workF);
 
