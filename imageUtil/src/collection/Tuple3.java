@@ -4,7 +4,7 @@ import java.util.Comparator;
 
 import org.apache.commons.lang3.builder.CompareToBuilder;
 
-public class Tuple3<V1, V2, V3> implements Comparable<Tuple3> {
+public class Tuple3<V1, V2, V3> implements Comparable<Tuple3<V1, V2, V3>> {
 
 	public Comparator<Tuple3<V1, V2, V3>> comparator1 = new Comparator<Tuple3<V1, V2, V3>>() {
 
@@ -73,7 +73,7 @@ public class Tuple3<V1, V2, V3> implements Comparable<Tuple3> {
 	}
 
 	@Override
-	public int compareTo(Tuple3 o) {
+	public int compareTo(Tuple3<V1, V2, V3> o) {
 
 		return new CompareToBuilder().append(this.val1, o.val1)
 				.append(this.val2, o.val2).append(this.val3, o.val3)
@@ -98,7 +98,7 @@ public class Tuple3<V1, V2, V3> implements Comparable<Tuple3> {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Tuple3 other = (Tuple3) obj;
+		Tuple3<V1, V2, V3> other = (Tuple3<V1, V2, V3>) obj;
 		if (val1 == null) {
 			if (other.val1 != null)
 				return false;

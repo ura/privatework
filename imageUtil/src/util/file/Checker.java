@@ -18,6 +18,7 @@ public class Checker {
 
 	private static final String DATA_FILE_NAME = "zipcheck.ser";
 
+	@SuppressWarnings("unchecked")
 	public Checker(File rootPath) {
 
 		//TODO ファイルの存在をチェック
@@ -25,7 +26,7 @@ public class Checker {
 
 		datatxt = new File(rootPath.getPath() + "\\" + DATA_FILE_NAME);
 		if (datatxt.exists()) {
-			checkSet = (Set<Check>) ObjectUtil.load(datatxt.getPath());
+			checkSet = ObjectUtil.load(datatxt.getPath(), Set.class);
 		} else {
 			checkSet = new HashSet<Check>();
 		}
@@ -49,7 +50,7 @@ public class Checker {
 
 		Iterator<Check> iterator = checkSet.iterator();
 		while (iterator.hasNext()) {
-			Check check = (Check) iterator.next();
+			Check check = iterator.next();
 			if (check.isOld()) {
 				iterator.remove();
 			}

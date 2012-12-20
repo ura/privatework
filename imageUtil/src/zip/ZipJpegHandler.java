@@ -168,7 +168,6 @@ public class ZipJpegHandler implements ZipUtilHandler {
 	}
 
 	private void entryMap(HashMap<String, Set<String>> map, ZipEntry ze) {
-		Set<String> nameSet;
 		String name = ze.getName();
 
 		String dir;

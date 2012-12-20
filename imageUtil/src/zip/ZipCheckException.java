@@ -2,6 +2,10 @@ package zip;
 
 public class ZipCheckException extends RuntimeException {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private State state;
 
 	public ZipCheckException() {

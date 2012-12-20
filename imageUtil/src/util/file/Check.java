@@ -5,6 +5,11 @@ import java.io.Serializable;
 
 public class Check implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public static long OLD_TIME = 1000l * 60 * 60 * 24 * 3;
 
 	private String fileName;

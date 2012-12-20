@@ -17,7 +17,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import log.Log;
-import module.InjectorMgr;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -271,7 +270,6 @@ public class FileOperationUtil {
 
 			//TODO 移動の時に、りねーむだけではなくてフォルダ比較を検討する。
 			//あとで、雑誌でテスト
-			boolean b = !srcPath.getParentFile().equals(src);
 			if ((!srcPath.getParentFile().equals(src))
 					&& (f == null || f.accept(srcPath))) {
 				File destPath = FileNameUtil.createNewPath(src, dir.dir);
@@ -322,9 +320,6 @@ public class FileOperationUtil {
 	 */
 	public static File createTempDir(String base, String head)
 			throws IOException {
-
-		long millis = System.currentTimeMillis();
-		long id = Thread.currentThread().getId();
 
 		String r = base + "/" + createUnicID(head);
 		new File(r).mkdir();

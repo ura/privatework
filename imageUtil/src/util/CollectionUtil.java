@@ -93,7 +93,6 @@ public class CollectionUtil {
 			String s = iterator.next();
 
 			for (Pattern pattern : patterns) {
-				boolean b = pattern.matcher(s.toLowerCase()).find();
 
 				if (!(pattern.matcher(s.toLowerCase()).find() ^ matchDeleteFlag)) {
 					log.debug("remove {},pattern {}",

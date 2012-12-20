@@ -50,7 +50,7 @@ public class DefaultModule extends AbstractModule {
 						Object x = mi.proceed();
 
 						String stop = stopWatch.stop(t);
-						long elapsedTime = stopWatch.getElapsedTime();
+						//long elapsedTime = stopWatch.getElapsedTime();
 
 						log.info(stop);
 						return x;

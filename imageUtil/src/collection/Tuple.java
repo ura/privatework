@@ -50,7 +50,7 @@ public class Tuple<V1, V2> implements Comparable<Tuple<V1, V2>> {
 	}
 
 	@Override
-	public int compareTo(Tuple o) {
+	public int compareTo(Tuple<V1, V2> o) {
 
 		return new CompareToBuilder().append(this.val1, o.val1)
 				.append(this.val2, o.val2).toComparison();
@@ -73,7 +73,8 @@ public class Tuple<V1, V2> implements Comparable<Tuple<V1, V2>> {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Tuple other = (Tuple) obj;
+		@SuppressWarnings("unchecked")
+		Tuple<V1, V2> other = (Tuple<V1, V2>) obj;
 		if (val1 == null) {
 			if (other.val1 != null)
 				return false;

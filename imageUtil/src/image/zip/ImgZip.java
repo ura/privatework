@@ -15,6 +15,10 @@ import org.slf4j.LoggerFactory;
  */
 public class ImgZip extends Img {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private static Logger log = LoggerFactory.getLogger(ImgZip.class);
 
 	public ImgZip(String filename, String entrys[]) {

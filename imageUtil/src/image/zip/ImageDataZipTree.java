@@ -28,6 +28,10 @@ import zip.ZipCheckException;
 
 public class ImageDataZipTree extends ImageDataTree {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private static Logger log = LoggerFactory.getLogger(ImageDataZipTree.class);
 	private static final int PASS_COUNT = 4;
 

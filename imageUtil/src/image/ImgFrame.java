@@ -28,6 +28,11 @@ import util.StaticUtil;
 
 public class ImgFrame extends AbstractAction implements WindowListener {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	private static Logger log = LoggerFactory.getLogger(ImgFrame.class);
 
 	private JButton addButton;
