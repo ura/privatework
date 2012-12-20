@@ -143,6 +143,11 @@ public class UserInput {
 		}
 
 		TableModel model = new DefaultTableModel(records, names) {
+			/**
+			 *
+			 */
+			private static final long serialVersionUID = 1L;
+
 			public Class<?> getColumnClass(int column) {
 				return getValueAt(0, column).getClass();
 			}
@@ -154,7 +159,7 @@ public class UserInput {
 
 		JTable table = new JTable(model);
 
-		JComboBox comboBox = new JComboBox();
+		JComboBox<TableModel> comboBox = new JComboBox<TableModel>();
 
 		TableCellEditor editor = new DefaultCellEditor(comboBox);
 		table.getColumnModel().getColumn(1).setCellEditor(editor);

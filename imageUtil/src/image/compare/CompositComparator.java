@@ -9,8 +9,6 @@ import java.util.Map.Entry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import collection.SortKey;
-
 public class CompositComparator implements ImgComparator {
 
 	private static Logger log = LoggerFactory
@@ -18,9 +16,9 @@ public class CompositComparator implements ImgComparator {
 
 	private ImgComparator comp;
 
-	private TreeMap<SortKey<Integer, Img>, Img> sameList = new TreeMap<SortKey<Integer, Img>, Img>();
-	private TreeMap<SortKey<Integer, Img>, Img> nearList = new TreeMap<SortKey<Integer, Img>, Img>();
-	private TreeMap<SortKey<Integer, Img>, Img> otherList = new TreeMap<SortKey<Integer, Img>, Img>();
+	private TreeMap<Integer, Img> sameList = new TreeMap<Integer, Img>();
+	private TreeMap<Integer, Img> nearList = new TreeMap<Integer, Img>();
+	private TreeMap<Integer, Img> otherList = new TreeMap<Integer, Img>();
 
 	private int sameLimit;
 	private int nearLimit = 10000;
@@ -48,12 +46,12 @@ public class CompositComparator implements ImgComparator {
 	public void add(Img image2, int result) {
 
 		if (result < sameLimit) {
-			sameList.put(new SortKey<Integer, Img>(result, image2), image2);
+			sameList.put(result, image2);
 		} else if (result < nearLimit) {
-			nearList.put(new SortKey<Integer, Img>(result, image2), image2);
+			nearList.put(result, image2);
 		} else {
 
-			otherList.put(new SortKey<Integer, Img>(result, image2), image2);
+			otherList.put(result, image2);
 		}
 
 	}
@@ -71,11 +69,10 @@ public class CompositComparator implements ImgComparator {
 		}
 	}
 
-	private void log(String msg, Img base,
-			TreeMap<SortKey<Integer, Img>, Img> map) {
-		for (Entry<SortKey<Integer, Img>, Img> entry : map.entrySet()) {
-			int result = entry.getKey().getKey1();
-			Img img2 = entry.getKey().getKey2();
+	private void log(String msg, Img base, TreeMap<Integer, Img> map) {
+		for (Entry<Integer, Img> entry : map.entrySet()) {
+			int result = entry.getKey();
+			Img img2 = entry.getValue();
 
 			log.info("{}\t一致度[{}]\t{}\t{} ", new Object[] { msg, result,
 					base.getImgFile().getName(), img2.getInfo() });

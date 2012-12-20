@@ -439,7 +439,7 @@ public class FileOperationUtil {
 	}
 
 	/**
-	 * 指定されたフォルダを再帰して、チェックしファイル名を単純化（アルファベット、数値のみ）します。
+	 * 指定されたフォルダを再帰して、チェックしファイル名を単純化します。
 	 * @param dir
 	 */
 	public static void renameToSimpleFileName(File dir, NameUtil nameUitl) {
@@ -666,7 +666,7 @@ public class FileOperationUtil {
 		List<File> delList = new ArrayList<File>();
 
 		for (int i = 1; i < list.size(); i++) {
-			log.info(Log.OP, "DELETE FILE {}", list.get(i));
+			log.warn(Log.OP, "DELETE FILE {}", list.get(i));
 			list.get(i).delete();
 			delList.add(list.get(i));
 

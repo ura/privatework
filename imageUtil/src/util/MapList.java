@@ -9,6 +9,13 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * @deprecated
+ * @author name
+ *
+ * @param <K>
+ * @param <V>
+ */
 public class MapList<K, V> {
 	private static Logger log = LoggerFactory.getLogger(MapList.class);
 

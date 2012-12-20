@@ -16,6 +16,13 @@ import javax.swing.JLabel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * イメージのラップクラス。
+ * ヒストグラム作成。
+ * カラー判定等の機能あり。
+ * @author name
+ *
+ */
 public class Img implements Serializable {
 
 	/**

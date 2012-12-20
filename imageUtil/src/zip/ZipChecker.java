@@ -5,6 +5,12 @@ import java.io.File;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * ZIPの状態判別用。
+ * 暗号化されているZIPや多重ZIP、ZIP破損等を判定する。
+ * @author name
+ *
+ */
 public class ZipChecker {
 
 	private static Logger log = LoggerFactory.getLogger(ZipChecker.class);
