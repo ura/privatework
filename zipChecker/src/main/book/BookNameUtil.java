@@ -98,15 +98,18 @@ public class BookNameUtil implements NameUtil {
 	private static Pattern partermBetween = Pattern
 			.compile("[^\\[0-9]([0-9]{1,2})[-]+([0-9]{2})[^\\]]+");
 
+	/**
+	 * ファイル名としての禁則文字の一覧。
+	 * 基本置換される文字候補。
+	 */
 	private static List<String> REPLASE_LIST = new ArrayList<>();
 	static {
+
+		//アルファベット以外削除
+		REPLASE_LIST.add("[^\\p{InBASIC_LATIN}]+");
+		//日本語以外消去
 		REPLASE_LIST
-				.add("[^\\u4E00-\\u9FBF\\u0020-\\u007Ea-zA-Z0-9０-９　 \\u3040-\\u309F\\u30A0-\\u30FF\\u30A0-\\u30FF\\u30A0-\\u30FF]");
-		REPLASE_LIST
-				.add("_[\\[\\]\\u4E00-\\u9FBF\\u0020-\\u007Ea-zA-Z0-9０-９　 \\u3040-\\u309F\\u30A0-\\u30FF\\u30A0-\\u30FF\\u30A0-\\u30FF]_");
-		REPLASE_LIST
-				.add("_[\\[\\]\\u4E00-\\u9FBF\\u0020-\\u007Ea-zA-Z0-9０-９　 \\u3040-\\u309F\\u30A0-\\u30FF\\u30A0-\\u30FF\\u30A0-\\u30FF]_");
-		REPLASE_LIST.add("^_");
+				.add("[^\\p{InHiragana}\\p{InKatakana}\\p{InCjkUnifiedIdeographs}\\p{InBASIC_LATIN}]+");
 
 	}
 
@@ -151,8 +154,8 @@ public class BookNameUtil implements NameUtil {
 		}
 
 		Map<File, File> result = null;
-		result = patarnBaseRename(fList, baseMap, result);
-		//result = regBaseRename(fList, baseMap, result);
+		//result = patarnBaseRename(fList, baseMap, result);
+		result = regBaseRename(fList, baseMap, result);
 
 		if (result != null) {
 			return result;
@@ -238,11 +241,12 @@ public class BookNameUtil implements NameUtil {
 	protected String base(List<File> list, String nameBase) {
 		String headStr = null;
 		;
-		for (int idx = nameBase.length() - 6; idx > 3; idx--) {
+		for (int idx = nameBase.length() - 6; idx > 1; idx--) {
 			headStr = nameBase.substring(0, idx);
 
 			for (File file : list) {
-				if (!file.getName().contains(headStr)) {
+				if (!file.getName().toUpperCase()
+						.contains(headStr.toUpperCase())) {
 					headStr = null;
 					break;
 				}
@@ -258,7 +262,7 @@ public class BookNameUtil implements NameUtil {
 
 	/**
 	 * 正規表現ベースでリネームします。
-	 * いまいちうまく行ってないです。
+	 * UniCodeブロックベースで大きく改善。
 	 * @param fList
 	 * @param baseMap
 	 * @param result
@@ -277,7 +281,8 @@ public class BookNameUtil implements NameUtil {
 						createSimpleName);
 				map.put(file.getKey(), dest);
 				if (set.contains(dest.getName())) {
-					log.warn("重複しています。{} >>  {}", file.getKey(), dest);
+					log.warn("重複しています。よって、変更しません。 {} >>  {}", file.getKey(),
+							dest);
 
 				}
 				set.add(dest.getName());
@@ -286,7 +291,6 @@ public class BookNameUtil implements NameUtil {
 
 			if (fList.size() == set.size()) {
 				result = map;
-			} else {
 				break;
 			}
 		}

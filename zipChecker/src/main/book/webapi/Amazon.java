@@ -8,7 +8,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
 import java.util.Collection;
 import java.util.HashMap;
@@ -201,8 +204,7 @@ public class Amazon {
 		SignedRequestsHelper helper;
 		try {
 
-			helper = SignedRequestsHelper.getInstance(ENDPOINT,
-					AWS_ACCESS_KEY_ID, AWS_SECRET_KEY);
+			helper = createHelper();
 
 			Map<String, String> params = new HashMap<String, String>();
 			params.put("Service", "AWSECommerceService");
@@ -218,6 +220,23 @@ public class Amazon {
 			throw new IllegalStateException(e);
 		}
 
+	}
+
+	private static int idx = 0;
+
+	private static synchronized SignedRequestsHelper createHelper()
+			throws UnsupportedEncodingException, NoSuchAlgorithmException,
+			InvalidKeyException {
+		SignedRequestsHelper helper;
+		String[] key1 = AWS_ACCESS_KEY_ID.split(",");
+		String[] key2 = AWS_SECRET_KEY.split(",");
+
+		helper = SignedRequestsHelper.getInstance(ENDPOINT, key1[idx
+				% key1.length], key2[idx % key2.length]);
+
+		idx++;
+
+		return helper;
 	}
 
 	static class GetImage<Void> implements Callable<Void> {

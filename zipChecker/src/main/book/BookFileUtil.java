@@ -241,11 +241,13 @@ public class BookFileUtil {
 			jpgCheck(workF);
 			FileOperationUtil.deleteEmptyDir(workF, "jpeg", "jpg", "png");
 
-			FileOperationUtil.removeFile(workF,
-					new String[] { "^.*\\.html$", "^.*\\.url$", "^.*\\.txt$",
-							"^Thumbs\\.db", "^[^.]*$", "spot\\.com\\.jpg",
-							"downloadmanga\\.vnsharing\\.net\\.jpg" });
+			FileOperationUtil.removeFile(workF, new String[] { "^.*\\.html$",
+					"^.*\\.url$", "^.*\\.txt$", "^Thumbs\\.db", "^[^.]*$",
+					"spot\\.com\\.jpg",
+					"downloadmanga\\.vnsharing\\.net\\.jpg",
+					"Manga_Cover\\.jpg" });
 			FileOperationUtil.renameToSimpleFileName(workF, bookName);
+			FileOperationUtil.deleteSameFile(workF);
 
 			Map<File, BookInfo> allbookInfo = bookName.getAllbookInfo(workF);
 
