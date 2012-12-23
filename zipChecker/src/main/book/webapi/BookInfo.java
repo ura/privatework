@@ -43,7 +43,7 @@ public class BookInfo implements Comparable<BookInfo>, Serializable {
 			.compile("^([^()\\n\\r]+)[ 　]*([0-9０-９]+)[巻集]");
 
 	private static final Pattern titleReg6 = Pattern
-			.compile("^([^()\\n\\r]+)([0-9０-９]+)[ 　(（〈]+");
+			.compile("^([^()\\n\\r0-9０-９]+)([0-9０-９]+)[ 　(（〈]+");
 	private static final Pattern titleReg6_1 = Pattern
 			.compile("^([^()\\n\\r]+)[(（]Volume:([0-9０-９]+)[巻集]*[）)]");
 
