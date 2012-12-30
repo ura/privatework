@@ -23,6 +23,11 @@ import org.w3c.tidy.Tidy;
 
 import util.StringUtil;
 
+/**
+ * 国会図書館の用のパーサ
+ * @author poti
+ *
+ */
 public class Library {
 
 	private static Logger log = LoggerFactory.getLogger(Library.class);
@@ -221,11 +226,11 @@ public class Library {
 					String publisherName = split[0];
 					String seriesName = split[2];
 
+					String kan = getKan((String) tExpKan.evaluate(item,
+							XPathConstants.STRING));
 					String t = (String) tExp.evaluate(item,
 							XPathConstants.STRING)
-							+ " 第"
-							+ getKan((String) tExpKan.evaluate(item,
-									XPathConstants.STRING)) + "巻";
+							+ (!"".equals(kan) ? " 第" + kan + "巻" : "");
 
 					System.out.println((String) tExpKan.evaluate(item,
 							XPathConstants.STRING));
