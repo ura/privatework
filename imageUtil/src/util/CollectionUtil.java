@@ -169,7 +169,7 @@ public class CollectionUtil {
 			this.total = total;
 		}
 
-		public int increment() {
+		public synchronized int increment() {
 			count++;
 			return count;
 		}
@@ -179,4 +179,22 @@ public class CollectionUtil {
 		}
 
 	}
+
+	public static class MapCounter<K> {
+
+		private HashMap<K, Counter> m = new HashMap<>();
+
+		public int increment(K key) {
+
+			Counter counter = m.get(key);
+
+			if (counter == null) {
+				counter = new Counter(0, Integer.MAX_VALUE);
+				m.put(key, counter);
+			}
+
+			return counter.increment();
+		}
+	}
+
 }

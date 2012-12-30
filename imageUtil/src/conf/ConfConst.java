@@ -16,9 +16,14 @@ public class ConfConst {
 	public static final String THREAD_BARCODE = "THREAD_BARCODE";
 	public static final String THREAD_BARCODE_DERAY = "THREAD_BARCODE_DERAY";
 
+	public static final String BARCODE_REMOTE_SITES = "BARCODE_REMOTE_SITES";
+	public static final String BARCODE_USE_REMOTE_SITES = "BARCODE_USE_REMOTE_SITES";
+
 	public static final String MAIN_CONF_FILE = "/main.properties";
 	public static final String AssociateTag = "AssociateTag";
 	public static final String SRC_DIR = "SRC_DIR";
+
+	public static final String NG_FILE_DIR = "NG_FILE_DIR";
 
 	public static Config MAIN_CONF = Config.loadConfig(MAIN_CONF_FILE,
 			Config.class);

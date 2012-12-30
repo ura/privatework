@@ -56,11 +56,14 @@ dependencies {
 	compile 'javax.mail:mail:latest.integration'
 
 	compile 'org.apache.commons:commons-lang3:latest.integration'
+	compile 'commons-httpclient:commons-httpclient:latest.integration'
+
+
 
 
 	compile 'net.sourceforge.javacsv:javacsv:2.0'
 	compile 'abaron:abaron:0.9.8'
-	compile 'org.apache.commons:commons-io:1.4'
+
 	compile 'org.apache.commons:commons-codec:1.6'
 	compile 'org.apache.ant:ant:1.8.2'
 

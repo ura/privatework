@@ -3,11 +3,12 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="test"/>
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry exported="true" kind="lib" path="C:/Users/poti/.gradle/caches/artifacts-4/org.perf4j/perf4j/c12498cf18507aa6433a94eb7d3e77d5/jars/perf4j-0.9.16.jar" sourcepath="C:/Users/poti/.gradle/caches/artifacts-4/org.perf4j/perf4j/c12498cf18507aa6433a94eb7d3e77d5/sources/perf4j-0.9.16-sources.jar"/>
 	<classpathentry exported="true" kind="lib" path="C:/Users/poti/.gradle/caches/artifacts-4/org.slf4j/slf4j-api/c12498cf18507aa6433a94eb7d3e77d5/jars/slf4j-api-1.7.2.jar" sourcepath="C:/Users/poti/.gradle/caches/artifacts-4/org.slf4j/slf4j-api/c12498cf18507aa6433a94eb7d3e77d5/sources/slf4j-api-1.7.2-sources.jar"/>
 	<classpathentry exported="true" kind="lib" path="C:/Users/poti/.gradle/caches/artifacts-4/ch.qos.logback/logback-classic/c12498cf18507aa6433a94eb7d3e77d5/jars/logback-classic-1.0.9.jar" sourcepath="C:/Users/poti/.gradle/caches/artifacts-4/ch.qos.logback/logback-classic/c12498cf18507aa6433a94eb7d3e77d5/sources/logback-classic-1.0.9-sources.jar"/>
 	<classpathentry exported="true" kind="lib" path="C:/Users/poti/.gradle/caches/artifacts-4/com.jolira/guice/c12498cf18507aa6433a94eb7d3e77d5/jars/guice-3.0.0.jar" sourcepath="C:/Users/poti/.gradle/caches/artifacts-4/com.jolira/guice/c12498cf18507aa6433a94eb7d3e77d5/sources/guice-3.0.0-sources.jar"/>
-	<classpathentry exported="true" kind="lib" path="C:/Users/poti/.gradle/caches/artifacts-4/com.google.guava/guava/c12498cf18507aa6433a94eb7d3e77d5/jars/guava-13.0.1.jar" sourcepath="C:/Users/poti/.gradle/caches/artifacts-4/com.google.guava/guava/c12498cf18507aa6433a94eb7d3e77d5/sources/guava-13.0.1-sources.jar"/>
+	<classpathentry exported="true" kind="lib" path="C:/Users/poti/.gradle/caches/artifacts-4/com.google.guava/guava/c12498cf18507aa6433a94eb7d3e77d5/jars/guava-14.0-rc1.jar" sourcepath="C:/Users/poti/.gradle/caches/artifacts-4/com.google.guava/guava/c12498cf18507aa6433a94eb7d3e77d5/sources/guava-14.0-rc1-sources.jar"/>
 	<classpathentry exported="true" kind="lib" path="C:/Users/poti/.gradle/caches/artifacts-4/org.apache.commons/commons-lang3/c12498cf18507aa6433a94eb7d3e77d5/jars/commons-lang3-3.1.jar" sourcepath="C:/Users/poti/.gradle/caches/artifacts-4/org.apache.commons/commons-lang3/c12498cf18507aa6433a94eb7d3e77d5/sources/commons-lang3-3.1-sources.jar"/>
 	<classpathentry exported="true" kind="lib" path="C:/Users/poti/flatjar/commons-io-1.4.jar" sourcepath="C:/Users/poti/flatjar/commons-io-1.4-sources.jar"/>
 	<classpathentry exported="true" kind="lib" path="C:/Users/poti/flatjar/commons-codec-1.6.jar" sourcepath="C:/Users/poti/flatjar/commons-codec-1.6-sources.jar"/>
@@ -27,8 +28,6 @@
 	<classpathentry exported="true" kind="lib" path="C:/Users/poti/.gradle/caches/artifacts-4/log4j/log4j/c12498cf18507aa6433a94eb7d3e77d5/jars/log4j-1.2.12.jar"/>
 	<classpathentry exported="true" kind="lib" path="C:/Users/poti/.gradle/caches/artifacts-4/logkit/logkit/c12498cf18507aa6433a94eb7d3e77d5/jars/logkit-1.0.1.jar" sourcepath="C:/Users/poti/.gradle/caches/artifacts-4/logkit/logkit/c12498cf18507aa6433a94eb7d3e77d5/sources/logkit-1.0.1-sources.jar"/>
 	<classpathentry exported="true" kind="lib" path="C:/Users/poti/.gradle/caches/artifacts-4/avalon-framework/avalon-framework/c12498cf18507aa6433a94eb7d3e77d5/jars/avalon-framework-4.1.3.jar"/>
-	<classpathentry exported="true" kind="lib" path="C:/Users/poti/.gradle/caches/artifacts-4/javax.servlet/servlet-api/c12498cf18507aa6433a94eb7d3e77d5/jars/servlet-api-2.3.jar" sourcepath="C:/Users/poti/.gradle/caches/artifacts-4/javax.servlet/servlet-api/c12498cf18507aa6433a94eb7d3e77d5/sources/servlet-api-2.3-sources.jar"/>
 	<classpathentry exported="true" kind="lib" path="C:/Users/poti/.gradle/caches/artifacts-4/commons-logging/commons-logging/c12498cf18507aa6433a94eb7d3e77d5/jars/commons-logging-1.1.jar" sourcepath="C:/Users/poti/.gradle/caches/artifacts-4/commons-logging/commons-logging/c12498cf18507aa6433a94eb7d3e77d5/sources/commons-logging-1.1-sources.jar"/>
-	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
