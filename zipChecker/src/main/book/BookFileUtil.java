@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -42,6 +43,7 @@ import zip.State;
 import zip.ZipChecker;
 import book.webapi.BookInfo;
 import conf.ConfConst;
+import static util.StaticUtil.sleep;
 import static util.file.FileNameUtil.createPath;
 import static util.file.FileNameUtil.getFileName;
 import static util.file.FileNameUtil.haveExt;
@@ -57,8 +59,12 @@ public class BookFileUtil {
 
 	private static final String WORK_DIR = ConfConst.MAIN_CONF
 			.getVal(ConfConst.ARC_WORK_DIR);
+
 	private static final int THREAD_DECODE = ConfConst.MAIN_CONF
 			.getInt(ConfConst.THREAD_DECODE);
+
+	private static final String NG_FILE_DIR = ConfConst.MAIN_CONF
+			.getVal(ConfConst.NG_FILE_DIR);
 
 	private static BookNameUtil bookName = InjectorMgr.get().getInstance(
 			BookNameUtil.class);
@@ -246,8 +252,11 @@ public class BookFileUtil {
 					"spot\\.com\\.jpg",
 					"downloadmanga\\.vnsharing\\.net\\.jpg",
 					"Manga_Cover\\.jpg" });
+
 			FileOperationUtil.renameToSimpleFileName(workF, bookName);
 			FileOperationUtil.deleteSameFile(workF);
+			FileOperationUtil.deleteSamaFileByCRC(
+					Arrays.asList(new File(NG_FILE_DIR).listFiles()), workF);
 
 			Map<File, BookInfo> allbookInfo = bookName.getAllbookInfo(workF);
 
@@ -280,7 +289,8 @@ public class BookFileUtil {
 			bookName.createCominName(new File(WORK_DIR), s);
 			bookName.getBookInfoRepo().save();
 
-			//使わなかったフォルダを消去。
+			sleep(10 * 1000l);
+			//使わなかったフォルダを消去。カラだったら。
 			FileOperationUtil.deleteEmptyDir(tempDest1);
 			FileOperationUtil.deleteEmptyDir(tempDest2);
 			FileOperationUtil.deleteEmptyDir(workF);
@@ -402,9 +412,13 @@ public class BookFileUtil {
 			} else {
 				long srcSize = dirSize(src);
 				long destSize = dirSize(dest);
+
+				int srcFiles = src.list().length;
+				int destFiles = dest.list().length;
+
 				if (notSame(src, tempDest2)) {
 
-					if (srcSize < destSize) {
+					if (srcSize < destSize && srcFiles <= destFiles) {
 
 						File path = createPath(tempDest1, bookNo.getInfo());
 						FileOperationUtil.renameTo(src, path);
@@ -412,17 +426,25 @@ public class BookFileUtil {
 						log.warn("サイズの小さいフォルダをテンポラリに移しました:{}  :{}K  {}K",
 								new Object[] { path, srcSize / 1024,
 										destSize / 1024 });
-					} else {
+					} else if (srcSize > destSize && srcFiles >= destFiles) {
 
 						File path = createPath(tempDest1, bookNo.getInfo());
 						FileOperationUtil.renameTo(dest, path);
 						FileOperationUtil.renameTo(src, dest);
 
 						log.warn("サイズの小さいフォルダをテンポラリに移しました:{}  :{}K  {}K",
-								new Object[] { path, srcSize / 1024,
-										destSize / 1024 });
+								new Object[] { path, destSize / 1024,
+										srcSize / 1024 });
 
+					} else {
+						File path = createPath(tempDest1, bookNo.getInfo());
+						FileOperationUtil.renameTo(src, path);
+						log.error(
+								"ファイル数とサイズの関係が不正です。:{}  :{}K  {}K  {}File  {}File  ",
+								new Object[] { path, destSize / 1024,
+										srcSize / 1024 }, destFiles, srcFiles);
 					}
+
 				} else {
 					File path = createPath(tempDest2, bookNo.getInfo());
 					FileOperationUtil.renameTo(src, path);

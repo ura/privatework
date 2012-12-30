@@ -6,13 +6,8 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.SortedSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -651,6 +646,53 @@ public class FileOperationUtil {
 
 	}
 
+	public static void deleteSamaFileByCRC(List<File> deleteFiles, File root) {
+
+		Collection<File> allFile = DirCollector.create(root).getAllFile();
+		deleteSamaFileByCRC(deleteFiles, allFile);
+
+	}
+
+	/**
+	 * 対象ファイルを削除します。
+	 * 名称が一致し、かつ、長さが一致し、内容が一致していた場合のみ削除します。
+	 * 名称が異なる場合は、中身が同一でもチェックしません。
+	 * TODO ロジック的に良いかは要検討
+	 * @param list
+	 */
+	public static void deleteSamaFileByCRC(List<File> deleteFiles,
+			Collection<File> targetList) {
+
+		TreeSet<File> deleteSet = new TreeSet<File>();
+		for (File base : deleteFiles) {
+
+			for (File f : targetList) {
+				try {
+					if (base.getName().equals(f.getName())
+							& base.length() == f.length()
+							& f.exists()
+							& FileUtils.checksumCRC32(base) == FileUtils
+									.checksumCRC32(f)) {
+
+						deleteSet.add(f);
+						log.warn("一致したため削除しました。元：{} >> 削除対象：{} ",
+								base.getPath(), f.getPath());
+						break;
+
+					}
+				} catch (IOException e) {
+					log.error("想定していないエラーです。CRCチェックでエラーがおきました。{}", e);
+				}
+			}
+
+		}
+
+		for (File file : deleteSet) {
+			file.delete();
+		}
+
+	}
+
 	/**
 	 * ひとつのファイルを残して削除します。
 	 * 前提条件として、CRC等で重複確認がされている必要があります。
@@ -661,7 +703,8 @@ public class FileOperationUtil {
 		List<File> delList = new ArrayList<File>();
 
 		for (int i = 1; i < list.size(); i++) {
-			log.warn(Log.OP, "DELETE FILE {}", list.get(i));
+			log.warn(Log.OP, "DELETE FILE {}\t\t{}", list.get(i), list.get(i)
+					.length());
 			list.get(i).delete();
 			delList.add(list.get(i));
 

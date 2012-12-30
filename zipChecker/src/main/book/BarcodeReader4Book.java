@@ -54,7 +54,7 @@ public class BarcodeReader4Book {
 	private static Logger log = LoggerFactory
 			.getLogger(BarcodeReader4Book.class);
 
-	private static final int MAX_DIV = 6;
+	private static final int MAX_DIV = 8;
 
 	private static final int THREAD_BARCODE = ConfConst.MAIN_CONF
 			.getInt(ConfConst.THREAD_BARCODE);
@@ -68,7 +68,7 @@ public class BarcodeReader4Book {
 
 		log.info("バーコード抽出処理を開始します。{} ", dir.getAbsolutePath());
 		File[] files = dir.listFiles(new FileNameFilter(MODE.EXT_INCLUDE,
-				"jpg", "jpeg"));
+				"jpg", "jpeg", "png"));
 		if (files.length == 0) {
 			return null;
 		}
@@ -212,7 +212,7 @@ public class BarcodeReader4Book {
 
 		int i = 0;
 		for (File file : fileList) {
-			Task task = new Task(++i, retry, file);
+			Task<String> task = new Task<String>(++i, retry, file);
 			list.add(task);
 
 		}
@@ -273,6 +273,7 @@ public class BarcodeReader4Book {
 
 	/**
 	 * 指定された粒度で、分割用のパラメータを作成する。
+	 * デフォルト分割、６まで上がる。
 	 * @param bitmap
 	 * @param div
 	 * @return
@@ -284,6 +285,7 @@ public class BarcodeReader4Book {
 		for (; div <= MAX_DIV; div++) {
 
 			//暫定対策：縦の方の分解率を上げ、二段バーコードの上を取りやすくする。
+			// 縦　２～６＊３分割。横２～６分割
 			for (int j = 0; j < div * 3; j++) {
 				for (int i = 0; i < div; i++) {
 					set.add(new Rect(i, j, div, div * 3
@@ -294,6 +296,7 @@ public class BarcodeReader4Book {
 				}
 			}
 
+			// 縦　２～６＊３分割。横２～６分割
 			for (int j = 0; j < div * 6; j++) {
 				for (int i = 0; i < div; i++) {
 					set.add(new Rect(i, j, div, div * 6, bitmap.getWidth(),
@@ -301,25 +304,32 @@ public class BarcodeReader4Book {
 				}
 			}
 
-			for (int j = 0; j < div * 12; j++) {
-				for (int i = 0; i < div; i++) {
-					set.add(new Rect(i, j, div, div * 12, bitmap.getWidth(),
-							bitmap.getHeight(), c++));
-				}
-			}
-
-			for (int j = 0; j < div * 24; j++) {
-				for (int i = 0; i < div; i++) {
-					set.add(new Rect(i, j, div, div * 24, bitmap.getWidth(),
-							bitmap.getHeight(), c++));
-				}
-			}
+			//T0DO 分析のために整理
+			//			for (int j = 0; j < div * 12; j++) {
+			//				for (int i = 0; i < div; i++) {
+			//					set.add(new Rect(i, j, div, div * 12, bitmap.getWidth(),
+			//							bitmap.getHeight(), c++));
+			//				}
+			//			}
+			//
+			//			for (int j = 0; j < div * 24; j++) {
+			//				for (int i = 0; i < div; i++) {
+			//					set.add(new Rect(i, j, div, div * 24, bitmap.getWidth(),
+			//							bitmap.getHeight(), c++));
+			//				}
+			//			}
 
 		}
 
 		return set;
 	}
 
+	/**
+	 * 分割して読み取りを試みます。
+	 * 画像の１分を定義するクラスです。
+	 * @author poti
+	 *
+	 */
 	public static class Rect {
 
 		private int baseWidth;
@@ -496,6 +506,7 @@ public class BarcodeReader4Book {
 				List<SmillaEnlargerConf> list = wrapper.convertConfList(file,
 						200);
 				for (SmillaEnlargerConf smillaEnlargerConf : list) {
+
 					File tempFile = wrapper.convertTempFile(file,
 							smillaEnlargerConf);
 					barcord = autoRead(tempFile.getAbsolutePath(), 2);
@@ -513,6 +524,7 @@ public class BarcodeReader4Book {
 								+ file.getAbsolutePath() + "\t" + barcord);
 						log.info(Log.STATIC, "NG:SmillaEnlargerConf:{}",
 								smillaEnlargerConf);
+						barcord = null;
 					}
 
 				}
