@@ -72,7 +72,9 @@ public class BookInfoRepoGUI {
 
 			while (true) {
 				String str = ClipBoard.getClipboard();
-				set(tb, str);
+
+				tf.setText(str);
+
 			}
 		}
 	}
@@ -101,30 +103,6 @@ public class BookInfoRepoGUI {
 		Set<BookInfo> result = new TreeSet<>();
 
 		result.addAll(set);
-
-		//		for (BookInfo bookInfo : set) {
-		//
-		//			map.put(bookInfo.getSimpleInfo(), bookInfo);
-		//
-		//		}
-		//
-		//		for (String e : map.keySet()) {
-		//			SortedSet<BookInfo> sortedSet = map.get(e);
-		//
-		//			Set<String> no = new BookNameUtil().getNO(sortedSet);
-		//
-		//			if (no.size() > 0) {
-		//				for (String string : no) {
-		//					result.add(e + " " + string);
-		//				}
-		//			} else {
-		//				for (BookInfo info : sortedSet) {
-		//					result.add(info.getInfo());
-		//				}
-		//
-		//			}
-		//
-		//		}
 
 		return result;
 
