@@ -1,7 +1,8 @@
 /testdata
 .hg
 .svn
-.*/**
+.gradle
+.settings
 *.log
 *.sar
 /test
