@@ -24,6 +24,7 @@ import util.Normalizer;
 import util.file.Dir;
 import util.file.DirCollector;
 import util.file.ObjectUtil;
+import book.rpc.BookClient;
 import book.webapi.BookInfo;
 import book.webapi.BookInfoFromWeb;
 import book.webapi.ISBNConv;
@@ -38,6 +39,7 @@ import static util.file.FileNameUtil.getFileName;
  * @author name
  *
  */
+
 public class BookInfoRepo implements Serializable {
 
 	/**
@@ -65,7 +67,15 @@ public class BookInfoRepo implements Serializable {
 		load();
 	}
 
-	static class Key implements Serializable {
+	/**
+	 *
+	 * ISBNが取得できていない書籍に関しては、フォルダ名がキーとなる
+	 *
+	 * @author poti
+	 *
+	 */
+
+	public static class Key implements Serializable {
 		public Key(String isbn, State state) {
 			super();
 			this.isbn = isbn;
@@ -76,8 +86,8 @@ public class BookInfoRepo implements Serializable {
 		 *
 		 */
 		private static final long serialVersionUID = 4935627485713044172L;
-		String isbn;
-		State state;
+		public String isbn;
+		public State state;
 
 		@Override
 		public int hashCode() {
@@ -106,6 +116,10 @@ public class BookInfoRepo implements Serializable {
 
 	}
 
+	/**
+	 * 所持している本を登録する
+	 * @param info
+	 */
 	public void addHave(BookInfo info) {
 		if (info.isRowdateOnly()) {
 			map.put(new Key(info.getIsbn(), State.FOLDERNAME), info);
@@ -405,16 +419,41 @@ public class BookInfoRepo implements Serializable {
 
 	public void load() {
 		try {
-			Object load = ObjectUtil.load("isbn.data");
+			Object load = ObjectUtil.load("isbn.data", Map.class);
 			map = (Map<Key, BookInfo>) load;
 
 			repalreISBN();
 
 			save();
+
+			log.warn("ローカルデータ　LOAD完了 データ保持数:{}", map.size());
+
 		} catch (Exception e) {
 			e.printStackTrace();
-			log.warn("loadに失敗しました");
+			log.warn("書籍ローカルデータのloadに失敗しました");
 		}
+
+		BookClient bookClient = new BookClient();
+		if (bookClient.isClient()) {
+
+			log.warn("書籍サーバよりデータをロードします");
+
+			Map<Key, BookInfo> dataFromServer = bookClient.getDataFromServer();
+			log.warn("書籍サーバよりデータをロードしました");
+
+			if (map == null) {
+				map = dataFromServer;
+			} else {
+				log.warn("書籍サーバのデータをマージしました。");
+				map.putAll(dataFromServer);
+
+			}
+			save();
+
+		} else {
+			log.warn("サーバのIPだったため、データの取得をしませんでした。");
+		}
+
 	}
 
 	public void save() {
@@ -467,6 +506,10 @@ public class BookInfoRepo implements Serializable {
 				return false;
 			return true;
 		}
+	}
+
+	public Map<Key, BookInfo> getMap() {
+		return map;
 	}
 
 }

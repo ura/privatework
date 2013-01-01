@@ -2,7 +2,6 @@ package book;
 
 import java.awt.Dimension;
 import java.util.Set;
-import java.util.SortedSet;
 import java.util.TreeSet;
 
 import javax.swing.JFrame;
@@ -13,6 +12,7 @@ import javax.swing.table.DefaultTableColumnModel;
 
 import util.ClipBoard;
 import book.BookInfoRepo.State;
+import book.rpc.BookServer;
 import book.webapi.BookInfo;
 
 import com.google.common.collect.SortedSetMultimap;
@@ -62,7 +62,7 @@ public class BookInfoRepoGUI {
 				@Override
 				public void run() {
 					while (true) {
-						sleep(1000);
+						sleep(10);
 
 						set(tb, tf.getText());
 					}
@@ -91,34 +91,40 @@ public class BookInfoRepoGUI {
 
 	}
 
-	private static Set<String> createBookSummary(Set<BookInfo> set) {
+	/**
+	 *
+	 */
+	private static Set<BookInfo> createBookSummary(Set<BookInfo> set) {
 
 		SortedSetMultimap<String, BookInfo> map = TreeMultimap.create();
 
-		Set<String> result = new TreeSet<>();
-		for (BookInfo bookInfo : set) {
+		Set<BookInfo> result = new TreeSet<>();
 
-			map.put(bookInfo.getSimpleInfo(), bookInfo);
+		result.addAll(set);
 
-		}
-
-		for (String e : map.keySet()) {
-			SortedSet<BookInfo> sortedSet = map.get(e);
-
-			Set<String> no = new BookNameUtil().getNO(sortedSet);
-
-			if (no.size() > 0) {
-				for (String string : no) {
-					result.add(e + " " + string);
-				}
-			} else {
-				for (BookInfo info : sortedSet) {
-					result.add(info.getInfo());
-				}
-
-			}
-
-		}
+		//		for (BookInfo bookInfo : set) {
+		//
+		//			map.put(bookInfo.getSimpleInfo(), bookInfo);
+		//
+		//		}
+		//
+		//		for (String e : map.keySet()) {
+		//			SortedSet<BookInfo> sortedSet = map.get(e);
+		//
+		//			Set<String> no = new BookNameUtil().getNO(sortedSet);
+		//
+		//			if (no.size() > 0) {
+		//				for (String string : no) {
+		//					result.add(e + " " + string);
+		//				}
+		//			} else {
+		//				for (BookInfo info : sortedSet) {
+		//					result.add(info.getInfo());
+		//				}
+		//
+		//			}
+		//
+		//		}
 
 		return result;
 
@@ -137,35 +143,35 @@ public class BookInfoRepoGUI {
 				Set<BookInfo> set = repo.get(State.HAVE,
 						keyword.split("[ 　\t\\[\\]第]"));
 
-				for (String bookInfo : createBookSummary(set)) {
+				for (BookInfo bookInfo : createBookSummary(set)) {
 					if (i >= MAX) {
 						return;
 					}
 
 					tb.setValueAt("所持", i, 0);
-					tb.setValueAt(bookInfo, i++, 1);
+					tb.setValueAt(bookInfo.getInfo(), i++, 1);
 				}
 			}
 			{
 				Set<BookInfo> set = repo.get(State.BAT,
 						keyword.split(" 　\t\\[\\]第"));
-				for (String bookInfo : createBookSummary(set)) {
+				for (BookInfo bookInfo : createBookSummary(set)) {
 					if (i >= MAX) {
 						return;
 					}
 					tb.setValueAt("候補", i, 0);
-					tb.setValueAt(bookInfo, i++, 1);
+					tb.setValueAt(bookInfo.getInfo(), i++, 1);
 				}
 			}
 			{
 				Set<BookInfo> set = repo.get(State.WANT,
 						keyword.split(" 　\t\\[\\]第"));
-				for (String bookInfo : createBookSummary(set)) {
+				for (BookInfo bookInfo : createBookSummary(set)) {
 					if (i >= MAX) {
 						return;
 					}
 					tb.setValueAt("欲しい", i, 0);
-					tb.setValueAt(bookInfo, i++, 1);
+					tb.setValueAt(bookInfo.getInfo(), i++, 1);
 				}
 			}
 		}
@@ -178,6 +184,10 @@ public class BookInfoRepoGUI {
 		repo = new BookInfoRepo();
 
 		repo.load();
+
+		BookServer server = new BookServer(repo);
+		server.startThread();
+
 		new JTextFieldTest();
 
 	}

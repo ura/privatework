@@ -23,6 +23,12 @@ public class ConfConst {
 	public static final String AssociateTag = "AssociateTag";
 	public static final String SRC_DIR = "SRC_DIR";
 
+	/**
+	 * 指定されたIPだった場合のみ、サーバを立ち上げる。
+	 * その他のIPの場合、クライアントはサーバに接続を試みる
+	 */
+	public static final String BOOK_SERVER_IP = "BOOK_SERVER_IP";
+
 	public static final String NG_FILE_DIR = "NG_FILE_DIR";
 
 	public static Config MAIN_CONF = Config.loadConfig(MAIN_CONF_FILE,

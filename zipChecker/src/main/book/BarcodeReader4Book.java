@@ -61,6 +61,9 @@ public class BarcodeReader4Book {
 	private static final int THREAD_BARCODE_DERAY = ConfConst.MAIN_CONF
 			.getInt(ConfConst.THREAD_BARCODE_DERAY);
 
+	private static final boolean BARCODE_USE_REMOTE_SITES = ConfConst.MAIN_CONF
+			.getBoolean(ConfConst.BARCODE_USE_REMOTE_SITES);
+
 	@Inject
 	private SmillaEnlargerWrapper wrapper;
 
@@ -176,6 +179,11 @@ public class BarcodeReader4Book {
 
 	public class Task<Strings> implements Callable<String> {
 
+		private boolean retry;
+		private File file;
+		private int i;
+		private boolean useRemote = BARCODE_USE_REMOTE_SITES;
+
 		public Task(int i, boolean retry, File file) {
 			super();
 			this.retry = retry;
@@ -183,9 +191,9 @@ public class BarcodeReader4Book {
 			this.i = i;
 		}
 
-		private boolean retry;
-		private File file;
-		private int i;
+		public void setUseRemote(boolean b) {
+			this.useRemote = b;
+		}
 
 		@Override
 		public String toString() {
@@ -195,7 +203,12 @@ public class BarcodeReader4Book {
 
 		@Override
 		public String call() throws Exception {
-			return readImpl(retry, file, i);
+
+			if (!useRemote) {
+				return readImpl(retry, file, i);
+			} else {
+				return new BookImgUploader().getBarcpdeInfoFromServer(file);
+			}
 		}
 	}
 

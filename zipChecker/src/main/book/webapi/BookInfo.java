@@ -10,11 +10,14 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.builder.CompareToBuilder;
+import org.msgpack.annotation.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import util.Normalizer;
 
+@Message
 public class BookInfo implements Comparable<BookInfo>, Serializable {
 
 	/**
@@ -277,8 +280,12 @@ public class BookInfo implements Comparable<BookInfo>, Serializable {
 
 	}
 
+	/**
+	 * TODO 使用の仕方を検討
+	 */
 	private TYPE type;
 
+	@Message
 	public enum TYPE {
 		ROW, KAN, ONE
 	}
@@ -465,7 +472,11 @@ public class BookInfo implements Comparable<BookInfo>, Serializable {
 	@Override
 	public int compareTo(BookInfo o) {
 
-		return getInfo().compareTo(o.getInfo());
+		return new CompareToBuilder()
+				.append(this.getTitleStr(), o.getTitleStr())
+				.append(this.getNo(), o.getNo())
+				.append(this.getAuthor(), o.getAuthor())
+				.append(this.getIsbn(), o.getIsbn()).toComparison();
 
 	}
 
