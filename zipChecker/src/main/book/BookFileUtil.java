@@ -195,11 +195,6 @@ public class BookFileUtil {
 
 			rebuildArc(newList);
 
-			for (File zipFile : files) {
-				//TODO 固定パスの削除、および、処理後の移動可否
-				FileOperationUtil.move(zipFile, "L:\\tmp");
-			}
-
 		} catch (IOException e) {
 			log.error("解凍時に想定外エラー", e);
 		} catch (InterruptedException e) {
