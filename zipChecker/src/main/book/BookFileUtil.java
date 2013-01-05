@@ -39,6 +39,7 @@ import util.file.DirCollector;
 import util.file.FileOperationUtil;
 import util.file.FileWalker;
 import util.file.KeywordFileCollector;
+import util.file.KeywordFileCollectorWithExculde;
 import zip.State;
 import zip.ZipChecker;
 import book.webapi.BookInfo;
@@ -65,6 +66,9 @@ public class BookFileUtil {
 
 	private static final String NG_FILE_DIR = ConfConst.MAIN_CONF
 			.getVal(ConfConst.NG_FILE_DIR);
+
+	private static final String RUBUILD_SRC_FILE_DIR = ConfConst.MAIN_CONF
+			.getVal(ConfConst.RUBUILD_SRC_FILE_DIR);
 
 	private static BookNameUtil bookName = InjectorMgr.get().getInstance(
 			BookNameUtil.class);
@@ -168,6 +172,40 @@ public class BookFileUtil {
 					arcFile.getAbsolutePath());
 			FileOperationUtil.deleteForce(newWorkDir);
 
+		}
+
+	}
+
+	public static void rebuildArcCLI(String base, Collection<String> contain,
+			Collection<String> exclude) {
+
+		log.warn("ルートディレクトリ\t{}", base);
+		log.warn("キーワード\t{}", contain);
+		log.warn("除外対象\t{}", exclude);
+
+		KeywordFileCollector coll = new KeywordFileCollectorWithExculde(
+				contain, exclude);
+		new FileWalker().walk(new File(base), coll);
+
+		try {
+
+			List<File> files = coll.getFiles();
+
+			for (File file : files) {
+				log.info("rebuildArc target {}", file.toString());
+			}
+
+			rebuildArc(files);
+
+			//これに関しては移動する。同じファイrを何回も処理しないため
+			FileOperationUtil.move(files, RUBUILD_SRC_FILE_DIR);
+
+		} catch (IOException e) {
+			log.error("解凍時に想定外エラー", e);
+		} catch (InterruptedException e) {
+			log.error("解凍時に想定外エラー", e);
+		} catch (Exception e) {
+			log.error("解凍時に想定外エラー", e);
 		}
 
 	}

@@ -45,20 +45,48 @@ dependencies {
 	//compile group: 'ch.qos.logback', name: 'logback-core', version: '1.0.0'
 	//compile 'ch.qos.logback:logback-classic:1.0.0'
 
+	compile('commons-logging:commons-logging:latest.integration') {
+		transitive = false
+		exclude module: 'log4j'
+		exclude module: 'org.slf4j:slf4j-log4j12'
+	}
+
+
+	compile('org.slf4j:slf4j-api:latest.integration') { transitive = false }
+	compile 'ch.qos.logback:logback-classic:latest.integration'
+
+
 
 	compile 'org.perf4j:perf4j:latest.integration'
 
 	//compile 'org.slf4j:slf4j-api:latest.integration' { transitive = false }
 
-	compile('org.slf4j:slf4j-api:latest.integration') { transitive = false }
 
-	compile 'ch.qos.logback:logback-classic:latest.integration'
+	//compile('commons-logging:commons-logging:latest.integration') {  }
+
+
+	compile 'org.slf4j:jcl104-over-slf4j:latest.integration'
 
 	compile 'com.jolira:guice:3.0.0'
 	compile 'com.google.guava:guava:latest.integration'
 
 
-	compile 'org.msgpack:msgpack-rpc:latest.integration'
+
+
+	compile ('org.msgpack:msgpack-rpc:latest.integration')
+	{
+		exclude module: 'log4j'
+		exclude module: 'org.slf4j'
+		exclude module:'slf4j-log4j12'
+	}
+
+	compile ('org.msgpack:msgpack:latest.integration')
+	{
+		exclude module: 'log4j'
+		exclude module: 'org.slf4'
+		exclude module:'slf4j-log4j12'
+	}
+
 
 
 
@@ -67,7 +95,14 @@ dependencies {
 	compile 'org.apache.commons:commons-lang3:latest.integration'
 	compile 'commons-httpclient:commons-httpclient:latest.integration'
 
-	compile 'org.msgpack:msgpack:latest.integration'
+
+	compile 'commons-cli:commons-cli:latest.integration'
+
+
+
+
+
+
 
 
 

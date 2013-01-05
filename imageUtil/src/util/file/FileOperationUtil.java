@@ -59,6 +59,16 @@ public class FileOperationUtil {
 		return b;
 	}
 
+	public static boolean move(Collection<File> f, String dirPath) {
+
+		boolean r = true;
+		for (File file : f) {
+			r = r && move(file, dirPath);
+		}
+
+		return r;
+	}
+
 	/**
 	 * ファイルをディレクトリに移動します。 ファイル名が重複している場合は、ファイル名をつけ直します。
 	 *

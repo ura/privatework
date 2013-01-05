@@ -31,6 +31,8 @@ public class ConfConst {
 
 	public static final String NG_FILE_DIR = "NG_FILE_DIR";
 
+	public static final String RUBUILD_SRC_FILE_DIR = "RUBUILD_SRC_FILE_DIR";
+
 	public static Config MAIN_CONF = Config.loadConfig(MAIN_CONF_FILE,
 			Config.class);
 

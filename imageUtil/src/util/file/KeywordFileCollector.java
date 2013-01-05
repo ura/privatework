@@ -12,9 +12,9 @@ import java.util.List;
  */
 public class KeywordFileCollector implements FileHandler {
 
-	private List<File> list = new ArrayList<File>();
+	protected List<File> list = new ArrayList<File>();
 
-	private String[] keywords;
+	protected String[] keywords;
 
 	public KeywordFileCollector(String... key) {
 		this.keywords = key;
@@ -34,10 +34,8 @@ public class KeywordFileCollector implements FileHandler {
 
 		} else {
 
-			for (String k : keywords) {
-				if (f.getName().contains(k)) {
-					list.add(f);
-				}
+			if (judge(f)) {
+				list.add(f);
 			}
 
 		}
@@ -45,14 +43,25 @@ public class KeywordFileCollector implements FileHandler {
 		return true;
 	}
 
+	protected boolean judge(File f) {
+
+		for (String k : this.keywords) {
+			if (f.getName().contains(k)) {
+				return true;
+			}
+
+		}
+		return false;
+
+	}
+
 	/**
-	 * 収集したファイルを返す。 なお、この時点で、重複ファイルの排除を行っておく。
+	 * 収集したファイルを返す。
 	 *
 	 * @return
 	 */
 	public List<File> getFiles() {
 
-		//FileOperationUtil.deleteSameFile(list);
 		return list;
 
 	}
