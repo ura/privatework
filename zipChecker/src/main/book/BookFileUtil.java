@@ -290,6 +290,7 @@ public class BookFileUtil {
 			FileOperationUtil.deleteSameFile(workF);
 			FileOperationUtil.deleteSamaFileByCRC(
 					Arrays.asList(new File(NG_FILE_DIR).listFiles()), workF);
+			FileOperationUtil.deleteEmptyDir(workF, "jpeg", "jpg", "png");
 
 			Map<File, BookInfo> allbookInfo = bookName.getAllbookInfo(workF);
 
@@ -319,7 +320,7 @@ public class BookFileUtil {
 				return;
 			}
 
-			bookName.createCominName(new File(WORK_DIR), s);
+			bookName.createCominName(workF, s);
 			bookName.getBookInfoRepo().save();
 
 			sleep(10 * 1000l);

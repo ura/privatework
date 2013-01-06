@@ -112,6 +112,13 @@ public class WinRARWrapper {
 
 	}
 
+	/**
+	 * zipに圧縮します。
+	 * @param src 圧縮元フォルダ
+	 * @param dest 圧縮後のファイル名。
+	 * @throws IOException
+	 * @throws InterruptedException
+	 */
 	public static void encode(String src, String destName) throws IOException,
 			InterruptedException {
 
@@ -139,6 +146,13 @@ public class WinRARWrapper {
 
 	}
 
+	/**
+	 * zipに圧縮します。
+	 * @param src 圧縮元フォルダ
+	 * @param dest 圧縮後のファイル名。
+	 * @throws IOException
+	 * @throws InterruptedException
+	 */
 	public static void encode(File src, File dest) throws IOException,
 			InterruptedException {
 		encode(src.getAbsolutePath(), dest.getAbsolutePath());

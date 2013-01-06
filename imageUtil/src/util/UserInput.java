@@ -135,7 +135,7 @@ public class UserInput {
 
 	public static <V> Collection<V> selectManySwing(List<V> list) {
 
-		String[] names = { "Boolean", "String" };
+		String[] names = { "選択", "対象" };
 
 		Object[][] records = new Object[list.size()][2];
 		for (int i = 0; i < records.length; i++) {
@@ -160,14 +160,14 @@ public class UserInput {
 		JTable table = new JTable(model);
 
 		JComboBox<TableModel> comboBox = new JComboBox<TableModel>();
-
 		TableCellEditor editor = new DefaultCellEditor(comboBox);
 		table.getColumnModel().getColumn(1).setCellEditor(editor);
 
+		table.getColumnModel().getColumn(0).setMaxWidth(30);
+
 		JButton addButton = new JButton("決定");
 
-		addButton.setMaximumSize(new Dimension(Short.MAX_VALUE, addButton
-				.getPreferredSize().height));
+		addButton.setMaximumSize(new Dimension(40, 40));
 
 		class MyActionListener implements ActionListener {
 
@@ -201,9 +201,12 @@ public class UserInput {
 		JPanel p = new JPanel();
 		p.setLayout(new BoxLayout(p, 2));
 		frame.getContentPane().add(p);
-		p.add(new JScrollPane(table));
+
+		JScrollPane scrollPane = new JScrollPane(table);
+		p.add(scrollPane);
 		p.add(addButton);
 
+		scrollPane.setSize(940, 600);
 		frame.setSize(1000, 640);
 		frame.setVisible(true);
 

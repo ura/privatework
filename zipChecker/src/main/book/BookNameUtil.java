@@ -33,7 +33,6 @@ import org.slf4j.LoggerFactory;
 import util.Normalizer;
 import util.WinRARWrapper;
 import util.file.DirCollector;
-import util.file.FileOperationUtil;
 import util.file.NameUtil;
 import book.webapi.BookInfo;
 import book.webapi.BookInfo.TYPE;
@@ -569,6 +568,9 @@ public class BookNameUtil implements NameUtil {
 
 	}
 
+	/**
+	 * 分冊の設定値。
+	 */
 	private final static int MAX_REBIULD = 25;
 
 	/**
@@ -583,9 +585,6 @@ public class BookNameUtil implements NameUtil {
 
 		SortedMap<Tuple<String, TYPE>, SortedMap<BookInfo, File>> m = classfy(map);
 
-		File temp1 = FileOperationUtil.createTempDir(baseDir, "1ファイル");
-		File tempMany = FileOperationUtil.createTempDir(baseDir, "完成");
-
 		for (Entry<Tuple<String, TYPE>, SortedMap<BookInfo, File>> e : m
 				.entrySet()) {
 			SortedMap<BookInfo, File> value = e.getValue();
@@ -594,22 +593,35 @@ public class BookNameUtil implements NameUtil {
 
 			log.warn("基礎名の分類結果です。{} : data数 {}", e.getKey(), keySet.size());
 
-			File path = createPath(baseDir, e.getKey().val1);
-			path.delete();
-			path.mkdir();
-			for (BookInfo bookInfo : list) {
-				File file = value.get(bookInfo);
-				file.renameTo(createPath(path, file));
+			File zipSrc = createPath(baseDir, e.getKey().val1);
+			zipSrc.delete();
+			zipSrc.mkdir();
+			File dest = zipSrc;
 
-			}
-			WinRARWrapper.encode(path, path);
-			path.renameTo(createPath(tempMany, path.getName()));
-
+			//LISTサイズが一以外だったらそのまま
+			//１だったら1冊ずつ処理
 			if (list.size() == 1) {
-				path.renameTo(createPath(temp1, path.getName()));
+
+				BookInfo bookInfo = list.get(0);
+				File boolFolder = value.get(bookInfo);
+
+				File result = createPath(baseDir, boolFolder);
+				boolFolder.renameTo(result);
+
+				zipSrc = result;
+				dest = result;
+
 			} else {
-				path.renameTo(createPath(tempMany, path.getName()));
+				for (BookInfo bookInfo : list) {
+					File file = value.get(bookInfo);
+					file.renameTo(createPath(zipSrc, file));
+
+				}
+
 			}
+
+			//フォルダ名と同じZIPを作る
+			WinRARWrapper.encode(zipSrc, dest);
 
 		}
 
@@ -653,9 +665,11 @@ public class BookNameUtil implements NameUtil {
 			if (bookInfo.isRowdateOnly()) {
 				baseInfo = Tuple.newT(bookInfo.getRowTitle(), TYPE.ROW);
 			} else {
-				//巻子がないものは巻数がない物同士でまとめる。
+				//巻子がないものは巻数がない物同士でもまとめない。
 				if (bookInfo.getNo().equals("")) {
-					baseInfo = Tuple.newT(bookInfo.getAuthor(), TYPE.ONE);
+					baseInfo = Tuple
+							.newT(bookInfo.getAuthor() + ":"
+									+ bookInfo.getTitleStr(), TYPE.ONE);
 				} else {
 					baseInfo = Tuple.newT(bookInfo.getTitleStr(), TYPE.KAN);
 				}
@@ -665,6 +679,7 @@ public class BookNameUtil implements NameUtil {
 			m.get(baseInfo).put(bookInfo, map.get(bookInfo));
 		}
 
+		//表記の揺れの吸収ロジック
 		for (Entry<Tuple<String, TYPE>, SortedMap<BookInfo, File>> e1 : m
 				.entrySet()) {
 			String k1 = e1.getKey().val1;
@@ -723,6 +738,12 @@ public class BookNameUtil implements NameUtil {
 		return result;
 	}
 
+	/**
+	 * 最終的なファイル名をきめるロジックです。
+	 * 分冊の単位も決めます。
+	 * @param src
+	 * @param result
+	 */
 	private void renameKey(
 			SortedMap<Tuple<String, TYPE>, SortedMap<BookInfo, File>> src,
 			SortedMap<Tuple<String, TYPE>, SortedMap<BookInfo, File>> result) {

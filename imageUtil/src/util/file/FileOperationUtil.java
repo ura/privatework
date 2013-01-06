@@ -104,7 +104,6 @@ public class FileOperationUtil {
 		}
 		//空だったら消える。
 		dir.delete();
-
 	}
 
 	/**
@@ -122,11 +121,12 @@ public class FileOperationUtil {
 			log.debug(dir2.toString() + "\t hasFolder:" + dir2.hasFolder());
 
 			if (dir2.isEmpty(new FileNameFilter(MODE.EXT_INCLUDE, ext))) {
-				log.info("削除対象:" + dir2.toString());
+				log.info(Log.OP, "削除対象:" + dir2.toString());
 				dir2.deleteForce();
 			}
 		}
-
+		//空だったら消える。
+		dir.delete();
 	}
 
 	/**
