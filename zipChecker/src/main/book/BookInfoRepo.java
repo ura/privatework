@@ -460,6 +460,13 @@ public class BookInfoRepo implements Serializable {
 		try {
 			ObjectUtil.save("isbn.data", map);
 
+			BookClient bookClient = new BookClient();
+			if (bookClient.isClient()) {
+				log.warn("サーバにデータをSAVEします。");
+				bookClient.saveToServer(this);
+
+			}
+
 		} catch (Exception e) {
 			log.warn("saveに失敗しました");
 		}

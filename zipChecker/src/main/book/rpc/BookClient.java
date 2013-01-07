@@ -22,9 +22,9 @@ public class BookClient {
 
 	public interface BookServerInterface {
 
-		String hello(String msg, int a);
-
 		Collection<BookInfoWeb> getBookInfo();
+
+		void setBookInfo(Collection<BookInfoWeb> infos);
 
 	}
 
@@ -44,6 +44,35 @@ public class BookClient {
 			log.warn("IPの取得処理でエラー", e1);
 		}
 		return result;
+	}
+
+	/**
+	 * サーバにデータをSAVEします
+	 * @return
+	 */
+	public void saveToServer(BookInfoRepo bookInfoRepo) {
+		Map<Key, BookInfo> m = new HashMap<BookInfoRepo.Key, BookInfo>();
+
+		try {
+
+			log.info("client call");
+
+			Client cli = new Client(BOOK_SERVER_IP, 1985);
+			BookServerInterface iface = cli.proxy(BookServerInterface.class);
+
+			Map<Key, BookInfo> map = bookInfoRepo.getMap();
+
+			Collection<BookInfoWeb> bookInfoWeb = BookInfoWeb
+					.toBookInfoWeb(map);
+
+			iface.setBookInfo(bookInfoWeb);
+
+			cli.close();
+			log.info("server connection close!");
+		} catch (Exception e) {
+			log.error("リモートサーバーへのSAVEに失敗しました。", e);
+		}
+
 	}
 
 	public Map<Key, BookInfo> getDataFromServer() {

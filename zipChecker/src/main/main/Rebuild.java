@@ -6,7 +6,7 @@ import util.UserInput;
 import book.BookFileUtil;
 import conf.ConfConst;
 
-public class Ribuild {
+public class Rebuild {
 
 	private static final String SRC_DIR = ConfConst.MAIN_CONF
 			.getVal(ConfConst.SRC_DIR);

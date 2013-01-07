@@ -31,6 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import util.Normalizer;
+import util.StringDistance;
 import util.WinRARWrapper;
 import util.file.DirCollector;
 import util.file.NameUtil;
@@ -695,7 +696,7 @@ public class BookNameUtil implements NameUtil {
 				}
 
 				if (k2 == TYPE.ONE && k4 == TYPE.ONE) {
-					if (new Distance().ld(k1, k3) <= 1 || k1.contains(k3)
+					if (new StringDistance().ld(k1, k3) <= 1 || k1.contains(k3)
 							|| k3.contains(k1)) {
 
 						move(e1, k1, e2, k3);
@@ -715,10 +716,10 @@ public class BookNameUtil implements NameUtil {
 					String t1 = value1.firstKey().getTitleStr();
 					String t2 = value2.firstKey().getTitleStr();
 
-					if ((new Distance().ld(author1, author2) <= 1
+					if ((new StringDistance().ld(author1, author2) <= 1
 							|| author1.contains(author2) || author2
 								.contains(author1))
-							&& new Distance().ld(t1, t2) <= 1
+							&& new StringDistance().ld(t1, t2) <= 1
 
 					) {
 
@@ -924,7 +925,7 @@ public class BookNameUtil implements NameUtil {
 			String r1 = s1.replaceAll("[0-9]", "");
 			String r2 = s2.replaceAll("[0-9]", "");
 
-			int ld = new Distance().ld(r1, r2);
+			int ld = new StringDistance().ld(r1, r2);
 			int max = r1.length() > r2.length() ? r1.length() : r2.length();
 			return (max - ld) * 100 / max;
 		} catch (Exception e) {

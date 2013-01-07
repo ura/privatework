@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.msgpack.rpc.Server;
@@ -36,17 +37,28 @@ public class BookServer implements Runnable {
 		this.bookInfoRepo = bookInfoRepo;
 	}
 
-	public String hello(String msg, int a) {
-		System.out.println("server!!!");
-		return msg;
-	}
-
 	public Collection<BookInfoWeb> getBookInfo() {
 
 		Map<Key, BookInfo> map = bookInfoRepo.getMap();
 		Collection<BookInfoWeb> bookInfoWeb = BookInfoWeb.toBookInfoWeb(map);
 
 		return bookInfoWeb;
+	}
+
+	public void setBookInfo(Collection<BookInfoWeb> infos) {
+
+		log.warn("サーバにマージ要求が来ました。");
+
+		Map<Key, BookInfo> m = new HashMap<BookInfoRepo.Key, BookInfo>();
+
+		for (BookInfoWeb bookInfoWeb : infos) {
+			bookInfoWeb.toBookInfo(m);
+		}
+		Map<Key, BookInfo> basemap = bookInfoRepo.getMap();
+		log.warn("新データ数：[{}]              旧データ数：[{}]", m.size(), basemap.size());
+
+		basemap.putAll(m);
+
 	}
 
 	@Override
