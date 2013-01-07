@@ -207,7 +207,12 @@ public class BarcodeReader4Book {
 			if (!useRemote) {
 				return readImpl(retry, file, i);
 			} else {
-				return new BookImgUploader().getBarcpdeInfoFromServer(file);
+				try {
+					return new BookImgUploader().getBarcpdeInfoFromServer(file);
+				} catch (Exception e) {
+					log.warn("リモートサバーでの画像解析に失敗したので、ローカルで実施します。", e);
+					return readImpl(retry, file, i);
+				}
 			}
 		}
 	}

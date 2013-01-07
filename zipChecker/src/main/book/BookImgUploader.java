@@ -28,9 +28,8 @@ public class BookImgUploader {
 		HttpClient client = new org.apache.commons.httpclient.HttpClient();
 		PostMethod postMethod = new PostMethod(urlRandam);
 
-		client.setConnectionTimeout(60 * 1000);
-
-		// Send any XML file as the body of the POST request
+		//TODO 設定値決め打ちでいいと考えるが？
+		client.setConnectionTimeout(60 * 5 * 1000);
 
 		log.debug("File Length = {}", f.length());
 
