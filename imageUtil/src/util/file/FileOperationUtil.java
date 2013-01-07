@@ -63,7 +63,7 @@ public class FileOperationUtil {
 
 		boolean r = true;
 		for (File file : f) {
-			r = r && move(file, dirPath);
+			r = move(file, dirPath) && r;
 		}
 
 		return r;
@@ -283,14 +283,26 @@ public class FileOperationUtil {
 						+ destPath.getAbsolutePath());
 
 				if (srcPath.exists()) {
-					try {
-						Files.move(srcPath.toPath(), destPath.toPath(),
-								StandardCopyOption.ATOMIC_MOVE);
-					} catch (IOException e) {
-						log.error("COPYに失敗", e);
-						throw new IllegalStateException();
+
+					for (int i = 0; i <= 5; i++) {
+
+						try {
+							Files.move(srcPath.toPath(), destPath.toPath(),
+									StandardCopyOption.ATOMIC_MOVE);
+
+							break;
+						} catch (IOException e) {
+
+							sleep(1000);
+
+							if (i == 5) {
+								log.error("COPYに失敗", e);
+								throw new IllegalStateException();
+							}
+						}
 					}
 				}
+
 			} else {
 				log.info("条件に一致しなかったため、移動しません。{}", src.getAbsolutePath());
 			}

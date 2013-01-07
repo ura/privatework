@@ -192,7 +192,7 @@ public class BookFileUtil {
 			List<File> files = coll.getFiles();
 
 			for (File file : files) {
-				log.info("rebuildArc target {}", file.toString());
+				log.warn("rebuildArc target {}", file.toString());
 			}
 
 			rebuildArc(files);
