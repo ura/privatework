@@ -13,12 +13,8 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
 import book.BookFileUtil;
-import conf.ConfConst;
 
 public class RebuildCUI {
-
-	private static final String SRC_DIR = ConfConst.MAIN_CONF
-			.getVal(ConfConst.SRC_DIR);
 
 	/**
 	 * @param args

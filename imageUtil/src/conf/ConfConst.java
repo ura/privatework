@@ -19,8 +19,15 @@ public class ConfConst {
 	public static final String BARCODE_REMOTE_SITES = "BARCODE_REMOTE_SITES";
 	public static final String BARCODE_USE_REMOTE_SITES = "BARCODE_USE_REMOTE_SITES";
 
+	/**
+	 * MAINのプロパティーの場所
+	 */
 	public static final String MAIN_CONF_FILE = "/main.properties";
 	public static final String AssociateTag = "AssociateTag";
+
+	/**
+	 * GUI用のデフォルトのソースのDIR
+	 */
 	public static final String SRC_DIR = "SRC_DIR";
 
 	/**
