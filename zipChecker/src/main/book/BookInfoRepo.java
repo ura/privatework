@@ -3,13 +3,21 @@ package book;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.SortedMap;
+import java.util.SortedSet;
+import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -28,6 +36,7 @@ import book.rpc.BookClient;
 import book.webapi.BookInfo;
 import book.webapi.BookInfoFromWeb;
 import book.webapi.ISBNConv;
+import collection.Tuple;
 import static util.file.FileNameUtil.getExt;
 import static util.file.FileNameUtil.getFileName;
 
@@ -48,7 +57,13 @@ public class BookInfoRepo implements Serializable {
 	private static final long serialVersionUID = 610289580264110233L;
 
 	private static Logger log = LoggerFactory.getLogger(BookInfoRepo.class);
+	private static int SEARCH_MAX = 4;
+
 	private Map<Key, BookInfo> map = new HashMap<Key, BookInfo>();
+
+	private List<SortedMap<Key, BookInfo>> searchmaps = new ArrayList<>();
+
+	private ExecutorService ex = Executors.newFixedThreadPool(SEARCH_MAX + 1);
 
 	public enum State implements Serializable {
 
@@ -75,7 +90,7 @@ public class BookInfoRepo implements Serializable {
 	 *
 	 */
 
-	public static class Key implements Serializable {
+	public static class Key implements Serializable, Comparable<Key> {
 		public Key(String isbn, State state) {
 			super();
 			this.isbn = isbn;
@@ -112,6 +127,13 @@ public class BookInfoRepo implements Serializable {
 			} else if (!isbn.equals(other.isbn))
 				return false;
 			return true;
+		}
+
+		@Override
+		public int compareTo(Key o) {
+
+			return isbn.compareTo(o.isbn);
+
 		}
 
 	}
@@ -224,46 +246,139 @@ public class BookInfoRepo implements Serializable {
 	 * キーワード（title,auther）で検索する。
 	 * 巻数は対象外。
 	 * @param info
+	 * @throws
 	 */
-	public Set<BookInfo> get(State state, String... keywords) {
-		Set<BookInfo> set = new TreeSet<BookInfo>();
+	public Set<BookInfo> get(final State state, final String... keywords) {
+		final Set<BookInfo> set = new TreeSet<BookInfo>();
 		log.info("{}:{}:{}:{}", keywords);
-		for (Entry<Key, BookInfo> e : map.entrySet()) {
-			if (state == State.ANY || e.getKey().state == state) {
 
-				if (keywords != null) {
-					boolean flag = true;
+		class SearchTask<Void> implements Callable<Void> {
 
-					for (String keyword : keywords) {
+			public int idx;
 
-						if (Normalizer.contain(e.getValue().getTitleStr(),
-								keyword)) {
-							continue;
+			public SearchTask(int idx) {
+				super();
+				this.idx = idx;
+
+			}
+
+			@Override
+			public Void call() throws Exception {
+
+				SortedMap<Key, BookInfo> sortedMap = searchmaps.get(idx);
+				for (Entry<Key, BookInfo> e : sortedMap.entrySet()) {
+					if (state == State.ANY || e.getKey().state == state) {
+
+						if (keywords != null) {
+							boolean flag = true;
+
+							for (String keyword : keywords) {
+
+								if (Normalizer.contain(e.getValue()
+										.getTitleStr(), keyword)) {
+									continue;
+								}
+
+								if (Normalizer.contain(
+										e.getValue().getAuthor(), keyword)) {
+									continue;
+								}
+								if (Normalizer.contain(e.getValue().getNo(),
+										keyword)) {
+									continue;
+								}
+								flag = false;
+								break;
+
+							}
+
+							if (flag) {
+								set.add(e.getValue());
+							}
+						} else {
+							set.add(e.getValue());
 						}
-
-						if (Normalizer.contain(e.getValue().getAuthor(),
-								keyword)) {
-							continue;
-						}
-						if (Normalizer.contain(e.getValue().getNo(), keyword)) {
-							continue;
-						}
-						flag = false;
-						break;
 
 					}
-
-					if (flag) {
-						set.add(e.getValue());
-					}
-				} else {
-					set.add(e.getValue());
 				}
 
+				return null;
+			}
+
+		}
+
+		List<Callable<Void>> l = new ArrayList<>();
+		for (int i = 0; i < SEARCH_MAX; i++) {
+			l.add(new SearchTask(i));
+
+		}
+		try {
+			ex.invokeAll(l);
+		} catch (InterruptedException e) {
+			log.error("検索時にエラーが発生しました。", e);
+
+		}
+		searchNewBook(set);
+		return set;
+
+	}
+
+	public boolean containsKey(String isbn) {
+		return map.containsKey(new Key(isbn, State.ANY));
+
+	}
+
+	private void searchNewBook(final Set<BookInfo> set) {
+
+		class NewSearchTask<Void> implements Callable<Void> {
+
+			@Override
+			public Void call() throws Exception {
+
+				SortedSet<String> title = new TreeSet<>();
+				SortedSet<String> author = new TreeSet<>();
+
+				if (set.size() > 3) {
+					for (BookInfo bookInfo : set) {
+
+						title.add(bookInfo.getTitleStr());
+						author.add(bookInfo.getAuthor());
+					}
+
+					if (title.size() == 1 && author.size() == 1) {
+
+						log.warn("絞り込みがされたため、追加検索を実施します {} : {}",
+								title.first(), author.first());
+
+						SortedSet<BookInfo> bookSortedSet = BookInfoFromWeb
+								.getBookInfoFromTitleAuther(title.first(),
+										author.first());
+
+						for (BookInfo bookInfo : bookSortedSet) {
+							if (bookInfo.isTrueISBN()
+									&& !map.containsKey(bookInfo.getIsbn())) {
+								log.warn("未登録書籍を登録します。{}", bookInfo);
+								map.put(new Key(bookInfo.getIsbn(), State.BAT),
+										bookInfo);
+							}
+						}
+						save();
+					} else {
+						log.warn("絞り込みがされていないため、検索しません。");
+						for (String s : title) {
+							log.warn(s);
+						}
+						for (String s : author) {
+							log.warn(s);
+						}
+					}
+				}
+
+				return null;
 			}
 		}
 
-		return set;
+		ex.submit(new NewSearchTask());
 
 	}
 
@@ -290,15 +405,15 @@ public class BookInfoRepo implements Serializable {
 		ThreadPoolExecutor ex = new ThreadPoolExecutor(1, 1, 0L,
 				TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
 
-		for (Tuple tuple : set) {
+		for (Tuple<String, String> tuple : set) {
 
-			final Tuple t = tuple;
+			final Tuple<String, String> t = tuple;
 			ex.submit(new Runnable() {
 
 				@Override
 				public void run() {
 					Set<BookInfo> bookInfos = BookInfoFromWeb
-							.getBookInfoFromTitleAuther(t.title, t.author);
+							.getBookInfoFromTitleAuther(t.val1, t.val2);
 					addBatch(bookInfos);
 
 				}
@@ -456,6 +571,26 @@ public class BookInfoRepo implements Serializable {
 
 	}
 
+	private void createSearchMap() {
+
+		searchmaps.clear();
+		for (int i = 0; i < SEARCH_MAX; i++) {
+			SortedMap<Key, BookInfo> m = new TreeMap<>();
+			searchmaps.add(m);
+		}
+		int i = 0;
+		for (Entry<Key, BookInfo> e : map.entrySet()) {
+
+			SortedMap<Key, BookInfo> sortedMap = searchmaps.get(i++
+					% searchmaps.size());
+			Key key = e.getKey();
+			BookInfo value = e.getValue();
+			sortedMap.put(key, value);
+
+		}
+
+	}
+
 	public void save() {
 		try {
 			ObjectUtil.save("isbn.data", map);
@@ -466,52 +601,9 @@ public class BookInfoRepo implements Serializable {
 				bookClient.saveToServer(this);
 
 			}
-
+			createSearchMap();
 		} catch (Exception e) {
 			log.warn("saveに失敗しました");
-		}
-	}
-
-	class Tuple {
-		public Tuple(String title, String author) {
-			super();
-			this.title = title;
-			this.author = author;
-		}
-
-		String title;
-		String author;
-
-		@Override
-		public int hashCode() {
-			final int prime = 31;
-			int result = 1;
-			result = prime * result
-					+ ((author == null) ? 0 : author.hashCode());
-			result = prime * result + ((title == null) ? 0 : title.hashCode());
-			return result;
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj)
-				return true;
-			if (obj == null)
-				return false;
-			if (getClass() != obj.getClass())
-				return false;
-			Tuple other = (Tuple) obj;
-			if (author == null) {
-				if (other.author != null)
-					return false;
-			} else if (!author.equals(other.author))
-				return false;
-			if (title == null) {
-				if (other.title != null)
-					return false;
-			} else if (!title.equals(other.title))
-				return false;
-			return true;
 		}
 	}
 

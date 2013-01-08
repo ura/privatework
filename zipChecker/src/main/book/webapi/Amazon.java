@@ -320,6 +320,8 @@ public class Amazon {
 		String xmlStr = "";
 		try {
 
+			sleep(2 * 1000);
+
 			String query = createQuery(q);
 			log.info("検索クエリ:{}", query);
 

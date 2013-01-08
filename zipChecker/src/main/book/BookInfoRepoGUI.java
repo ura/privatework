@@ -10,6 +10,9 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableColumnModel;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import util.ClipBoard;
 import book.BookInfoRepo.State;
 import book.rpc.BookServer;
@@ -26,62 +29,79 @@ import static util.StaticUtil.sleep;
  * @author name
  *
  */
-public class BookInfoRepoGUI {
+public class BookInfoRepoGUI extends JFrame {
+
+	private static Logger log = LoggerFactory.getLogger(BookInfoRepoGUI.class);
+
 	private static final int MAX = 150;
 
-	static class JTextFieldTest extends JFrame {
-		public JTextFieldTest() {
-			getContentPane().setLayout(null);
+	private BookInfoRepo repo;
 
-			final JTextField tf = new JTextField("Hello World!!", 15);
+	public BookInfoRepoGUI() {
 
-			tf.setBounds(20, 20, 640, 30);
-			getContentPane().add(tf);
+		repo = new BookInfoRepo();
 
-			final JTable tb = new JTable(MAX, 2);
+		repo.load();
 
-			DefaultTableColumnModel columnModel = (DefaultTableColumnModel) tb
-					.getColumnModel();
+		BookServer server = new BookServer(repo);
+		server.startThread();
 
-			columnModel.getColumn(0).setPreferredWidth(30);
-			columnModel.getColumn(1).setPreferredWidth(550);
+		getContentPane().setLayout(null);
 
-			JScrollPane sp = new JScrollPane(tb);
-			sp.setPreferredSize(new Dimension(230, 80));
-			sp.setBounds(20, 80, 640, 650);
-			getContentPane().add(sp);
+		final JTextField tf = new JTextField("Hello World!!", 15);
 
-			setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-			setTitle("JTextFieldTest");
-			setSize(700, 800);
-			setVisible(true);
-			setAlwaysOnTop(true);
+		tf.setBounds(20, 20, 640, 30);
+		getContentPane().add(tf);
 
-			new Thread(new Runnable() {
+		final JTable tb = new JTable(MAX, 2);
 
-				@Override
-				public void run() {
-					while (true) {
+		DefaultTableColumnModel columnModel = (DefaultTableColumnModel) tb
+				.getColumnModel();
+
+		columnModel.getColumn(0).setPreferredWidth(30);
+		columnModel.getColumn(1).setPreferredWidth(550);
+
+		JScrollPane sp = new JScrollPane(tb);
+		sp.setPreferredSize(new Dimension(230, 80));
+		sp.setBounds(20, 80, 640, 650);
+		getContentPane().add(sp);
+
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setTitle("JTextFieldTest");
+		setSize(700, 800);
+		setVisible(true);
+		setAlwaysOnTop(true);
+
+		new Thread(new Runnable() {
+
+			@Override
+			public void run() {
+				while (true) {
+					try {
 						sleep(10);
 
 						set(tb, tf.getText());
+					} catch (Exception e) {
+
+						log.error("検索スレッドで想定外のエラー", e);
+						sleep(10000);
 					}
-
 				}
-			}).start();
-
-			while (true) {
-				String str = ClipBoard.getClipboard();
-
-				tf.setText(str);
 
 			}
+		}).start();
+
+		while (true) {
+			String str = ClipBoard.getClipboard();
+
+			tf.setText(str);
+
 		}
 	}
 
-	private static String key;
+	private String key;
 
-	static void clear(JTable tb) {
+	private void clear(JTable tb) {
 		DefaultTableColumnModel defaultTableColumnModel = new DefaultTableColumnModel();
 		//tb.setColumnModel(defaultTableColumnModel);
 
@@ -96,7 +116,7 @@ public class BookInfoRepoGUI {
 	/**
 	 *
 	 */
-	private static Set<BookInfo> createBookSummary(Set<BookInfo> set) {
+	private Set<BookInfo> createBookSummary(Set<BookInfo> set) {
 
 		SortedSetMultimap<String, BookInfo> map = TreeMultimap.create();
 
@@ -108,14 +128,14 @@ public class BookInfoRepoGUI {
 
 	}
 
-	static void set(JTable tb, String keyword)
+	private void set(JTable tb, String keyword)
 
 	{
 
 		if (!keyword.equals(key)) {
 			clear(tb);
 			key = keyword;
-			System.out.println("QUERY*" + keyword);
+			System.out.println("QUERY:" + keyword);
 			int i = 0;
 			{
 				Set<BookInfo> set = repo.get(State.HAVE,
@@ -156,17 +176,9 @@ public class BookInfoRepoGUI {
 
 	}
 
-	private static BookInfoRepo repo;
-
 	public static void main(String[] args) {
-		repo = new BookInfoRepo();
 
-		repo.load();
-
-		BookServer server = new BookServer(repo);
-		server.startThread();
-
-		new JTextFieldTest();
+		new BookInfoRepoGUI();
 
 	}
 
