@@ -178,8 +178,24 @@ public class BookInfoRepo implements Serializable {
 	 */
 	public void update(Set<BookInfo> infos, State state) {
 		for (BookInfo info : infos) {
-			map.put(new Key(info.getIsbn(), state), info);
+			update(info, state);
 		}
+
+	}
+
+	/**
+	 * ステータスの更新、書籍データの更新
+	 * @param info
+	 * @param state
+	 */
+	public void update(BookInfo info, State state) {
+
+		log.warn("書籍情報更新 {} {}", info, state);
+		//キーの構造上、おんなじキーだときの更新がかからないっぽい。
+		//バリューの方にステータスは入れるべきだった
+		map.remove(new Key(info.getIsbn(), State.ANY));
+		map.put(new Key(info.getIsbn(), state), info);
+		this.save();
 
 	}
 
