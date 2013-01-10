@@ -344,8 +344,16 @@ public class BookInfoRepo implements Serializable {
 
 	}
 
+	/**
+	 * 新刊の探査。
+	 * むやみに探索するのではなく、ある程度保持している本があった場合に検索する。
+	 * タイトルがおんなじ＋作者が一緒
+	 * である程度の冊数を保持していた場合新刊を探査
+	 * @param set 保持している本
+	 */
 	private void searchNewBook(final Set<BookInfo> set) {
 
+		//ロックするとうざいのでバックグラウンドで。
 		class NewSearchTask<Void> implements Callable<Void> {
 
 			@Override
@@ -361,6 +369,7 @@ public class BookInfoRepo implements Serializable {
 						author.add(bookInfo.getAuthor());
 					}
 
+					author = aggregationOfAuthor(author);
 					if (title.size() == 1 && author.size() == 1) {
 
 						log.warn("絞り込みがされたため、追加検索を実施します {} : {}",
@@ -372,7 +381,8 @@ public class BookInfoRepo implements Serializable {
 
 						for (BookInfo bookInfo : bookSortedSet) {
 							if (bookInfo.isTrueISBN()
-									&& !map.containsKey(bookInfo.getIsbn())) {
+									&& !BookInfoRepo.this.containsKey(bookInfo
+											.getIsbn())) {
 								log.warn("未登録書籍を登録します。{}", bookInfo);
 								map.put(new Key(bookInfo.getIsbn(), State.BAT),
 										bookInfo);
@@ -395,6 +405,31 @@ public class BookInfoRepo implements Serializable {
 		}
 
 		ex.submit(new NewSearchTask());
+
+	}
+
+	/**
+	 * すべての著者名に含まれている名前を抽出します。
+	 * 作、画、のように複数人の共著の場合、著者名の統一を行います。
+	 * @param set
+	 * @return
+	 */
+	private SortedSet<String> aggregationOfAuthor(SortedSet<String> set) {
+
+		SortedSet<String> author = new TreeSet<>();
+		for (String a1 : set) {
+
+			boolean b = true;
+			for (String a2 : set) {
+
+				b = b & a2.contains(a1);
+			}
+			if (b) {
+				author.add(a1);
+			}
+
+		}
+		return author;
 
 	}
 
