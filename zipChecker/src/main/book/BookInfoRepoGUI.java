@@ -171,12 +171,11 @@ public class BookInfoRepoGUI extends JFrame {
 			clear(tb);
 			key = keyword;
 			System.out.println("QUERY:" + keyword);
-
 			try {
 				int i = 0;
-				{
-					Set<BookInfo> set = repo.get(State.HAVE,
-							keyword.split("[ 　\t\\[\\]第]"));
+				if ("want".equalsIgnoreCase(keyword)) {
+
+					Set<BookInfo> set = repo.get(State.WANT);
 
 					for (BookInfo bookInfo : createBookSummary(set)) {
 						if (i >= MAX) {
@@ -187,30 +186,48 @@ public class BookInfoRepoGUI extends JFrame {
 						tb.setValueAt(bookInfo.getInfo(), i++, 1);
 						list.add(bookInfo);
 					}
-				}
-				{
-					Set<BookInfo> set = repo.get(State.BAT,
-							keyword.split(" 　\t\\[\\]第"));
-					for (BookInfo bookInfo : createBookSummary(set)) {
-						if (i >= MAX) {
-							return;
+
+				} else {
+
+					{
+						Set<BookInfo> set = repo.get(State.HAVE,
+								keyword.split("[ 　\t\\[\\]第]"));
+
+						for (BookInfo bookInfo : createBookSummary(set)) {
+							if (i >= MAX) {
+								return;
+							}
+
+							tb.setValueAt(State.HAVE, i, 0);
+							tb.setValueAt(bookInfo.getInfo(), i++, 1);
+							list.add(bookInfo);
 						}
-						tb.setValueAt(State.BAT, i, 0);
-						tb.setValueAt(bookInfo.getInfo(), i++, 1);
-						list.add(bookInfo);
 					}
-				}
-				{
-					Set<BookInfo> set = repo.get(State.WANT,
-							keyword.split(" 　\t\\[\\]第"));
-					for (BookInfo bookInfo : createBookSummary(set)) {
-						if (i >= MAX) {
-							return;
+					{
+						Set<BookInfo> set = repo.get(State.BAT,
+								keyword.split(" 　\t\\[\\]第"));
+						for (BookInfo bookInfo : createBookSummary(set)) {
+							if (i >= MAX) {
+								return;
+							}
+							tb.setValueAt(State.BAT, i, 0);
+							tb.setValueAt(bookInfo.getInfo(), i++, 1);
+							list.add(bookInfo);
 						}
-						tb.setValueAt(State.WANT, i, 0);
-						tb.setValueAt(bookInfo.getInfo(), i++, 1);
-						list.add(bookInfo);
 					}
+					{
+						Set<BookInfo> set = repo.get(State.WANT,
+								keyword.split(" 　\t\\[\\]第"));
+						for (BookInfo bookInfo : createBookSummary(set)) {
+							if (i >= MAX) {
+								return;
+							}
+							tb.setValueAt(State.WANT, i, 0);
+							tb.setValueAt(bookInfo.getInfo(), i++, 1);
+							list.add(bookInfo);
+						}
+					}
+
 				}
 			} finally {
 				init = false;
